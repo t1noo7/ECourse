@@ -1,0 +1,220 @@
+.img30x30 {
+  width: 30px;
+  height: 30px;
+}
+
+.cart-view {
+  margin-top: 100px;
+  /* Adjust this value as needed */
+  z-index: 1;
+  /* Lower z-index to ensure it's below the header */
+  position: relative;
+  /* Ensure position is relative to allow margin-top */
+  background-color: rgba(255, 255, 255, 0.9);
+  /* Optional: Add background to see boundaries */
+  padding: 20px;
+  /* Add some padding for spacing inside */
+  border-radius: 10px;
+  /* Optional: To smooth out the edges */
+}
+
+.has-children {
+  position: relative;
+  display: inline-block;
+}
+
+/* Only trigger hover for user-profile */
+.user-profile {
+  display: inline-block;
+  position: relative;
+}
+
+/* Show the dropdown menu only when hovering over the user-profile */
+.user-profile:hover .sub-menu {
+  display: block;
+}
+
+.sub-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 10px 0;
+  min-width: 220px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+}
+
+.sub-menu li {
+  list-style: none;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.sub-menu li:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.sub-menu li h4 {
+  margin: 0;
+}
+
+.sub-menu li h4 a {
+  text-decoration: none;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+
+.sub-menu li h4 a:hover {
+  color: #007bff;
+}
+
+.sub-menu li:hover {
+  background-color: #f8f9fa;
+}
+
+/* Adjust user greeting and cart elements */
+.img30x30 {
+  vertical-align: middle;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.user-profile a.link.style3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-profile a.link.style3:hover {
+  color: #007bff;
+}
+
+/* Cart icon styling - no hover or dropdown for the cart */
+.cart-icon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.button-checkout {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.4s ease;
+  box-shadow: 0px 10px 20px rgba(110, 142, 251, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.button-checkout:hover {
+  color: #6e8efb;
+  background: #fff;
+  box-shadow: 0px 15px 25px rgba(110, 142, 251, 0.5);
+}
+
+.button-checkout::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(110, 142, 251, 0.3);
+  transition: width 0.6s ease, height 0.6s ease, top 0.6s ease, left 0.6s ease;
+  border-radius: 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.button-checkout:hover::before {
+  width: 0;
+  height: 0;
+  opacity: 1;
+}
+
+.button-checkout span {
+  position: relative;
+  z-index: 1;
+}
+
+.order-confirmation {
+  color: #D3D3D3;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  color: #E5E5E5;
+}
+
+.order-table th,
+.order-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.order-table th {
+  background-color: #333;
+  color: #FFF;
+  font-weight: bold;
+  border-bottom: 2px solid #444;
+}
+
+.order-table tbody tr:nth-child(even) {
+  background-color: #2e2e2e;
+}
+
+.order-table tbody .order-row:hover {
+  background-color: #444;
+}
+
+.order-table td {
+  border-bottom: 1px solid #444;
+}
+
+/* Escaped Media Query for Responsive Design */
+@media (max-width: 768px) {
+  .order-confirmation .container {
+    padding: 0 10px;
+  }
+
+  .order-history-title {
+    font-size: 20px;
+  }
+
+  .order-table th,
+  .order-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .confirmation-message {
+    background-color: #2d6a4f;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}

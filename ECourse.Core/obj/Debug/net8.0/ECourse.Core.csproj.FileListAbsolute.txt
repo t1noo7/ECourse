@@ -1,0 +1,16 @@
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/bin/Debug/net8.0/ECourse.Core.deps.json
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/bin/Debug/net8.0/ECourse.Core.dll
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/bin/Debug/net8.0/ECourse.Core.pdb
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/bin/Debug/net8.0/ECourse.Common.dll
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/bin/Debug/net8.0/ECourse.Common.pdb
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.csproj.AssemblyReference.cache
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.AssemblyInfoInputs.cache
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.AssemblyInfo.cs
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.csproj.CoreCompileInputs.cache
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.sourcelink.json
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.csproj.CopyComplete
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.dll
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/refint/ECourse.Core.dll
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ECourse.Core.pdb
+/Users/duongt1l0.ch0co/Projects/Git/ECourse/ECourse.Core/obj/Debug/net8.0/ref/ECourse.Core.dll

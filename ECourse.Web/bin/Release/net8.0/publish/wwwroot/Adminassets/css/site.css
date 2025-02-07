@@ -1,0 +1,16 @@
+.btnUpload {
+    background: #e83b3b;
+    border: none;
+    color: white !important;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.wd-48 {
+    width: 48px;
+}
