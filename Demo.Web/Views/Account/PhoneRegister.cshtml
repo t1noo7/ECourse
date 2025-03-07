@@ -1,88 +1,127 @@
 ﻿@model Demo.Web.Areas.Admin.Models.PhoneRegisterViewModel
 
-@section Styles {
-        <style>
-            #register_form .col-md-4 {
-                text-align: left;
-            }
-        </style>
+@{
+    ViewBag.Title = "Account Register";
 }
-<section class="breadcrumb-wrap bg-f br-bg-5">
-    <div class="overlay op-6 bg-black"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 col-md-10 offset-md-1">
-                <div class="breadcrumb-title">
-                    <h2>Register</h2>
-                    <ul class="breadcrumb-menu">
-                        <li><a href="index.html">Home </a></li>
-                        <li>Register</li>
-                    </ul>
+
+<!--
+    Tuỳ chọn: Sử dụng font-awesome hoặc la-* để hiển thị icon mạng xã hội
+    <link rel="stylesheet" href="~/Content/fontawesome-all.min.css" />
+-->
+
+<section class="login-section"
+         style="
+            min-height: 100vh;
+            /* Thay đường dẫn ảnh của bạn */
+            background: url('@Url.Content("~/assets/img/carousel-1.jpg")') no-repeat center center;
+            background-size: cover;
+            position: relative;
+         ">
+
+    <!-- Overlay mờ -->
+    <div class="overlay"
+         style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+         ">
+    </div>
+
+    <!-- Nội dung chính trên overlay -->
+    <div class="container" style="position: relative; z-index: 1;">
+        <div class="row align-items-center" style="min-height: 100vh;">
+            <!-- Cột trái: giới thiệu, text, social icons -->
+            <div class="col-lg-6 text-white d-flex flex-column justify-content-center mb-5 mb-lg-0">
+                <h1 class="mb-3 fw-semi-bold">Join Us</h1>
+                <p class="mb-4">
+                    Become a part of our community and unlock limitless learning opportunities.
+                </p>
+                <div class="social-icons">
+                    <a href="#" class="me-3 text-white">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="me-3 text-white">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="me-3 text-white">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-white">
+                        <i class="fab fa-youtube"></i>
+                    </a>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
 
+            <!-- Cột phải: Form đăng ký -->
+            <div class="col-lg-5 offset-lg-1">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Register</h2>
 
-<section class="Login-wrap pt-100 pb-100">
-    <div class="container">
-        <div class="col-xl-6 offset-xl-3 col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-            <div class="login-form">
-                <div class="login-header bg-blue">
-                    <h2 class="text-center mb-0">Register</h2>
-                </div>
-                <div class="login-body">
-                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-                    @using (Html.BeginForm("PhoneRegister", "Account", FormMethod.Post, new { @class = "row", id = "register_form" }))
-                    {
-                            <div class="row">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+                        @using (Html.BeginForm("PhoneRegister", "Account", FormMethod.Post))
+                        {
                             @Html.AntiForgeryToken()
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                    @Html.LabelFor(x => x.Phone)
-                                    @Html.TextBoxFor(x => x.Phone, new { @class = "required", placeholder = "Phone No. *" })
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                    @Html.LabelFor(x => x.Password)
-                                    @Html.PasswordFor(x => x.Password, new { @class = "required", placeholder = "Password *" })
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                    @Html.LabelFor(x => x.PasswordConfirm)
-                                    @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "required", placeholder = "Confirm Password *" })
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <button type="submit" class="btn v6">Register</button>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group text-center">
-                                        <span class="or">Or Register With</span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="form-group">
-                                        <ul class="social-profile v3 text-center mt-0">
-                                            <li><a target="_blank" href="https://instagram.com/"><i
-                                                        class="lab la-instagram"></i></a></li>
-                                            <li><a target="_blank" href="https://twitter.com/"><i
-                                                        class="lab la-twitter"></i></a></li>
-                                            <li><a target="_blank" href="https://facebook.com/"><i
-                                                        class="lab la-facebook-f"></i></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 text-center">
-                                    <p class="mb-0">Already Have An Account? <a class="link" href="account/login">Login</a></p>
-                                </div>
+
+                            <!-- Trường Phone -->
+                            <div class="mb-3">
+                                @Html.LabelFor(x => x.Phone, new { @class = "form-label" })
+                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", placeholder = "Phone No. *" })
+                                @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
                             </div>
-                    }
+
+                            <!-- Trường Password -->
+                            <div class="mb-3">
+                                @Html.LabelFor(x => x.Password, new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Password *" })
+                                @Html.ValidationMessageFor(x => x.Password, "", new { @class = "text-danger" })
+                            </div>
+
+                            <!-- Trường Confirm Password -->
+                            <div class="mb-3">
+                                @Html.LabelFor(x => x.PasswordConfirm, new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "form-control", placeholder = "Confirm Password *" })
+                                @Html.ValidationMessageFor(x => x.PasswordConfirm, "", new { @class = "text-danger" })
+                            </div>
+
+                            <!-- Nút Register -->
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Register</button>
+
+                            <!-- Đăng ký bằng mạng xã hội (tuỳ chọn) -->
+                            <div class="text-center mt-2">
+                                <span>Or Register With</span>
+                                <ul class="social-profile list-inline d-inline-block mb-0 ms-2">
+                                    <li class="list-inline-item">
+                                        <a target="_blank" href="https://instagram.com/">
+                                            <i class="lab la-instagram"></i>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a target="_blank" href="https://twitter.com/">
+                                            <i class="lab la-twitter"></i>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a target="_blank" href="https://facebook.com/">
+                                            <i class="lab la-facebook-f"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Liên kết tới trang Login -->
+                            <div class="mt-3 text-center">
+                                <p class="mb-0">
+                                    Already Have An Account?
+                                    <a class="link" href="account/login">Login</a>
+                                </p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
