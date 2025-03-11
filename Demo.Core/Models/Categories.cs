@@ -10,7 +10,6 @@ namespace Demo.Core.Models
         public string? CatName { get; set; }
 
         [Display(Name = "Miêu tả danh mục")]
-        [Required(ErrorMessage = "Miêu tả danh mục không được để trống")]
         public string? Description { get; set; }
 
         [Display(Name = "Công khai")]
@@ -18,10 +17,6 @@ namespace Demo.Core.Models
 
         [Display(Name = "Ảnh đại diện")]
         public string? Thumb { get; set; }
-
-        [Display(Name = "Tiêu đề")]
-        [Required(ErrorMessage = "Tiêu đề không được để trống")]
-        public string? Title { get; set; }
 
         [Display(Name = "Tên thay thế")]
         public string? Alias { get; set; }
