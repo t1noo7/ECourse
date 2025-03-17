@@ -24,6 +24,7 @@ namespace Demo.Web.Startup
             services.AddTransient<IUserGroupManager, UserGroupManager>();
 
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IBannerRepository, BannerRepository>();
             //services.AddTransient<INewsRepository, NewsRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
