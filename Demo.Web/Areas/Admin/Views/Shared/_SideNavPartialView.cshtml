@@ -30,15 +30,17 @@
                 </li>
             }
 
-            @if (allRoles.Contains(RoleList.Sale))
+            @* @if (allRoles.Contains(RoleList.Sale))
             {
+                <li>
                 <a href="/admin/generalItem/Sales" data-href="/admin/generalItem/editSale" class="br-menu-link">
                     <div class="br-menu-item">
                         <i class="menu-item-icon ion-ios-people tx-20"></i>
                         <span class="menu-item-label">Quản lý Sales</span>
                     </div>
                 </a>
-            }
+                </li>
+            } *@
 
             @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
             {

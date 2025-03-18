@@ -9,16 +9,26 @@ namespace Demo.Core.Models
         public string Title { get; set; }
 
         [Display(Name = "Mô tả")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Display(Name = "Ảnh đại diện")]
-        public string Thumb { get; set; }
+        public string? Thumb { get; set; }
 
         [Display(Name = "Kích hoạt")]
         public bool Active { get; set; }
 
         [Display(Name = "Giá")]
-        public long Price { get; set; }
-        public int FakePrice { get; set; }
+        [Required(ErrorMessage = "Giá không được để trống")]
+        public int Price { get; set; }
+        [Display(Name = "Giá đã giảm")]
+        public int? DiscountPrice { get; set; }
+
+        [Display(Name = "Thời lượng")]
+        [Required(ErrorMessage = "Thời lượng không được để trống")]
+        public int Time {  get; set; }
+
+        /*[Display(Name = "Giáo viên")]
+        [Required(ErrorMessage = "Giáo viên không được để trống")]
+        public string Teacher { get; set; }*/
     }
 }
