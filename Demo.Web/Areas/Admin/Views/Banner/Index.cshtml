@@ -1,0 +1,70 @@
+﻿@using Demo.Core.Models
+@model List<Banner>
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    ViewData["Title"] = "Danh sách banner";
+}
+@section Button {
+    <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
+       class="btn btn-primary btn-sm pull-right">Thêm Mới</a>
+}
+<div class="card mt-2 mb-2 shadow-base pd-b-10">
+    <div class="card-body pb-0">
+        <table class="table mg-b-0" cellspacing="0">
+            <tr>
+                <th>STT</th>
+                <th>
+                    Tiêu Đề
+                </th>
+                <th>
+                    Ảnh
+                </th>
+                <th>
+                    Thứ Tự
+                </th>
+                <th>
+                    Ngày Tạo
+                </th>
+                <th>
+                    Trạng Thái
+                </th>
+            </tr>
+
+            @{
+                var stt = 1;
+                foreach (var item in Model.OrderByDescending(x => x.Created))
+                {
+                    <tr class="stat even">
+                        <td class="ac">
+                            @(stt++)
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Title</a>
+                        </td>
+                        <td>
+                            <img src="@item.Image" class="img64x64" />
+                        </td>
+                        <td>@item.Order</td>
+                        <td>@item.Created</td>
+                        <td>
+                            @if (item.Status == true)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <div class="badge badge-success badge-dot m-r-10"></div>
+                                    <div>Hoạt Động</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center">
+                                    <div class="badge badge-danger badge-dot m-r-10"></div>
+                                    <div>Không Hoạt Động</div>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>
