@@ -64,7 +64,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 model.Modified = DateTimeExtensions.UTCNowVN;
 
                 bool isExist = false;
-                if (model.Id != Guid.Empty && model.Id != null)
+                if (model.Id == Guid.Empty)
                 {
                     isExist = _courseRepository.Find(x => x.Id == model.Id && x.Deleted != true).FirstOrDefault() != null;
 
@@ -77,7 +77,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 if (fileInput != null)
                 {
-                    model.Thumb = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "courses", $"{model.Id}.thumb.png");
+                    model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "courses", $"{model.Id}.thumb.png");
                 }
 
                 if (String.IsNullOrEmpty(model.FriendlyUrl))

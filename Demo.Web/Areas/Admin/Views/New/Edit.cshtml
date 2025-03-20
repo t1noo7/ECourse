@@ -1,19 +1,19 @@
-@using Demo.Core.Models
+﻿@using Demo.Core.Models
 @using Demo.Web.Extensions
-@model Lesson
+@model New
 
 @{
-    ViewData["Title"] = "Thiết lập Bài giảng";
+    ViewData["Title"] = "Thiết lập tin tức";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
 }
 
 <div class="card mt-2 mb-2 shadow-base">
     <div class="card-body pb-0">
-        <form method="post" enctype="multipart/form-data" asp-controller="Lesson" asp-action="Edit" id="editForm">
+        <form method="post" enctype="multipart/form-data" asp-controller="New" asp-action="Edit" id="editForm">
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.Created)
             @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.Image)
             @Html.HiddenFor(m => m.FriendlyUrl)
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
@@ -28,22 +28,19 @@
                         })
                 </div>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.YouTubeUrl)
-                <input type="text" class="form-control" asp-for="YouTubeUrl" id="youtube-url">
-            </div>
-            <div class="form-group">
-                <label class="font-weight-semibold">Preview</label>
-                <div id="youtube-preview">
-                    <!-- Video preview iframe will be inserted here -->
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Image) @Html.RequireLabel()
+                    <partial name="_EditImage" model="@Model.Image" />
                 </div>
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.Description, new
+                    @Html.LabelFor(m => m.SContent) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.SContent, new
                         {
-                            Class = "form-control form-control-smy h-100"
+                            Class = "form-control form-control-smy h-100",
+                            required = "required"
                         })
                 </div>
             </div>
@@ -52,10 +49,15 @@
                     @Html.LabelFor(m => m.Content) @Html.RequireLabel()
                     @Html.TextAreaFor(m => m.Content, new
                         {
-                            Class = "form-control form-control-smy h-100",
-                            required =
-                             "required"
+                            Class = "form-control form-control-smy h-150",
+                            required = "required"
                         })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(x => x.Status) &nbsp;
+                    @Html.CheckBoxFor(m => m.Status)
                 </div>
             </div>
             <hr />
@@ -71,32 +73,10 @@
     <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script>
-        common.initTinyMce('#Content');
-
-        $('#youtube-url').on('input', function () {
-            var url = $(this).val();
-            var videoId = extractYouTubeVideoId(url);
-            if (videoId) {
-                var iframeHtml = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe>';
-                $('#youtube-preview').html(iframeHtml);
-            } else {
-                $('#youtube-preview').html('<span>Invalid YouTube URL</span>');
-            }
-        });
-
-        function extractYouTubeVideoId(url) {
-            var regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            var match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        $('#youtube-url').trigger('input');
-    </script>
-    <script>
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {
                 common.initTinyMce('#Content');
-                common.initTinyMce('#Description');
+                common.initTinyMce('#SContent');
             }, 1000);
         });
     </script>

@@ -32,3 +32,32 @@
         Your browser does not support the HTML5 canvas element.
     </canvas>
 </div>
+
+<script>
+    document.getElementById("fileInput").addEventListener("change", function (event) {
+        var file = event.target.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    var canvas = document.getElementById("canvas");
+                    var ctx = canvas.getContext("2d");
+
+                    // Đặt kích thước canvas theo ảnh
+                    canvas.width = img.width * 0.7;
+                    canvas.height = img.height * 0.7;
+
+                    // Vẽ ảnh lên canvas
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

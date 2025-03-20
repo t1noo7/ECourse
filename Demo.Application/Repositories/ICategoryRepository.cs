@@ -3,7 +3,7 @@ using Demo.Core.Repositories;
 
 namespace Demo.Application.Repositories
 {
-    public interface ICategoryRepository : IBaseRepository<Categories>
+    public interface ICategoryRepository : IBaseRepository<Category>
     {
     }
 }

@@ -1,8 +1,8 @@
 ﻿@using Demo.Core.Models
-@model List<Banner>
+@model List<Category>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
-    ViewData["Title"] = "Danh sách banner";
+    ViewData["Title"] = "Danh sách danh mục";
 }
 @section Button {
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
@@ -14,13 +14,10 @@
             <tr>
                 <th>STT</th>
                 <th>
-                    Tiêu Đề
+                    Tên Danh Mục
                 </th>
                 <th>
                     Ảnh
-                </th>
-                <th>
-                    Thứ Tự
                 </th>
                 <th>
                     Ngày Tạo
@@ -40,13 +37,12 @@
                             @(stt++)
                         </td>
                         <td>
-                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Title</a>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.CatName</a>
                         </td>
                         <td>
                             <img src="@item.Image" class="img64x64" />
                         </td>
-                        <td>@item.Order</td>
-                        <td>@item.Created</td>
+                        <td>@item.Modified</td>
                         <td>
                             @if (item.Status == true)
                             {

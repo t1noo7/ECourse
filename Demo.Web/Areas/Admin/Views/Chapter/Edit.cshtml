@@ -1,20 +1,20 @@
-﻿@using Demo.Core.Models
+@using Demo.Core.Models
 @using Demo.Web.Extensions
-@model Banner
+@model Chapter
 
 @{
-    ViewData["Title"] = "Thiết lập banner";
+    ViewData["Title"] = "Thiết lập Lớp học";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
+    var lessons = ViewBag.Lessons as List<Demo.Core.Models.Lesson>;
 }
 
 <div class="card mt-2 mb-2 shadow-base">
     <div class="card-body pb-0">
-        <form method="post" enctype="multipart/form-data" asp-controller="Banner" asp-action="Edit" id="editForm">
+        <form method="post" enctype="multipart/form-data" asp-controller="Class" asp-action="Edit" id="editForm">
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.Created)
             @Html.HiddenFor(m => m.CreatedBy)
-            @Html.HiddenFor(m => m.Image)
-            @Html.HiddenFor(m => m.Order)
             @Html.HiddenFor(m => m.FriendlyUrl)
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
@@ -31,34 +31,12 @@
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.Image) @Html.RequireLabel()
-                    <partial name="_EditImage" model="@Model.Image" />
-                </div>
-            </div>
-            <div class="row mb-lg-2">
-                <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.Content) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.Content, new
+                    @Html.LabelFor(m => m.Order) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.Order, new
                         {
-                            Class = "form-control form-control-smy h-100",
+                            Class = "form-control form-control-smy",
                             required = "required"
                         })
-                </div>
-            </div>
-            <div class="row mb-lg-2">
-                <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.ButtonContent) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.ButtonContent, new
-                        {
-                            Class = "form-control form-control-smy h-150",
-                            required = "required"
-                        })
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(x => x.Status) &nbsp;
-                    @Html.CheckBoxFor(m => m.Status)
                 </div>
             </div>
             <hr />
@@ -71,12 +49,12 @@
 </div>
 
 @section scripts {
-    <script src="https://cdn.tiny.cloud/1/q067kmptog56kbxw1h86mc871k4f3ytfic0ss5aljlu5ueea/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {
                 common.initTinyMce('#Content');
-                common.initTinyMce('#ButtonContent');
             }, 1000);
         });
     </script>

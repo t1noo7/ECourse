@@ -2,45 +2,41 @@
 using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
-using Demo.Database.Repositories;
 using Demo.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class BannerController : Controller
+    public class NewController : Controller
     {
-        private readonly ILogger<BannerController> _logger;
-        private readonly IBannerRepository _bannerRepository;
+        private readonly ILogger<NewController> _logger;
+        private readonly INewRepository _newRepository;
         private readonly IFileService _fileService;
 
-        public BannerController(ILogger<BannerController> logger,
-            IBannerRepository BannerRepository,
-            IFileService fileService)
+        public NewController(ILogger<NewController> logger, INewRepository newRepository, IFileService fileService)
         {
             _logger = logger;
-            _bannerRepository = BannerRepository;
+            _newRepository = newRepository;
             _fileService = fileService;
         }
-
         public IActionResult Index()
         {
-            var banners = _bannerRepository.Find(x => x.Deleted == false).ToList();
-            return View(banners);
+
+            var news = _newRepository.Find(x => x.Deleted == false).ToList();
+            return View(news);
         }
 
         public IActionResult Edit(Guid? id)
         {
-            Banner? model = null;
+            New? model = null;
             if (id.HasValue)
             {
-                model = _bannerRepository.Get(id.Value);
+                model = _newRepository.Get(id.Value);
             }
             if (model == null)
             {
-                model = new Banner();
+                model = new New();
                 model.Id = Guid.NewGuid();
             }
             return View(model);
@@ -48,7 +44,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Banner model, IFormFile fileInput, string returnUrl)
+        public async Task<IActionResult> Edit(New model, IFormFile fileInput, string returnUrl)
         {
             try
             {
@@ -63,38 +59,31 @@ namespace Demo.Web.Areas.Admin.Controllers
                 bool isExist = false;
                 if (model.Id == Guid.Empty)
                 {
-                    isExist = _bannerRepository.Find(x => x.Id == model.Id && x.Deleted != true).FirstOrDefault() != null;
+                    isExist = _newRepository.Find(x => x.Id == model.Id && x.Deleted != true).FirstOrDefault() != null;
 
                     if (!isExist)
                     {
                         model.CreatedBy = model.ModifiedBy;
                         model.Created = DateTimeExtensions.UTCNowVN;
-
-                        // tăng thứ tự banner lên + 1 nếu thêm mới
-                        var lstBanner = _bannerRepository.GetAll().OrderByDescending(b => b.Order);
-                        var highestBanner = lstBanner.FirstOrDefault();
-                        int maxOrderIndex = highestBanner != null ? highestBanner.Order : 1;
-                        model.Order = maxOrderIndex + 1;
-
-                        model.Status = true;
+                        model.Author = User?.Identity?.Name;
                     }
                 }
 
                 if (fileInput != null)
                 {
-                    model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "banners", $"{model.Id}.thumb.png");
+                    model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "news", $"{model.Id}.thumb.png");
                 }
 
                 if (String.IsNullOrEmpty(model.FriendlyUrl))
                 {
                     var url = StringHelpers.ToFriendlyUrl(model.Title);
-                    if (_bannerRepository.Find(x => x.FriendlyUrl == url && x.Deleted != true).FirstOrDefault() != null)
+                    if (_newRepository.Find(x => x.FriendlyUrl == url && x.Deleted != true).FirstOrDefault() != null)
                     {
                         do
                         {
                             model.FriendlyUrl = url + "-" + new Random().Next(1, 100);
                         }
-                        while (_bannerRepository.Find(x => x.FriendlyUrl == model.FriendlyUrl && x.Deleted != true).FirstOrDefault() != null);
+                        while (_newRepository.Find(x => x.FriendlyUrl == model.FriendlyUrl && x.Deleted != true).FirstOrDefault() != null);
                     }
                     else
                     {
@@ -104,11 +93,11 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 if (isExist)
                 {
-                    await _bannerRepository.UpdateAsync(model);
+                    await _newRepository.UpdateAsync(model);
                 }
                 else
                 {
-                    await _bannerRepository.UpsertAsync(model);
+                    await _newRepository.UpsertAsync(model);
                 }
 
                 if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
@@ -123,7 +112,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _bannerRepository.SetAsync(id, nameof(Banner.Deleted), true);
+            await _newRepository.SetAsync(id, nameof(Course.Deleted), true);
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
             else return Redirect(returnUrl);
         }

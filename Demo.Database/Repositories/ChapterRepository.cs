@@ -4,9 +4,9 @@ using MongoDB.Driver;
 
 namespace Demo.Database.Repositories
 {
-    public class ClassRepository : BaseRepository<Class>, IClassRepository
+    public class ChapterRepository : BaseRepository<Chapter>, IChapterRepository
     {
-        public ClassRepository(IMongoDatabase db) : base(db)
+        public ChapterRepository(IMongoDatabase db) : base(db)
         {
         }
     }

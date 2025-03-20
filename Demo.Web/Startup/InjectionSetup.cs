@@ -25,7 +25,8 @@ namespace Demo.Web.Startup
 
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IBannerRepository, BannerRepository>();
-            //services.AddTransient<INewsRepository, NewsRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<INewRepository, NewRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IPaymentRepository, PaymentRepository>();
@@ -33,7 +34,7 @@ namespace Demo.Web.Startup
             //services.AddTransient<IVoucherRepository, VoucherRepository>();
             //services.AddTransient<IGeneralItemRepository, GeneralItemRepository>();
             services.AddTransient<ICourseRepository, CourseRepository>();
-            services.AddTransient<IClassRepository, ClassRepository>();
+            services.AddTransient<IChapterRepository, ChapterRepository>();
             services.AddTransient<ILessonRepository, LessonRepository>();
             //services.AddTransient<IEventRepository, EventRepository>();
             //services.AddTransient<IBookRepository, BookRepository>();

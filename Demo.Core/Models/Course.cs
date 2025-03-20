@@ -11,11 +11,11 @@ namespace Demo.Core.Models
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }
 
-        [Display(Name = "Ảnh đại diện")]
-        public string? Thumb { get; set; }
+        [Display(Name = "Ảnh")]
+        public string? Image { get; set; }
 
-        [Display(Name = "Kích hoạt")]
-        public bool Active { get; set; }
+        [Display(Name = "Trạng thái hoạt động")]
+        public bool Status { get; set; }
 
         [Display(Name = "Giá")]
         [Required(ErrorMessage = "Giá không được để trống")]

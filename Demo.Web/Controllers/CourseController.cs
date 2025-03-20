@@ -22,13 +22,13 @@ namespace Demo.Web.Controllers
 
         public IActionResult List()
         {
-            var model = _courseRepository.Find(x => x.Active && x.Deleted == false).OrderByDescending(x => x.Created).ToList();
+            var model = _courseRepository.Find(x => x.Status && x.Deleted == false).OrderByDescending(x => x.Created).ToList();
             return View(model);
         }
 
         public IActionResult Detail(string url)
         {
-            var course = _courseRepository.Find(x => x.FriendlyUrl == url && x.Deleted == false && x.Active).ToList().FirstOrDefault();
+            var course = _courseRepository.Find(x => x.FriendlyUrl == url && x.Deleted == false && x.Status).ToList().FirstOrDefault();
             return View(course);
         }
 

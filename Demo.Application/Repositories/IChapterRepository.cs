@@ -3,7 +3,7 @@ using Demo.Core.Repositories;
 
 namespace Demo.Application.Repositories
 {
-    public interface IClassRepository : IBaseRepository<Class>
+    public interface IChapterRepository : IBaseRepository<Chapter>
     {
     }
 }

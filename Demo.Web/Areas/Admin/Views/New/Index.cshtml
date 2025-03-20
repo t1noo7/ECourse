@@ -1,8 +1,8 @@
 ﻿@using Demo.Core.Models
-@model List<Banner>
+@model List<New>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
-    ViewData["Title"] = "Danh sách banner";
+    ViewData["Title"] = "Danh sách tin tức";
 }
 @section Button {
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
@@ -20,7 +20,7 @@
                     Ảnh
                 </th>
                 <th>
-                    Thứ Tự
+                    Tác Giả
                 </th>
                 <th>
                     Ngày Tạo
@@ -45,7 +45,7 @@
                         <td>
                             <img src="@item.Image" class="img64x64" />
                         </td>
-                        <td>@item.Order</td>
+                        <td>@item.Author</td>
                         <td>@item.Created</td>
                         <td>
                             @if (item.Status == true)

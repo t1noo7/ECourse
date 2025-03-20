@@ -11,6 +11,7 @@ using Demo.Core.Models;
 namespace Demo.Web.Areas.Admin.Controllers
 {
     [WebAuthorize(RoleList.Account, RoleList.Admin, RoleList.OrderManager)]
+
     [Area("Admin")]
     public class OrderController : Controller
     {

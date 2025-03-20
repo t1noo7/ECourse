@@ -1,59 +1,58 @@
-﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Demo.Common.Extensions;
+using MongoDB.Driver;
+using Demo.Core.Models;
 using Demo.Application.Repositories;
+using Demo.Web.Helpers;
 using Demo.Web.Filters;
 using Demo.Core.Permission;
-using Demo.Core.Models;
-using Demo.Web.Helpers;
+using Demo.Common.Extensions;
+using Demo.Application.Services;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
+    [WebAuthorize(RoleList.Admin, RoleList.Customer, RoleList.Sale)]
     [Area("Admin")]
-    public class LessonController : Controller
+    public class ChapterController : Controller
     {
-        private readonly ILogger<LessonController> _logger;
-        private readonly ILessonRepository _lessonRepository;
+        private readonly ILogger<ChapterController> _logger;
+        private readonly IChapterRepository _chapterRepository;
         private readonly ICourseRepository _courseRepository;
 
-        public LessonController(ILogger<LessonController> logger,
-            ILessonRepository lessonRepository, ICourseRepository courseRepository)
+        public ChapterController(ILogger<ChapterController> logger,
+            IChapterRepository chapterRepository, ICourseRepository courseRepository)
         {
             _logger = logger;
-            _lessonRepository = lessonRepository;
+            _chapterRepository = chapterRepository;
             _courseRepository = courseRepository;
+
         }
 
         public IActionResult Index()
         {
-            var lessons = _lessonRepository.Find(x => x.Deleted == false).ToList();
-            return View(lessons);
+            var classes = _chapterRepository.Find(x => x.Deleted == false).ToList();
+            return View(classes);
         }
 
         public IActionResult Edit(Guid? id)
         {
-            Lesson? model = null;
-
+            Chapter? model = null;
+            var course = _courseRepository.Find(x => x.Deleted == false).ToList();
             if (id.HasValue)
             {
-                model = _lessonRepository.Get(id.Value);
+                model = _chapterRepository.Get(id.Value);
             }
-
             if (model == null)
             {
-                model = new Lesson
-                {
-                    Id = Guid.NewGuid()
-                };
+                model = new Chapter();
+                model.Id = Guid.NewGuid();
             }
-
+            ViewBag.Courses = course;
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Lesson model, string returnUrl)
+        public async Task<IActionResult> Edit(Chapter model, string returnUrl)
         {
             try
             {
@@ -61,41 +60,31 @@ namespace Demo.Web.Areas.Admin.Controllers
                 {
                     return View(model);
                 }
-
                 model.ModifiedBy = User?.Identity?.Name;
                 model.Modified = DateTimeExtensions.UTCNowVN;
-
                 if (model.Id == Guid.Empty)
                 {
                     model.CreatedBy = model.ModifiedBy;
                     model.Created = DateTimeExtensions.UTCNowVN;
                 }
 
-                // sử dụng ảnh thumbnail youtube
-                /*if (!string.IsNullOrEmpty(model.YouTubeUrl))
-                {
-                    var videoId = ExtractYouTubeVideoId(model.YouTubeUrl);
-                    model.Image = $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
-                }*/
-
-                if (string.IsNullOrEmpty(model.FriendlyUrl))
+                if (String.IsNullOrEmpty(model.FriendlyUrl))
                 {
                     var url = StringHelpers.ToFriendlyUrl(model.Title);
-                    if (_lessonRepository.Find(x => x.FriendlyUrl == url && x.Deleted != true).FirstOrDefault() != null)
+                    if (_chapterRepository.Find(x => x.FriendlyUrl == url && x.Deleted != true).FirstOrDefault() != null)
                     {
                         do
                         {
                             model.FriendlyUrl = url + "-" + new Random().Next(1, 100);
                         }
-                        while (_lessonRepository.Find(x => x.FriendlyUrl == model.FriendlyUrl && x.Deleted != true).FirstOrDefault() != null);
+                        while (_chapterRepository.Find(x => x.FriendlyUrl == model.FriendlyUrl && x.Deleted != true).FirstOrDefault() != null);
                     }
                     else
                     {
                         model.FriendlyUrl = url;
                     }
                 }
-
-                await _lessonRepository.UpsertAsync(model);
+                await _chapterRepository.UpsertAsync(model);
                 if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
                 else return Redirect(returnUrl);
             }
@@ -108,16 +97,9 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _lessonRepository.SetAsync(id, nameof(Lesson.Deleted), true);
+            await _chapterRepository.SetAsync(id, nameof(Chapter.Deleted), true);
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
             else return Redirect(returnUrl);
-        }
-
-        private string ExtractYouTubeVideoId(string url)
-        {
-            var uri = new Uri(url);
-            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-            return query["v"];
         }
     }
 }
