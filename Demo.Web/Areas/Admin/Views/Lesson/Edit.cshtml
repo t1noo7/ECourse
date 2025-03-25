@@ -29,13 +29,45 @@
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(m => m.YouTubeUrl)
+                @Html.LabelFor(m => m.YouTubeUrl) @Html.RequireLabel()
                 <input type="text" class="form-control" asp-for="YouTubeUrl" id="youtube-url">
             </div>
             <div class="form-group">
                 <label class="font-weight-semibold">Preview</label>
                 <div id="youtube-preview">
                     <!-- Video preview iframe will be inserted here -->
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.CourseId)
+                    <select class="form-control" id="courseSelection" name="CourseId">
+                        @if (courses != null)
+                        {
+                            <!-- Display the selected course -->
+                            <option value="courses.Id" selected>courses.Title</option>
+
+                            <!-- Display the list of courses, excluding the selected one -->
+                            @foreach (var course in courses)
+                            {
+                                @if (course.Id != Model.CourseId)
+                                {
+                                    <option value="@course.Id">@course.Title</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <!-- Display "Select a Course" if no course is selected -->
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var course in courses)
+                            {
+                                <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
+                                    @course.Title
+                                </option>
+                            }
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-lg-2">
@@ -71,27 +103,45 @@
     <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script>
-        common.initTinyMce('#Content');
+        document.addEventListener("DOMContentLoaded", function () {
+            var youtubeInput = document.getElementById("youtube-url");
+            var previewContainer = document.getElementById("youtube-preview");
 
-        $('#youtube-url').on('input', function () {
-            var url = $(this).val();
-            var videoId = extractYouTubeVideoId(url);
-            if (videoId) {
-                var iframeHtml = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe>';
-                $('#youtube-preview').html(iframeHtml);
-            } else {
-                $('#youtube-preview').html('<span>Invalid YouTube URL</span>');
+            function getEmbedUrl(url) {
+                var videoId = "";
+                var match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+                if (match) {
+                    videoId = match[1];
+                }
+                return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+            }
+
+            function updatePreview() {
+                var url = youtubeInput.value.trim();
+                var embedUrl = getEmbedUrl(url);
+
+                if (!embedUrl) {
+                    previewContainer.innerHTML = "<span class='text-danger'>URL không hợp lệ</span>";
+                    return;
+                }
+
+                previewContainer.innerHTML = `
+                        <iframe width="560" height="315"
+                            src="${embedUrl}"
+                            frameborder="0" allowfullscreen>
+                        </iframe>`;
+            }
+
+            youtubeInput.addEventListener("input", updatePreview);
+
+            // Khi load trang, nếu có URL sẵn thì cập nhật preview
+            if (youtubeInput.value.trim() !== "") {
+                setTimeout(updatePreview, 500);
             }
         });
-
-        function extractYouTubeVideoId(url) {
-            var regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            var match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        $('#youtube-url').trigger('input');
     </script>
+
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {

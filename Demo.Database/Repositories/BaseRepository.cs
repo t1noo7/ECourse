@@ -1,3 +1,4 @@
+using Demo.Core.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;

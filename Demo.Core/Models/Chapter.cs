@@ -1,3 +1,6 @@
+using Demo.Common.Extensions;
+using Demo.Core.Enums;
+using Demo.Core.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 
 namespace Demo.Core.Models

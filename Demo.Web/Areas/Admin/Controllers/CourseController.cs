@@ -4,6 +4,7 @@ using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
 using Demo.Core.Permission;
+using Demo.Database.Repositories;
 using Demo.Web.Filters;
 using Demo.Web.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,6 @@ namespace Demo.Web.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-
             var courses = _courseRepository.Find(x => x.Deleted == false).ToList();
             return View(courses);
         }
@@ -64,7 +64,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 model.Modified = DateTimeExtensions.UTCNowVN;
 
                 bool isExist = false;
-                if (model.Id == Guid.Empty)
+                if (model.Id != Guid.Empty && model.Id != null)
                 {
                     isExist = _courseRepository.Find(x => x.Id == model.Id && x.Deleted != true).FirstOrDefault() != null;
 
@@ -114,6 +114,22 @@ namespace Demo.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error while saving course");
                 return View(model);
             }
+        }
+
+        public async Task<IActionResult> ChangeStatus(Guid id, bool status)
+        {
+            try
+            {
+                var model = await _courseRepository.GetAsync(id);
+                model.Status = status;
+                await _courseRepository.UpdateAsync(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)

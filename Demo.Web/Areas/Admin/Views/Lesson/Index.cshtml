@@ -3,10 +3,18 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách bài giảng";
+    var searchModel = ViewBag.SearchModel as Demo.Application.Models.LessonFilter;
 }
+
+<div class="card mt-2 mb-2 shadow-base" id="searchBox">
+    <div class="card-body pb-0">
+        <partial name="_SearchLesson" model="@searchModel" />
+    </div>
+</div>
+
 @section Button {
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
-        class="btn btn-primary btn-sm pull-right">Thêm mới</a>
+       class="btn btn-primary btn-sm pull-right"><i class="anticon anticon-plus-circle m-r-5"></i>Thêm mới</a>
 }
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
@@ -31,12 +39,12 @@
                             @(stt++)
                         </td>
                         <td>
-                            <a
-                                href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Title</a>
+                            @item.Title
                         </td>
                         <td>@item.Created</td>
                         <td>
-                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="DeleteItem text-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 }

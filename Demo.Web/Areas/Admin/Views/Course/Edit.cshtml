@@ -36,7 +36,7 @@
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
+                    @Html.LabelFor(m => m.Description)
                     @Html.TextAreaFor(m => m.Description, new
                         {
                             Class = "form-control form-control-smy h-100"
@@ -44,22 +44,15 @@
                 </div>
             </div>
             <div class="row mb-lg-2">
-                <div class="col-md-12 col-sm-12 search-item">
+                <div class="col-md-4 col-sm-6 search-item">
                     @Html.LabelFor(m => m.Price) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.Price, new
-                        {
-                            Class = "form-control form-control-smy h-150",
-                            required = "required"
-                        })
+                    <input name="@(nameof(Model.Price))" type="number" min="0" value="@Model.Price" class="form-control form-control-smy" />
                 </div>
             </div>
             <div class="row mb-lg-2">
-                <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.DiscountPrice) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.DiscountPrice, new
-                        {
-                            Class = "form-control form-control-smy h-150"
-                        })
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.DiscountPrice) 
+                    <input name="@(nameof(Model.DiscountPrice))" type="number" min="0" value="@Model.DiscountPrice" class="form-control form-control-smy" />
                 </div>
             </div>
             <div class="row">
@@ -79,7 +72,7 @@
 
 @section scripts {
     <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
-        referrerpolicy="origin"></script>
+            referrerpolicy="origin"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {

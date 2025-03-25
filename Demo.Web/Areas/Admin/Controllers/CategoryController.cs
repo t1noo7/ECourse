@@ -72,13 +72,29 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             if (fileInput != null)
             {
-                model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "categories", $"{model.Id}.thumb.png");
+                model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 628, 300, "categories", $"{model.Id}.thumb.png");
             }
 
             await (model.Id == Guid.Empty ? _categoryRepository.UpsertAsync(model) : _categoryRepository.UpdateAsync(model));
 
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
             else return Redirect(returnUrl);
+        }
+
+        public async Task<IActionResult> ChangeStatus(Guid id, bool status)
+        {
+            try
+            {
+                var model = await _categoryRepository.GetAsync(id);
+                model.Status = status;
+                await _categoryRepository.UpdateAsync(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)

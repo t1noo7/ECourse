@@ -3,7 +3,7 @@
 @model Chapter
 
 @{
-    ViewData["Title"] = "Thiết lập Lớp học";
+    ViewData["Title"] = "Thiết lập Học phần";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
     var lessons = ViewBag.Lessons as List<Demo.Core.Models.Lesson>;
@@ -11,7 +11,7 @@
 
 <div class="card mt-2 mb-2 shadow-base">
     <div class="card-body pb-0">
-        <form method="post" enctype="multipart/form-data" asp-controller="Class" asp-action="Edit" id="editForm">
+        <form method="post" enctype="multipart/form-data" asp-controller="Chapter" asp-action="Edit" id="editForm">
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.Created)
             @Html.HiddenFor(m => m.CreatedBy)

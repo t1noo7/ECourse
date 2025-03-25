@@ -6,6 +6,7 @@ using Demo.Web.Filters;
 using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
+using Demo.Database.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -25,15 +26,24 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(Guid courseId)
         {
-            var lessons = _lessonRepository.Find(x => x.Deleted == false).ToList();
-            return View(lessons);
+            if (courseId != Guid.Empty)
+            {
+                var lessons = _lessonRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
+                return View(lessons);
+            }
+            else
+            {
+                var lessons = _lessonRepository.Find(x => x.Deleted == false).ToList();
+                return View(lessons);
+            }
         }
 
         public IActionResult Edit(Guid? id)
         {
             Lesson? model = null;
+            var lscourse = _courseRepository.Find(x => x.Deleted == false).ToList();
 
             if (id.HasValue)
             {
@@ -47,7 +57,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                     Id = Guid.NewGuid()
                 };
             }
-
+            ViewBag.Courses = lscourse;
             return View(model);
         }
 
@@ -65,7 +75,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 model.ModifiedBy = User?.Identity?.Name;
                 model.Modified = DateTimeExtensions.UTCNowVN;
 
-                if (model.Id == Guid.Empty)
+                if (model.Id != Guid.Empty && model.Id != null)
                 {
                     model.CreatedBy = model.ModifiedBy;
                     model.Created = DateTimeExtensions.UTCNowVN;

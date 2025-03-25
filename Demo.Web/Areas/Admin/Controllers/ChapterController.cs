@@ -27,10 +27,18 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         }
 
-        public IActionResult Index()
+        public IActionResult Index(Guid courseId)
         {
-            var classes = _chapterRepository.Find(x => x.Deleted == false).ToList();
-            return View(classes);
+            if(courseId != Guid.Empty)
+            {
+                var chapters = _chapterRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
+                return View(chapters);
+            }
+            else
+            {
+                var chapters = _chapterRepository.Find(x => x.Deleted == false).ToList();
+                return View(chapters);
+            }
         }
 
         public IActionResult Edit(Guid? id)
@@ -62,7 +70,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 }
                 model.ModifiedBy = User?.Identity?.Name;
                 model.Modified = DateTimeExtensions.UTCNowVN;
-                if (model.Id == Guid.Empty)
+                if (model.Id != Guid.Empty && model.Id != null)
                 {
                     model.CreatedBy = model.ModifiedBy;
                     model.Created = DateTimeExtensions.UTCNowVN;

@@ -6,7 +6,7 @@
 }
 @section Button {
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
-       class="btn btn-primary btn-sm pull-right">Thêm Mới</a>
+       class="btn btn-primary btn-sm pull-right"><i class="anticon anticon-plus-circle m-r-5"></i>Thêm Mới</a>
 }
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
@@ -40,7 +40,7 @@
                             @(stt++)
                         </td>
                         <td>
-                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Title</a>
+                            <a href="@Url.Action("Index", "Lesson", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Title</a>
                         </td>
                         <td>
                             <img src="@item.Image" class="img64x64" />
@@ -56,22 +56,26 @@
                         </td>
                         <td>@item.Created</td>
                         <td>
-                            @if (item.Status == true)
-                            {
-                                <div class="d-flex align-items-center">
-                                    <div class="badge badge-success badge-dot m-r-10"></div>
-                                    <div>Hoạt Động</div>
-                                </div>
-                            } else
-                            {
-                                <div class="d-flex align-items-center">
-                                    <div class="badge badge-danger badge-dot m-r-10"></div>
-                                    <div>Không Hoạt Động</div>
-                                </div>
-                            }
+                            <a href="@Url.Action("ChangeStatus", new { id = item.Id, status = !item.Status })" onclick="return confirm('Bạn có chắc chắn muốn đổi trạng thái?')" class="text-info">
+                                @if (item.Status == false)
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div class="badge badge-danger badge-dot m-r-10"></div>
+                                        <div>Không Hoạt Động</div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <div class="badge badge-success badge-dot m-r-10"></div>
+                                        <div>Hoạt Động</div>
+                                    </div>
+                                }
+                            </a>
                         </td>
                         <td>
-                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="DeleteItem text-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 }

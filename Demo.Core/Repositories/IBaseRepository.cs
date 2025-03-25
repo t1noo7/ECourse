@@ -1,3 +1,4 @@
+using Demo.Core.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
@@ -8,7 +9,6 @@ namespace Demo.Core.Repositories
     {
         T Get(Guid id);
         Task<T> GetAsync(Guid id);
-
         Task<T> GetAsync(Expression<Func<T, bool>> predicate);
         Task<List<T>> GetAllAsync();
         List<T> GetAll();

@@ -11,8 +11,8 @@ namespace Demo.Core.Models
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }
 
-        [Display(Name = "Chương")]
-        public Guid ChapterId { get; set; }
+        [Display(Name = "Khóa học")]
+        public Guid CourseId { get; set; }
 
         [Display(Name = "Video")]
         [Required(ErrorMessage = "Video không được để trống")]

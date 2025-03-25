@@ -2,6 +2,7 @@
 using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
+using Demo.Core.Repositories;
 using Demo.Database.Repositories;
 using Demo.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -61,7 +62,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 model.Modified = DateTimeExtensions.UTCNowVN;
 
                 bool isExist = false;
-                if (model.Id == Guid.Empty)
+                if (model.Id != Guid.Empty && model.Id != null)
                 {
                     isExist = _bannerRepository.Find(x => x.Id == model.Id && x.Deleted != true).FirstOrDefault() != null;
 
@@ -119,6 +120,22 @@ namespace Demo.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "Error while saving");
                 return View(model);
             }
+        }
+
+        public async Task<IActionResult> ChangeStatus(Guid id, bool status)
+        {
+            try
+            {
+                var model = await _bannerRepository.GetAsync(id);
+                model.Status = status;
+                await _bannerRepository.UpdateAsync(model);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
