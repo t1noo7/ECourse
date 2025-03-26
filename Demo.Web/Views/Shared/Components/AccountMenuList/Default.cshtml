@@ -5,47 +5,34 @@
 @if (Model != null)
 {
     var href = Model.IsAuthenticated ? "javascript:void(0);" : @FriendlyUrl.Login;
-    if (Model.IsAuthenticated)
-    {
-        <li class="has-children">
-            <div class="user-profile">
-                <img src="~/assets/img/user-face.jpeg" alt="User" class="img30x30"> 
-                <a class="link style3" href="@href">Hello, @User.Identity.Name</a>
-                
-                <ul class="sub-menu">
-                    @if (Model.AdminPermission)
-                    {
-                        <li><h4><a href="@FriendlyUrl.Admin">Đến trang quản trị</a></h4></li>
-                    }
-                    <li><h4><a href="@FriendlyUrl.MyCourses()">Khoá học của tôi</a></h4></li>
-                    <li><h4><a href="@FriendlyUrl.MyOrders()">Đơn hàng của tôi</a></h4></li>
-                    <li><h4><a href="@FriendlyUrl.MyProfile()">Thông tin cá nhân</a></h4></li>
-                    
-                    @if (!Model.IsExternalLogin)
-                    {
-                        <li><h4><a href="/account/changepassword">Đổi mật khẩu</a></h4></li>
-                    }
 
-                    <li>
-                        <h4><a href="javascript:void(0)" onclick="$('#logoutForm').submit()">Thoát</a></h4>
-                        <form method="post" enctype="multipart/form-data" asp-controller="Account" asp-action="Logout" asp-area=""
-                            id="logoutForm" class="hidden"></form>
-                    </li>
-                </ul>
-            </div>
+    <div class="user-menu-container">
+        <!-- Đặt trong div để dễ kiểm soát -->
+        <a href="@href" class="nav-link dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown">
+            <img src="~/assets/img/testimonial-4.jpg" alt="User" class="rounded-circle img30x30 me-2" style="width: 30px; height: 30px; border-radius: 50%;">
+            <span class="d-none d-md-inline">Hello, @User.Identity.Name</span>
+        </a>
 
-            @if (ViewBag.CartCount != null && ViewBag.CartCount > 0)
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 list-unstyled" aria-labelledby="userDropdown">
+            @if (Model.AdminPermission)
             {
-                <a href="/cart.html"><img src="~/assets/img/cart/cart-full.png" class="img30x30 cart-icon"/></a>
+                <li><a class="dropdown-item py-2" href="@FriendlyUrl.Admin"><i class="fa fa-cog me-2"></i> Trang quản Trị</a></li>
             }
-            else
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyCourses()"><i class="fa fa-book me-2"></i> Khoá học của tôi</a></li>
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyOrders()"><i class="fa fa-shopping-cart me-2"></i> Đơn hàng của tôi</a></li>
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyProfile()"><i class="fa fa-user me-2"></i> Thông tin cá nhân</a></li>
+
+            @if (!Model.IsExternalLogin)
             {
-                <a href="/cart.html"><img src="~/assets/img/cart/cart-null.png" class="img30x30 cart-icon"/></a>
+                <li><a class="dropdown-item py-2" href="/account/changepassword"><i class="fa fa-lock me-2"></i> Đổi mật khẩu</a></li>
             }
-        </li>
-    }
-    else
-    {
-        <a href="/account/login" class="link style3">Login/Register</a>
-    }
+
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form method="post" asp-controller="Account" asp-action="Logout" id="logoutForm">
+                    <button type="submit" class="dropdown-item py-2 text-danger"><i class="fa fa-sign-out-alt me-2"></i> Đăng Xuất</button>
+                </form>
+            </li>
+        </ul>
+    </div>
 }

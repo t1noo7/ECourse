@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using MongoDB.Driver;
 
 namespace Demo.Web.Controllers
 {
@@ -56,50 +57,37 @@ namespace Demo.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Checkout(string productIds)
-        {
-            // Kiểm tra xem người dùng đã đăng nhập chưa
+        public IActionResult Checkout(Guid courseId)
+        { 
             if (User?.Identity?.IsAuthenticated != true)
             {
                 return RedirectToAction("Login", "Account", new { returnUrl = "/Checkout" });
             }
 
-            var courses = new List<Course>();
-            if (!String.IsNullOrEmpty(productIds))
-            {
-                try
-                {
-                    var courseIds = productIds.Split(',').Select(x => Guid.Parse(x)).ToList();
-                    courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
-                }
-                catch (FormatException)
-                {
-                    return RedirectToAction("Cart"); // Điều hướng trở lại giỏ hàng nếu productIds không hợp lệ
-                }
-            }
+            var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
 
-            if (courses.Count == 0)
+            if (course == null)
             {
-                return RedirectToAction("Cart"); // Điều hướng trở lại giỏ hàng nếu không có khóa học
+                return RedirectToAction("Cart");
             }
 
             var model = new OrderViewModel();
             var currentUser = _userRepository.GetByUsername(User.Identity.Name);
+
             if (currentUser != null)
             {
                 model.CustomerName = currentUser.FullName;
                 model.CustomerPhone = currentUser.PhoneNumber;
                 model.CustomerEmail = currentUser.Email;
-                model.CustomerAddress = currentUser.Address;
-                model.Courses = courses;
-                model.ProductIds = productIds;
+                model.CourseId = course.Id;
             }
-
-            return View(model); // Hiển thị trang checkout với dữ liệu đã load
+            ViewBag.Course = course;
+            return View(model);
         }
 
+
         [HttpPost]
-        public IActionResult Checkout(OrderViewModel model, List<Guid> CourseIds)
+        public IActionResult Checkout(OrderViewModel model, Guid courseId)
         {
             if (!ModelState.IsValid)
             {
@@ -113,13 +101,13 @@ namespace Demo.Web.Controllers
             }
 
             // Ensure the product IDs are not empty
-            if (CourseIds == null || !CourseIds.Any())
+            if (courseId == null)
             {
                 return Json(new JsonReturn(false, "Vui lòng chọn ít nhất một sản phẩm để thanh toán."));
             }
 
             // Fetch the selected courses from the repository
-            var courses = _courseRepository.Find(x => CourseIds.Contains(x.Id)).ToList();
+            var courses = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
             if (!courses.Any())
             {
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));

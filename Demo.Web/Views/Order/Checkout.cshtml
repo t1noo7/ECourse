@@ -4,14 +4,15 @@
 @using Demo.Web.Extensions;
 @using Demo.Web.Helpers;
 @model OrderViewModel
-
+@{
+    var course = ViewBag.Course as Demo.Core.Models.Course;
+}
 <!-- Begin:: Banner Section -->
 <section class="order_section" style="margin-top: 120px;">
     <div class="container largeContainer">
         <div class="row">
             <div class="col-lg-12">
                 <div class="related_area text-center">
-                    <div class="subTitle sbsm">Thông tin khách hàng</div>
                     <h2 class="secTitle">Hoàn tất đơn hàng</h2>
                 </div>
             </div>
@@ -19,10 +20,11 @@
 
         <!-- Form Order Details -->
         <form asp-action="Checkout" method="post">
-            <input type="hidden" asp-for="ProductIds" />
+            <input type="hidden" asp-for="CourseId" />
             <div class="row">
                 <!-- Customer Information -->
                 <div class="col-lg-6">
+                    <h3><label class="span_bold">Thông tin khách hàng</label></h3>
                     <div class="form-group">
                         <label for="customerName" class="span_bold">Tên khách hàng</label>
                         <input type="text" id="customerName" name="customerName" value="@Model.CustomerName"
@@ -40,12 +42,6 @@
                         <input type="email" id="customerEmail" name="customerEmail" value="@Model.CustomerEmail"
                                class="form-control" placeholder="Nhập email của bạn" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="customerAddress" class="span_bold">Địa chỉ</label>
-                        <input type="text" id="customerAddress" name="customerAddress" value="@Model.CustomerAddress"
-                               class="form-control" placeholder="Nhập địa chỉ của bạn" required>
-                    </div>
                 </div>
 
                 <!-- Product and Payment Information -->
@@ -53,30 +49,34 @@
                     <div class="form-group text-center">
                         <h3><label class="span_bold">Sản phẩm đã đặt mua</label></h3>
                         <ul id="orderedProducts" class="list-group">
-                            @if (Model != null && Model.Courses != null && Model.Courses.Count > 0)
+                            @if (Model != null)
                             {
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Số thứ tự</th>
-                                            <th scope="col">Tên sản phẩm</th>
-                                            <th scope="col">Hình ảnh</th>
+                                            <th scope="col">Tên khóa học</th>
+                                            <th scope="col">Ảnh</th>
+                                            <th scope="col">Nội dung</th>
                                             <th scope="col">Giá tiền</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in Model.Courses)
-                                        {
-                                            <tr>
-                                                <td>@(Model.Courses.IndexOf(item) + 1)</td>
-                                                <td>@item.Title</td>
-                                                <td>
-                                                    <img src="@item.Image" alt="@item.Title" style="width: 100px; height: auto;">
-                                                </td>
-                                                <td>@item.Price.ToString("#,##0 VND")</td>
-                                            </tr>
-                                            <input type="hidden" name="CourseIds" value="@item.Id" />
-                                        }
+                                        <tr>
+                                            <td>@course.Title</td>
+                                            <td>
+                                                <img src="@course.Image" alt="@course.Title" style="width: 100px; height: auto;">
+                                            </td>
+                                            <td>@Html.Raw(@course.Description)</td>
+                                            @if(course.DiscountPrice > 0 && course.DiscountPrice != null)
+                                            {
+                                                <td>@course.DiscountPrice?.ToString("#,##0 VNĐ")</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@course.Price.ToString("#,##0 VNĐ")</td>
+                                            }
+                                        </tr>
+                                        <input type="hidden" name="CourseIds" value="@course.Id" />
                                     </tbody>
                                 </table>
                             }
@@ -85,9 +85,9 @@
                                 <li class="list-group-item">Không có sản phẩm nào trong giỏ hàng.</li>
                             }
                         </ul>
-                        <span class="badge badge-primary badge-pill mt-2">
+@*                         <span class="badge badge-primary badge-pill mt-2">
                             <h5>Tổng tiền: <strong>@Model.Courses.Sum(x => x.Price).ToString("#,##0 VND")</strong></h5>
-                        </span>
+                        </span> *@
                     </div>
 
                     <div class="form-group">
@@ -98,17 +98,25 @@
 
                     <div class="form-group">
                         <label class="span_bold">Tổng số tiền phải thanh toán</label>
-                        <p id="totalAmount" class="green">@Model.Courses.Sum(item => item.Price).ToString("C")</p>
+                        @if(course.DiscountPrice > 0 && course.DiscountPrice != null)
+                        {
+                            <p id="totalAmount" class="green">@course.DiscountPrice?.ToString("#,##0 VNĐ")</p>
+                        }
+                        else
+                        {
+                            <p id="totalAmount" class="green">@course.Price.ToString("#,##0 VNĐ")</p>
+                        }
+                        
                     </div>
                 </div>
             </div>
 
-            <input type="hidden" asp-for="ProductIds" />
+            <input type="hidden" asp-for="CourseId" />
 
             <!-- Submit Button -->
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <button class="button-checkout" type="submit">
+                    <button class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;" type="submit">
                         <span>Hoàn thành</span>
                     </button>
                 </div>

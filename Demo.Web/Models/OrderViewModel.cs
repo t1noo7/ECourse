@@ -26,13 +26,12 @@ namespace Demo.Web.Models
         // [Required(ErrorMessage = "Ảnh chụp màn hình thanh toán không được để trống")]
         // public string? VerifyImageUrl { get; set; }
 
-        public List<Course>? Courses { get; set; }
-        public string? ProductIds { get; set; }
+        public Guid CourseId { get; set; }
 
         /// <summary>
         /// Mã voucher
         /// </summary>
-        public string? VoucherCode { get; set; }
+        /*public string? VoucherCode { get; set; }*/
 
         /// <summary>
         /// Hình thức thanh toán

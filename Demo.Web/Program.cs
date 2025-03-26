@@ -45,7 +45,7 @@ app.MapControllerRoute(
     pattern: FriendlyUrl.CourseDetailFrm,
     defaults: new { controller = "Course", action = "Detail" });
 
-app.MapControllerRoute(
+/*app.MapControllerRoute(
 name: "cuahangsach",
 pattern: FriendlyUrl.BookShopFrUrl,
 defaults: new { controller = "BookShop", action = "List" });
@@ -53,7 +53,7 @@ defaults: new { controller = "BookShop", action = "List" });
 app.MapControllerRoute(
 name: "sukien",
 pattern: FriendlyUrl.EventsListFrUrl,
-defaults: new { controller = "Event", action = "List" });
+defaults: new { controller = "Event", action = "List" });*/
 
 app.MapControllerRoute(
 name: "khoahoccuatoi",
@@ -63,7 +63,7 @@ defaults: new { controller = "Orders", action = "MyCourses" });
 app.MapControllerRoute(
 name: "donhangcuatoi",
 pattern: FriendlyUrl.MyOrdersFrUrl,
-defaults: new { controller = "Orders", action = "MyCourses" });
+defaults: new { controller = "Orders", action = "MyOrders" });
 
 app.MapControllerRoute(
     name: "thongtincuatoi",

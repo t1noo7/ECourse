@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Demo.Infrastructure.File\Demo.Infrastructure.File.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Shared\Components\Course\" />
-  </ItemGroup>
-
 </Project>
