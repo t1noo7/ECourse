@@ -225,42 +225,6 @@ namespace Demo.Web.Controllers
             return View(orders);
         }
 
-        // public IActionResult MyCourse(string code)
-        // {
-        //     if (User?.Identity?.IsAuthenticated != true)
-        //     {
-        //         return RedirectToAction("Login", "Account");
-        //     }
-        //     ViewData["PaymentTime"] = _systemParameters.PaymentPendingDays;
-        //     var order = _orderRepository.Find(x => x.Code == code && x.Deleted != true).FirstOrDefault();
-
-        //     List<BillingInformationViewModel> lsBillinfo = new List<BillingInformationViewModel>();
-        //     var pay = _paymentService.GetPaid(order.Id, PaymentState.Paid);
-        //     if (pay.Any())
-        //     {
-
-        //         order.Combo.Vegetables.ForEach(x =>
-        //         {
-        //             var harvestedGr = 0;
-        //             deliveries.ForEach(y =>
-        //             {
-        //                 var h = y.Vegetables.FirstOrDefault(z => z.Id == x.Id);
-        //                 if (h != null)
-        //                 {
-        //                     harvestedGr += h.Weight;
-        //                 }
-        //             });
-        //             lsBillinfo.Add(new BillingInformationViewModel()
-        //             {
-        //                 Id = x.Id,
-        //                 MoneyGot = harvestedGr
-        //             });
-        //         });
-        //     }
-        //     ViewData["Harvested"] = lsHarvested;
-        //     return View(order);
-        // }
-
         //public IActionResult Voucher(string code)
         //{
         //    if (String.IsNullOrEmpty(code))

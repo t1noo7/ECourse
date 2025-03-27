@@ -83,7 +83,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 if (fileInput != null)
                 {
-                    model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 360, 230, "banners", $"{model.Id}.thumb.png");
+                    model.Image = _fileService.ResizeImageJpeg(fileInput.OpenReadStream(), 1366, 768, "banners", $"{model.Id}.thumb.png");
                 }
 
                 if (String.IsNullOrEmpty(model.FriendlyUrl))

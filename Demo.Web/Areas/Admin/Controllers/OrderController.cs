@@ -94,14 +94,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             order.Status = status;
             order.StatusHistories.Add(new OrderStatusDetails { ActionTime = DateTimeExtensions.UTCNowVN, Status = status, Author = User?.Identity?.Name });
 
-            // if (status == OrderStatus.Active)
-            // {
-            //     foreach (var item in order.Combo.Vegetables)
-            //     {
-            //         item.Delivery = item.Delivery ?? new VegetableDelivery();
-            //         item.Delivery.StartDate = DateTimeExtensions.UTCNowVN;
-            //     }
-            // }
             await _orderRepository.UpsertAsync(order);
 
             _logger.LogDebug($"Status updated to {status}, order Id: {order.Id}");

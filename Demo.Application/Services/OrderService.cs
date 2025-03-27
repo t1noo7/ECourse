@@ -20,7 +20,7 @@ namespace Demo.Application.Services
 
         List<Order> IOrderService.GetActiveCourse(string username)
         {
-            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Paid).ToList();
+            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Paid || x.Status == OrderStatus.Pending).ToList();
         }
     }
 }

@@ -1,5 +1,75 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using Demo.Core.Models
+@model (List<Course> MyCourses, List<Course> SuggestedCourses)
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <!-- Khóa học của tôi -->
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Khóa Học Của Tôi</h6>
+        </div>
+        <div class="row g-4 justify-content-center">
+            @if (Model.MyCourses != null && Model.MyCourses.Any())
+            {
+                foreach (var item in Model.MyCourses)
+                {
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="course-item bg-light">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                                <div class="progress" style="height: 5px;">
+                                    @* <div class="progress-bar bg-success" role="progressbar" style="width: @item.Progress%" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100"></div> *@
+                                </div>
+                            </div>
+                            <div class="text-center p-4 pb-0">
+                                <h5 class="mb-4">@item.Title</h5>
+                                @* <p>Tiến trình học: <strong>@item.Progress%</strong></p> *@
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">Bạn chưa tham gia khóa học nào.</p>
+            }
+        </div>
+
+        <!-- Khóa học gợi ý -->
+        <div class="text-center wow fadeInUp mt-5" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Khóa Học Gợi Ý</h6>
+        </div>
+        <div class="row g-4 justify-content-center">
+            @if (Model.SuggestedCourses != null && Model.SuggestedCourses.Any())
+            {
+                foreach (var item in Model.SuggestedCourses)
+                {
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="course-item bg-light">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                                <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
+                                    <a href="#" class="btn btn-sm btn-primary px-3 border-end">Xem Thêm</a>
+                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary px-3" onclick="joinCourse('@item.Id')">Tham Gia</a>
+                                </div>
+                            </div>
+                            <div class="text-center p-4 pb-0">
+                                <h5 class="mb-4">@item.Title</h5>
+                                <p>Thời gian: 3 tháng</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">Không có khóa học gợi ý.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function joinCourse(courseId) {
+        window.location.href = '/Order/Checkout?courseId=' + courseId;
+    }
+</script>
