@@ -110,8 +110,7 @@ namespace Demo.Infrastructure.Mail
         {
             if (order == null) return null;
             var user = _userRepository.GetByUsername(order.Username);
-            var sale = order.SaleId.HasValue ? _orderRepository.Get(order.SaleId.Value) : null;
-            var emails = $"{user.Email};{sale?.SaleEmail}";
+            var emails = $"{user.Email};";
             return emails.Length > 1 ? emails : null;
         }
     }

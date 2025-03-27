@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo.Infrastructure", "Demo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Infrastructure.Mail", "Demo.Infrastructure.Mail\Demo.Infrastructure.Mail.csproj", "{673FC6B7-4A89-4D5D-B670-B039E2B1CFDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Web", "Demo.Web\Demo.Web.csproj", "{A469F757-7B74-4CAB-BCCC-6B100846494A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Web", "Demo.Web\Demo.Web.csproj", "{A469F757-7B74-4CAB-BCCC-6B100846494A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Infrastructure.File", "Demo.Infrastructure.File\Demo.Infrastructure.File.csproj", "{E96C5A9E-79D8-4F32-BB0C-227990C3322A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Infrastructure.File", "Demo.Infrastructure.File\Demo.Infrastructure.File.csproj", "{E96C5A9E-79D8-4F32-BB0C-227990C3322A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +59,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{673FC6B7-4A89-4D5D-B670-B039E2B1CFDD} = {5A068BB7-5A56-40CE-A53D-69D73B4ECA4C}
+		{E96C5A9E-79D8-4F32-BB0C-227990C3322A} = {5A068BB7-5A56-40CE-A53D-69D73B4ECA4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D771331B-7D23-4A30-BC3F-27DABF442E1A}

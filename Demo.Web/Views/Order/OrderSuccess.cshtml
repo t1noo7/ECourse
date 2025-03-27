@@ -1,0 +1,32 @@
+@using Demo.Core.Models;
+@using EnumsNET
+@model List<Order>
+
+<section class="order-confirmation">
+    <div class="container">
+        @if (Model?.Any() == true)
+        {
+            <div class="confirmation-message">
+                <p>Đặt hàng thành công!</p>
+            </div>
+            @Component.InvokeAsync("Order");
+        }
+        else
+        {
+            <p>Không có đơn hàng nào!</p>
+        }
+    </div>
+</section>
+
+<style>
+    .confirmation-message {
+        background-color: #2d6a4f;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>

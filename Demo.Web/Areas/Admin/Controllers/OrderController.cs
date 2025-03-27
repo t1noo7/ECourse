@@ -67,7 +67,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             order.Modified = DateTimeExtensions.UTCNowVN;
             order.CustomerAddress = model.CustomerAddress;
             order.CustomerNote = model.CustomerNote;
-            order.SaleId = model.SaleId;
 
             // if (model.FarmerId.HasValue)
             // {

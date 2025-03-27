@@ -108,7 +108,7 @@ namespace Demo.Web.Controllers
 
             // Fetch the selected courses from the repository
             var courses = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
-            if (!courses.Any())
+            if (courses == null)
             {
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
             }
@@ -133,12 +133,12 @@ namespace Demo.Web.Controllers
             order.CreatedBy = User?.Identity?.Name;
             order.ModifiedBy = User?.Identity?.Name;
             order.Modified = DateTimeExtensions.UTCNowVN;
-            order.Price = courses.Sum(x => x.Price);
+            order.Price = courses.Price;
             order.Status = OrderStatus.Pending;
             order.Username = User.Identity.Name;
-            order.CustomerAddress = model.CustomerAddress;
             order.CustomerName = model.CustomerName;
             order.CustomerPhone = model.CustomerPhone;
+            order.Course = courses;
             //order.CustomerNote = model.CustomerNote;
             //order.VerifyImageUrl = model.VerifyImageUrl;
             order.StatusHistories = new List<OrderStatusDetails>
@@ -153,13 +153,6 @@ namespace Demo.Web.Controllers
             order.Code = User.Identity.Name.Length > 4
                 ? User.Identity.Name.Substring(0, 4) + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
                 : User.Identity.Name.Length + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss");
-            if (courses.Any())
-            {
-                foreach (var course in courses)
-                {
-                    order.courses.Add(course);
-                }
-            }
 
             // Handle voucher logic
             //if (!string.IsNullOrEmpty(model.VoucherCode))
@@ -186,7 +179,7 @@ namespace Demo.Web.Controllers
             //    }
             //}
 
-            order.Price = courses.Sum(x => x.Price);
+            order.Price = courses.Price;
 
             // Save the order
             _orderRepository.UpsertAsync(order);
@@ -213,17 +206,16 @@ namespace Demo.Web.Controllers
         //    return Json(new JsonReturn(false));
         //}
 
-        public IActionResult MyOrder()
+        public IActionResult MyOrders()
         {
             if (User?.Identity?.IsAuthenticated != true)
             {
                 return RedirectToAction("Login", "Account");
             }
-            var orders = _orderService.GetOrdersByUsername(User.Identity.Name).OrderByDescending(x => x.Created).ToList();
-            return View(orders);
+            return View();
         }
 
-        public IActionResult MyCourse()
+        public IActionResult MyCourses()
         {
             if (User?.Identity?.IsAuthenticated != true)
             {

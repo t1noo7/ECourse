@@ -9,9 +9,6 @@ namespace Demo.Web.Models
     public class OrderViewModel
     {
 
-        [Required(ErrorMessage = "Địa chỉ không được để trống")]
-        public string? CustomerAddress { get; set; }
-
         [Required(ErrorMessage = "Tên không được để trống")]
         public string? CustomerName { get; set; }
         [Required(ErrorMessage = "Email không được để trống")]

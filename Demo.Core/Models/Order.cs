@@ -28,22 +28,15 @@ namespace Demo.Core.Models
         [Required(ErrorMessage = "Địa chỉ không được để trống")]
         public string? CustomerAddress { get; set; }
 
-        public Guid? SaleId { get; set; }
-        public string? SaleEmail { get; set; }
-
         [Required(ErrorMessage = "Ảnh xác thực chuyển khoản không được để trống")]
         public string? VerifyImageUrl { get; set; }
-
-        public DateTime IssuedDate { get; set; }
-        public DateTime ExpiredDate { get; set; }
 
         public List<OrderStatusDetails> StatusHistories { get; set; } = new List<OrderStatusDetails>();
         public OrderStatus Status { get; set; }
 
         [Required(ErrorMessage = "Nội dung thanh toán không được để trống")]
         public string PaymentContent { get; set; }
-        [BsonElement("Courses")]
-        public List<Course> courses { get; set; } = new List<Course>();
+        public Course Course { get; set; }
         //public Voucher Voucher { get; set; } = new Voucher();
         public PaymentOption PaymentOption { get; set; }
 
@@ -57,9 +50,7 @@ namespace Demo.Core.Models
         }
         public string GetCourseNames()
         {
-            return courses != null && courses.Any()
-                ? string.Join(", ", courses.Select(c => c.Title))
-                : "No courses registered";
+            return Course != null ? string.Join(", ", Course.Title) : "No courses registered";
         }
     }
 }

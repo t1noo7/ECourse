@@ -56,14 +56,14 @@ pattern: FriendlyUrl.EventsListFrUrl,
 defaults: new { controller = "Event", action = "List" });*/
 
 app.MapControllerRoute(
-name: "khoahoccuatoi",
-pattern: FriendlyUrl.MyCoursesFrUrl,
-defaults: new { controller = "Orders", action = "MyCourses" });
+    name: "khoahoccuatoi",
+    pattern: FriendlyUrl.MyCoursesFrUrl,
+    defaults: new { controller = "Order", action = "MyCourses" });
 
 app.MapControllerRoute(
-name: "donhangcuatoi",
-pattern: FriendlyUrl.MyOrdersFrUrl,
-defaults: new { controller = "Orders", action = "MyOrders" });
+    name: "donhangcuatoi",
+    pattern: FriendlyUrl.MyOrdersFrUrl,
+    defaults: new { controller = "Order", action = "MyOrders" });
 
 app.MapControllerRoute(
     name: "thongtincuatoi",
