@@ -221,7 +221,7 @@ namespace Demo.Web.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var orders = _orderService.GetActivePendingPaidOrdersByUsername(User.Identity.Name);
+            var orders = _orderService.GetActiveCourse(User.Identity.Name);
             return View(orders);
         }
 

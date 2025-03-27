@@ -5,6 +5,6 @@ namespace Demo.Application.Services
     public interface IOrderService
     {
         List<Order> GetOrdersByUsername(string username);
-        List<Order> GetActivePendingPaidOrdersByUsername(string username);
+        List<Order> GetActiveCourse(string username);
     }
 }

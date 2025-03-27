@@ -2,29 +2,37 @@
 @using EnumsNET
 @model List<Order>
 
-<h2 class="order-history-title">Lịch sử đơn hàng của tôi</h2>
-<table class="order-table">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Mã đơn hàng</th>
-            <th>Khoá học</th>
-            <th>Ngày tạo</th>
-            <th>Thanh toán</th>
-            <th>Trạng thái</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Count; i++)
-        {
-            <tr class="order-row">
-                <td>@(i + 1)</td>
-                <td>@Model[i].Code</td>
-                <td>@Model[i].GetCourseNames()</td>
-                <td>@Model[i].Created.ToString("dd/MM/yyyy")</td>
-                <td>@Model[i].Price.ToString("N0") VND</td>
-                <td>@Model[i].Status.AsString(EnumFormat.Description)</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container-xxl py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center nav-item nav-link active">Lịch Sử Đơn Hàng Của Tôi</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã đơn hàng</th>
+                            <th>Khoá học</th>
+                            <th>Ngày tạo</th>
+                            <th>Thanh toán</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>@Model[i].Code</td>
+                                <td>@Model[i].GetCourseNames()</td>
+                                <td>@Model[i].Created.ToString("dd/MM/yyyy")</td>
+                                <td>@Model[i].Price.ToString("#,##0") VNĐ</td>
+                                <td>@Model[i].Status.AsString(EnumFormat.Description)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

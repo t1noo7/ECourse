@@ -18,11 +18,9 @@ namespace Demo.Application.Services
             return _orderRepository.Find(x => x.Username == username).ToList();
         }
 
-        List<Order> IOrderService.GetActivePendingPaidOrdersByUsername(string username)
+        List<Order> IOrderService.GetActiveCourse(string username)
         {
-            return _orderRepository.Find(x => x.Username == username &&
-                                          (x.Status == OrderStatus.Pending ||
-                                           x.Status == OrderStatus.Paid)).ToList();
+            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Paid).ToList();
         }
     }
 }
