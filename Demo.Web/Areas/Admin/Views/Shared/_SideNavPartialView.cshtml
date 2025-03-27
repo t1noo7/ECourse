@@ -92,7 +92,7 @@
 
             }
 
-            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Sale))
+@*             @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Sale))
             {
                 <li>
                     <a href="/admin/event/index" data-href="/admin/event/edit" class="br-menu-link">
@@ -100,7 +100,7 @@
                         <span>Quản lý sự kiện</span>
                     </a>
                 </li>
-            }
+            } *@
 
             @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
             {

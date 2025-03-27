@@ -22,8 +22,8 @@
                                     <div class="col-sm-10 col-lg-8">
                                         <h5 class="text-primary text-uppercase mb-3 animated slideInDown">@item.Title</h5>
                                         <h1 class="display-3 text-white animated slideInDown">@item.Title</h1>
-                                        <p class="fs-5 text-white mb-4 pb-2">@item.Content</p>
-                                        <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">@item.ButtonContent</a>
+                                        <div class="fs-5 text-white mb-4 pb-2">@Html.Raw(@item.Content)</div>
+                                        <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">@Html.Raw(@item.ButtonContent)</a>
                                         <a href="@FriendlyUrl.Login" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Tham Gia Ngay</a>
                                     </div>
                                 </div>
@@ -90,90 +90,9 @@
 <!-- Courses Start -->
 @await Component.InvokeAsync("Course")
 <!-- Courses End -->
-<!-- Team Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Instructors</h6>
-            <h1 class="mb-5">Expert Instructors</h1>
-        </div>
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="team-item bg-light">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="~/assets/img/team-1.jpg" alt="">
-                    </div>
-                    <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                        <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center p-4">
-                        <h5 class="mb-0">Instructor Name</h5>
-                        <small>Designation</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="team-item bg-light">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="~/assets/img/team-2.jpg" alt="">
-                    </div>
-                    <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                        <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center p-4">
-                        <h5 class="mb-0">Instructor Name</h5>
-                        <small>Designation</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="team-item bg-light">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="~/assets/img/team-3.jpg" alt="">
-                    </div>
-                    <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                        <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center p-4">
-                        <h5 class="mb-0">Instructor Name</h5>
-                        <small>Designation</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                <div class="team-item bg-light">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid" src="~/assets/img/team-4.jpg" alt="">
-                    </div>
-                    <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                        <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                    <div class="text-center p-4">
-                        <h5 class="mb-0">Instructor Name</h5>
-                        <small>Designation</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Team End -->
+<!-- New Start -->
+@await Component.InvokeAsync("New")
+<!-- New End -->
 <!-- FeedBack Start -->
 @await Component.InvokeAsync("FeedBack")
 <!-- FeedBack End -->

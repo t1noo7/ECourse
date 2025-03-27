@@ -1,0 +1,33 @@
+﻿@using Demo.Core.Models
+@model List<Lesson>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Danh sách bài học -->
+        <div class="col-md-4">
+            <ul class="list-group">
+                @foreach (var lesson in Model)
+                {
+                    <li class="list-group-item">
+                        <a href="javascript:void(0);" onclick="loadLesson('@lesson.Id')">@lesson.Title</a>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Nội dung bài học -->
+        <div class="col-md-8">
+            <div id="lessonContent">
+                <h3>Chọn bài học để xem nội dung</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadLesson(lessonId) {
+        $.get('/Lesson/GetLessonContent', { lessonId: lessonId }, function (data) {
+            $('#lessonContent').html(data);
+        });
+    }
+</script>
