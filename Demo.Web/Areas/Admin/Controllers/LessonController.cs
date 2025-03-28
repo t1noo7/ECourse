@@ -10,7 +10,7 @@ using Demo.Database.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
+    //[WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
     [Area("Admin")]
     public class LessonController : Controller
     {

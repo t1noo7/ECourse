@@ -6,16 +6,29 @@
     var searchModel = ViewBag.SearchModel as Demo.Application.Models.LessonFilter;
 }
 
+<div class="page-header">
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item">
+                <i class="anticon anticon-home m-r-5"></i>Home
+            </a>
+            <span class="breadcrumb-item active">Danh sách Bài giảng</span>
+        </nav>
+    </div>
+</div>
 <div class="card mt-2 mb-2 shadow-base" id="searchBox">
     <div class="card-body pb-0">
         <partial name="_SearchLesson" model="@searchModel" />
     </div>
 </div>
-
-@section Button {
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Danh sách Bài giảng</h4>
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
-       class="btn btn-primary btn-sm pull-right"><i class="anticon anticon-plus-circle m-r-5"></i>Thêm mới</a>
-}
+       class="btn btn-primary btn-sm">
+        <i class="anticon anticon-plus-circle m-r-5"></i>Thêm Mới
+    </a>
+</div>
+
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">

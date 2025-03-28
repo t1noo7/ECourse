@@ -14,7 +14,7 @@ using MongoDB.Driver;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [WebAuthorize(RoleList.Admin, RoleList.Product)]
+    //[WebAuthorize(RoleList.Admin, RoleList.Product)]
     [Area("Admin")]
     public class CourseController : Controller
     {

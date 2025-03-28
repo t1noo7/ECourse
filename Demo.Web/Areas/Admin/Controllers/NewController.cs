@@ -2,12 +2,15 @@
 using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
+using Demo.Core.Permission;
 using Demo.Database.Repositories;
+using Demo.Web.Filters;
 using Demo.Web.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
+    //[WebAuthorize(RoleList.Content, RoleList.Admin)]
     [Area("Admin")]
     public class NewController : Controller
     {
