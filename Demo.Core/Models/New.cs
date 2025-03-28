@@ -9,10 +9,6 @@ namespace Demo.Core.Models
         [Required(ErrorMessage = "Tiêu đề không được để trống")]
         public string Title { get; set; }
 
-        [Display(Name = "Mô Tả Ngắn")]
-        [Required(ErrorMessage = "Mô tả ngắn không được để trống")]
-        public string SContent { get; set; }
-
         [Display(Name = "Nội Dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; }

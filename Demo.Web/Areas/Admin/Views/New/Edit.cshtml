@@ -36,16 +36,6 @@
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-12 col-sm-12 search-item">
-                    @Html.LabelFor(m => m.SContent) @Html.RequireLabel()
-                    @Html.TextAreaFor(m => m.SContent, new
-                        {
-                            Class = "form-control form-control-smy h-100",
-                            required = "required"
-                        })
-                </div>
-            </div>
-            <div class="row mb-lg-2">
-                <div class="col-md-12 col-sm-12 search-item">
                     @Html.LabelFor(m => m.Content) @Html.RequireLabel()
                     @Html.TextAreaFor(m => m.Content, new
                         {
@@ -76,7 +66,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             setTimeout(function () {
                 common.initTinyMce('#Content');
-                common.initTinyMce('#SContent');
             }, 1000);
         });
     </script>

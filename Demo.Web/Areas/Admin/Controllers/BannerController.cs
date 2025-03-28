@@ -138,6 +138,34 @@ namespace Demo.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder([FromBody] Dictionary<string, List<string>> data)
+        {
+            try
+            {
+                if (data == null || !data.ContainsKey("ids") || data["ids"] == null)
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ!" });
+
+                var ids = data["ids"];
+                int order = 1;
+
+                foreach (var id in ids)
+                {
+                    var banner = await _bannerRepository.GetAsync(Guid.Parse(id));
+                    if (banner != null)
+                    {
+                        banner.Order = order++;
+                        await _bannerRepository.UpdateAsync(banner);
+                    }
+                }
+                return Json(new { success = true });
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật thứ tự banner");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
             await _bannerRepository.SetAsync(id, nameof(Banner.Deleted), true);

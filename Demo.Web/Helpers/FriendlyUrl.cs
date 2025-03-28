@@ -16,6 +16,7 @@
         public static string NewsFrUrl = "/tin-tuc/{url}";
         public static string NewsListFrUrl = "/dach-sach-tin";
         public static string AboutUsFrUrl = "/ve-chung-toi";
+        public static string MyLessonFrUrl = "/lop-hoc-cua-toi";
 
         public static string Login
         {
@@ -46,6 +47,10 @@
         public static string MyOrders()
         {
             return MyOrdersFrUrl;
+        }
+        public static string MyLessons()
+        {
+            return MyLessonFrUrl;
         }
         public static string MyProfile()
         {

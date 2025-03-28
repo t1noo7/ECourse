@@ -23,7 +23,7 @@
                                         <h5 class="text-primary text-uppercase mb-3 animated slideInDown">@item.Title</h5>
                                         <h1 class="display-3 text-white animated slideInDown">@item.Title</h1>
                                         <div class="fs-5 text-white mb-4 pb-2">@Html.Raw(@item.Content)</div>
-                                        <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">@Html.Raw(@item.ButtonContent)</a>
+                                        <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tìm Hiểu Thêm</a>
                                         <a href="@FriendlyUrl.Login" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Tham Gia Ngay</a>
                                     </div>
                                 </div>
@@ -90,6 +90,45 @@
 <!-- Courses Start -->
 @await Component.InvokeAsync("Course")
 <!-- Courses End -->
+<!-- Contact Start -->
+<div class="container contact-section">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="~/assets/img/brand-1.png" alt="Contact Image" class="img-fluid rounded">
+        </div>
+        <div class="col-md-6">
+            <div class="contact-form">
+                <h4 class="text-uppercase fw-bold text-center nav-item nav-link active">Liên Hệ</h4>
+                <p class="text-center text-muted">Để được nhận khóa học về đầu tư bất động sản từ Nguyễn Văn A:</p>
+                <form>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Họ tên*" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Tuổi">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Tỉnh/Thành phố">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="E-mail*" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Lĩnh vực kinh doanh">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Số điện thoại*" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" placeholder="Khó khăn thường gặp khi đầu tư bất động sản*" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary py-3 px-5 mt-2">Gửi Khóa Học Miễn Phí Cho Tôi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
 <!-- New Start -->
 @await Component.InvokeAsync("New")
 <!-- New End -->

@@ -14,7 +14,7 @@ namespace Demo.Web.Components
         }
         public IViewComponentResult Invoke()
         {
-            var model = _newRepository.Find(x => x.Deleted != false && x.Status == true).ToList();
+            var model = _newRepository.Find(x => x.Deleted != true && x.Status == true).Take(4).ToList();
             return View(model);
         }
     }

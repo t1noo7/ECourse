@@ -15,7 +15,9 @@
                     <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="course-item bg-light">
                             <div class="position-relative overflow-hidden">
-                                <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                                <a href="@Url.Action("MyLessons", "Order", new { courseId = item.Id })">
+                                    <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                                    </a>
                                 <div class="progress" style="height: 5px;">
                                     @* <div class="progress-bar bg-success" role="progressbar" style="width: @item.Progress%" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100"></div> *@
                                 </div>
@@ -24,7 +26,6 @@
                                 <h5 class="mb-4">@item.Title</h5>
                                 @* <p>Tiến trình học: <strong>@item.Progress%</strong></p> *@
                             </div>
-                            <a href="@Url.Action("MyLessons", "Order", new { courseId = item.Id })">Xem bài học</a>
                         </div>
                     </div>
                 }
