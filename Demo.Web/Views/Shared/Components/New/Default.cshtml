@@ -1,0 +1,30 @@
+﻿@using Demo.Core.Models
+@model List<New>
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Tin Tức</h6>
+            <h1 class="mb-5">Bài Viết Mới Nhất</h1>
+        </div>
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="team-item bg-light">
+                        <div class="overflow-hidden">
+                            <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                        </div>
+                        <div class="text-center p-4">
+                            <h5 class="mb-0">@item.Title</h5>
+                            <small class="text-muted">By @item.Author - @item.Created.ToString("dd/MM/yyyy")</small>
+                        </div>
+                        <div class="d-flex justify-content-center py-2">
+                            <a href="/news/details/@item.Id" class="btn btn-primary btn-sm">Đọc thêm</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

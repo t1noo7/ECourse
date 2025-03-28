@@ -1,0 +1,137 @@
+﻿@using Demo.Web.Helpers
+@{
+    ViewData["Title"] = "Home Page";
+    var banner = ViewBag.Banners as List<Demo.Core.Models.Banner>;
+}
+
+
+<!-- Banner Start -->
+<div class="container-fluid p-0 mb-5">
+    <div class="owl-carousel header-carousel position-relative">
+        @if (banner.Count > 0)
+        {
+            @foreach (var item in banner)
+            {
+                if (item != null)
+                {
+                    <div class="owl-carousel-item position-relative">
+                        <img class="img-fluid" src="@item.Image" alt="@item.Title">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+                            <div class="container">
+                                <div class="row justify-content-start">
+                                    <div class="col-sm-10 col-lg-8">
+                                        <h5 class="text-primary text-uppercase mb-3 animated slideInDown">@item.Title</h5>
+                                        <h1 class="display-3 text-white animated slideInDown">@item.Title</h1>
+                                        <div class="fs-5 text-white mb-4 pb-2">@Html.Raw(@item.Content)</div>
+                                        <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Tìm Hiểu Thêm</a>
+                                        <a href="@FriendlyUrl.Login" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Tham Gia Ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+<!-- Banner End -->
+<!-- Service Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
+                        <h5 class="mb-3">Giảng viên giàu kinh nghiệm</h5>
+                        <p>Học cùng chuyên gia trong ngành với phương pháp giảng dạy thực tiễn và dễ hiểu.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-globe text-primary mb-4"></i>
+                        <h5 class="mb-3">Lớp học trực tuyến</h5>
+                        <p>Học tập linh hoạt, mọi lúc mọi nơi với các bài giảng trực tuyến chất lượng cao.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-home text-primary mb-4"></i>
+                        <h5 class="mb-3">Dự án thực tế</h5>
+                        <p>Áp dụng kiến thức vào thực tiễn qua các dự án giúp bạn nâng cao kỹ năng.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="service-item text-center pt-3">
+                    <div class="p-4">
+                        <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
+                        <h5 class="mb-3">Tài liệu học tập</h5>
+                        <p>Hệ thống tài liệu, giáo trình chi tiết giúp bạn tự học hiệu quả.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service End -->
+<!-- About Start -->
+@await Component.InvokeAsync("AboutUs")
+<!-- About End -->
+<!-- Categories Start -->
+@await Component.InvokeAsync("Category")
+<!-- Categories Start -->
+<!-- Courses Start -->
+@await Component.InvokeAsync("Course")
+<!-- Courses End -->
+<!-- Contact Start -->
+<div class="container contact-section">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="~/assets/img/brand-1.png" alt="Contact Image" class="img-fluid rounded">
+        </div>
+        <div class="col-md-6">
+            <div class="contact-form">
+                <h4 class="text-uppercase fw-bold text-center nav-item nav-link active">Liên Hệ</h4>
+                <p class="text-center text-muted">Để được nhận khóa học về đầu tư bất động sản từ Nguyễn Văn A:</p>
+                <form>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Họ tên*" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Tuổi">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Tỉnh/Thành phố">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="E-mail*" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Lĩnh vực kinh doanh">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Số điện thoại*" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" placeholder="Khó khăn thường gặp khi đầu tư bất động sản*" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary py-3 px-5 mt-2">Gửi Khóa Học Miễn Phí Cho Tôi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
+<!-- New Start -->
+@await Component.InvokeAsync("New")
+<!-- New End -->
+<!-- FeedBack Start -->
+@await Component.InvokeAsync("FeedBack")
+<!-- FeedBack End -->

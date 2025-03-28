@@ -1,0 +1,83 @@
+@using Demo.Core.Models
+@using Demo.Web.Extensions
+@model Course
+
+@{
+    ViewData["Title"] = "Thiết lập Khóa học";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+        <form method="post" enctype="multipart/form-data" asp-controller="Course" asp-action="Edit" id="editForm">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Created)
+            @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.Image)
+            @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <p>Model ID: @Model.Id</p>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Title) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.Title, new
+                        {
+                            Class = "form-control form-control-smy",
+                            required = "required"
+                        })
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Image) @Html.RequireLabel()
+                    <partial name="_EditImage" model="@Model.Image" />
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Description)
+                    @Html.TextAreaFor(m => m.Description, new
+                        {
+                            Class = "form-control form-control-smy h-100"
+                        })
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Price) @Html.RequireLabel()
+                    <input name="@(nameof(Model.Price))" type="number" min="0" value="@Model.Price" class="form-control form-control-smy" />
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.DiscountPrice) 
+                    <input name="@(nameof(Model.DiscountPrice))" type="number" min="0" value="@Model.DiscountPrice" class="form-control form-control-smy" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(x => x.Status) &nbsp;
+                    @Html.CheckBoxFor(m => m.Status)
+                </div>
+            </div>
+            <hr />
+            <div class="mb-2">
+                <button class="btn btn-success" type="button" onclick="$('#editForm').submit()">Lưu</button>
+                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                common.initTinyMce('#Description');
+            }, 1000);
+        });
+    </script>
+}

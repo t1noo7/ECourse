@@ -1,0 +1,153 @@
+@using Demo.Core.Models
+@using Demo.Web.Extensions
+@model Lesson
+
+@{
+    ViewData["Title"] = "Thiết lập Bài giảng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
+}
+
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+        <form method="post" enctype="multipart/form-data" asp-controller="Lesson" asp-action="Edit" id="editForm">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Created)
+            @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <p>Model ID: @Model.Id</p>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Title) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.Title, new
+                        {
+                            Class = "form-control form-control-smy",
+                            required = "required"
+                        })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.YouTubeUrl) @Html.RequireLabel()
+                <input type="text" class="form-control" asp-for="YouTubeUrl" id="youtube-url">
+            </div>
+            <div class="form-group">
+                <label class="font-weight-semibold">Preview</label>
+                <div id="youtube-preview">
+                    <!-- Video preview iframe will be inserted here -->
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.CourseId)
+                    <select class="form-control" id="courseSelection" name="CourseId">
+                        @if (courses != null)
+                        {
+                            <!-- Display the selected course -->
+                            <option value="courses.Id" selected>courses.Title</option>
+
+                            <!-- Display the list of courses, excluding the selected one -->
+                            @foreach (var course in courses)
+                            {
+                                @if (course.Id != Model.CourseId)
+                                {
+                                    <option value="@course.Id">@course.Title</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <!-- Display "Select a Course" if no course is selected -->
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var course in courses)
+                            {
+                                <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
+                                    @course.Title
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Description, new
+                        {
+                            Class = "form-control form-control-smy h-100"
+                        })
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Content) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Content, new
+                        {
+                            Class = "form-control form-control-smy h-100",
+                            required =
+                             "required"
+                        })
+                </div>
+            </div>
+            <hr />
+            <div class="mb-2">
+                <button class="btn btn-success" type="button" onclick="$('#editForm').submit()">Lưu</button>
+                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var youtubeInput = document.getElementById("youtube-url");
+            var previewContainer = document.getElementById("youtube-preview");
+
+            function getEmbedUrl(url) {
+                var videoId = "";
+                var match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+                if (match) {
+                    videoId = match[1];
+                }
+                return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+            }
+
+            function updatePreview() {
+                var url = youtubeInput.value.trim();
+                var embedUrl = getEmbedUrl(url);
+
+                if (!embedUrl) {
+                    previewContainer.innerHTML = "<span class='text-danger'>URL không hợp lệ</span>";
+                    return;
+                }
+
+                previewContainer.innerHTML = `
+                        <iframe width="560" height="315"
+                            src="${embedUrl}"
+                            frameborder="0" allowfullscreen>
+                        </iframe>`;
+            }
+
+            youtubeInput.addEventListener("input", updatePreview);
+
+            // Khi load trang, nếu có URL sẵn thì cập nhật preview
+            if (youtubeInput.value.trim() !== "") {
+                setTimeout(updatePreview, 500);
+            }
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                common.initTinyMce('#Content');
+                common.initTinyMce('#Description');
+            }, 1000);
+        });
+    </script>
+}

@@ -1,0 +1,72 @@
+@using Demo.Core.Models
+@model List<Order>
+@using Microsoft.AspNetCore.Http.Extensions
+@using Demo.Common.Extensions
+@{
+    ViewData["Title"] = "Danh sách đơn hàng";
+    var searchModel = ViewBag.SearchModel as Demo.Application.Models.OrderFilter;
+}
+<div class="card mt-2 mb-2 shadow-base" id="searchBox">
+    <div class="card-body pb-0">
+        <partial name="_SearchOrders" model="@searchModel" />
+    </div>
+</div>
+<div class="card mt-2 mb-2 shadow-base pd-b-10">
+    <div class="card-body pb-0">
+        <table class="table mg-b-0" cellspacing="0">
+            <tr>
+                <th>STT</th>
+                <th>
+                    ID Đơn hàng
+                </th>
+                <th>
+                    Tên khách hàng
+                </th>
+                <th>
+                    Khoá học đăng ký
+                </th>
+                <th>
+                    Giá (VNĐ)
+                </th>
+                <th>
+                    Ngày tạo
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+            </tr>
+
+            @{
+                var stt = 1;
+                foreach (var item in Model.OrderByDescending(m => m.Created))
+                {
+                    <tr class="stat even">
+                        <td class="ac">
+                            @(stt++)
+                        </td>
+                        <td>
+                            <a
+                                href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Code</a>
+                        </td>
+                        <td>
+                            @item.CustomerName
+                        </td>
+                        <td>
+                            @item.GetCourseNames()
+                        </td>
+                        <td>
+                            @item.Price.ToString("N0")
+                        </td>
+                        <td>
+                            @item.Created.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            @item.Status.GetEnumDescription()
+                        </td>
+
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+</div>

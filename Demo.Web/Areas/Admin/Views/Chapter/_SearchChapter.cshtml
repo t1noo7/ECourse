@@ -1,0 +1,15 @@
+﻿@using Demo.Application.Models
+@model ChapterFilter
+@using (Html.BeginForm(null, null, FormMethod.Get, new { role = "form", id = "frmSearch" }))
+{
+    <div class="row mb-2">
+        <div class="col-md-3 col-sm-9 col-xs-12 search-item">
+            <label for="query">Khóa học</label>
+            @Html.TextBoxFor(x => x.Course, new { Class = "form-control form-control-sm" })
+        </div>
+    </div>
+    <br>
+    <div class="col mb-2 search-item" style="padding-left:0">
+        <button id="btnSearch" class="btn btn-sm bd bg-success tx-white pointer" type="submit"><i class="fa fa-search"></i> Tìm kiếm</button>
+    </div>
+}

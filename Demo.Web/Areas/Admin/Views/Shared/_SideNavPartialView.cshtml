@@ -1,0 +1,126 @@
+﻿@using Demo.Core.Permission
+@inject Demo.Core.Services.IUserGroupManager _roleManager
+@{
+    var allRoles = _roleManager.GetAllRoles(User.Identity.Name);
+}
+
+<script src="https://kit.fontawesome.com/8502367fe4.js" crossorigin="anonymous"></script>
+<div class="side-nav">
+    <div class="side-nav-inner">
+        <ul class="side-nav-menu scrollable">
+            <li>
+                <a href="/admin" data-href="/admin" class="br-menu-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Thống Kê</span>
+                </a>
+            </li>
+
+            @if (allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
+            {
+                <li>
+                    <a href="/admin/order/index" data-href="/admin/order/edit//admin/order/details" class="br-menu-link">
+                        <i class="fa fa-edit"></i>
+                        <span>Quản lý đơn hàng</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Customer))
+            {
+                <li>
+                    <a href="/admin/account/Users"
+                       data-href="/admin/account/AddEmployee//admin/account/AssignRoles//admin/account/UserDetails"
+                       class="br-menu-link">
+                        <i class="fa fa-group"></i>
+                        <span>Quản lý người dùng, khách hàng</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
+                <li>
+                    <a href="/admin/banner/index" data-href="/admin/banner/Edit//admin/banner/details" class="br-menu-link">
+                        <i class="fa fa-windows"></i>
+                        <span>Quản lý Banner</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
+                <li>
+                    <a href="/admin/category/index" data-href="/admin/category/edit" class="br-menu-link">
+                        <i class="fas fa-bars"></i>
+                        <span>Quản lý Danh Mục</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Product))
+            {
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle">
+                        <i class="anticon anticon-build"></i>
+                        <span class="title">Quản lý khóa học</span>
+                        <span class="arrow">
+                            <i class="arrow-icon"></i>
+                        </span>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/admin/course/index" data-href="/admin/courses/Edit//admin/course/details"
+                                   class="br-menu-link">
+                                    <i class="fa fa-book"></i>
+                                    <span>Quản lý khoá học</span>
+                                </a>
+                            </li>
+@*                             <li>
+                                <a href="/admin/chapter/index" data-href="/admin/chapter/Edit//admin/chapter/details" class="br-menu-link">
+                                    <i class="fa fa-child"></i>
+                                    <span>Quản lý học phần</span>
+                                </a>
+                            </li> *@
+                            <li>
+                                <a href="/admin/lesson/index" data-href="/admin/lesson/Edit//admin/lesson/details" class="br-menu-link">
+                                    <i class="fa fa-picture-o"></i>
+                                    <span>Quản lý bài giảng</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </a>
+                </li>
+
+            }
+
+@*             @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Sale))
+            {
+                <li>
+                    <a href="/admin/event/index" data-href="/admin/event/edit" class="br-menu-link">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Quản lý sự kiện</span>
+                    </a>
+                </li>
+            } *@
+
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
+                <li>
+                    <a href="/admin/new/index" data-href="/admin/new/edit" class="br-menu-link">
+                        <i class="fa fa-file-text-o"></i>
+                        <span>Quản lý bài viết</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin))
+            {
+                <li>
+                    <a href="#" class="br-menu-link">
+                        <i class="fa fa-android"></i>
+                        <span>Danh mục quản trị</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

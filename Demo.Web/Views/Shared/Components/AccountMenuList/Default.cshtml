@@ -1,0 +1,39 @@
+﻿@using Demo.Web.Helpers
+@using Demo.Web.ViewModels
+@model AccountMenuViewModel
+
+@if (Model != null && Model.IsAuthenticated)
+{
+    <div class="user-menu-container">
+        <a href="javascript:void(0);" class="nav-link dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown">
+            <img src="~/assets/img/testimonial-4.jpg" alt="User" class="rounded-circle img30x30 me-2" style="width: 30px; height: 30px; border-radius: 50%;">
+            <span class="d-none d-md-inline">Hello, @User.Identity.Name</span>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 list-unstyled" aria-labelledby="userDropdown">
+            @if (Model.AdminPermission)
+            {
+                <li><a class="dropdown-item py-2" href="@FriendlyUrl.Admin"><i class="fa fa-cog me-2"></i> Trang quản Trị</a></li>
+            }
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyCourses()"><i class="fa fa-book me-2"></i> Khoá học của tôi</a></li>
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyOrders()"><i class="fa fa-shopping-cart me-2"></i> Đơn hàng của tôi</a></li>
+            <li><a class="dropdown-item py-2" href="@FriendlyUrl.MyProfile()"><i class="fa fa-user me-2"></i> Thông tin cá nhân</a></li>
+
+            @if (!Model.IsExternalLogin)
+            {
+                <li><a class="dropdown-item py-2" href="/account/changepassword"><i class="fa fa-lock me-2"></i> Đổi mật khẩu</a></li>
+            }
+
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form method="post" asp-controller="Account" asp-action="Logout" id="logoutForm">
+                    <button type="submit" class="dropdown-item py-2 text-danger"><i class="fa fa-sign-out-alt me-2"></i> Đăng Xuất</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+} else
+{
+    <a href="@FriendlyUrl.Login" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Đăng Ký Ngay<i class="fa fa-arrow-right ms-3"></i></a>
+}
+

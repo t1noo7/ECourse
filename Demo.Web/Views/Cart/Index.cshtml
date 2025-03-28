@@ -1,0 +1,142 @@
+﻿@using Demo.Core.Models
+@model List<Course>
+
+@{
+    ViewData["Title"] = "Your Shopping Cart";
+}
+
+<link rel="stylesheet" href="~/assets/css/theme.css" />
+
+<div class="container mt-4 cart-view">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            <p><strong>Your cart is empty!</strong></p>
+            <p><a href="/" class="btn btn-outline-primary mt-3">Continue Shopping</a></p>
+        </div>
+    }
+    else
+    {
+        <form action="javascript:void(0)">
+            <table class="table table-striped table-hover table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Select</th>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình đại diện</th>
+                        <th>Giá</th>
+                        <th>Thành tiền</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var item = Model[i];
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="checkbox-item" data-product-id="@item.Id"
+                                    data-price="@item.Price" />
+                            </td>
+                            <td>@(i + 1)</td>
+                            <td>@item.Title</td>
+                            <td>
+                                <img src="@item.Image" alt="@item.Title" class="img-thumbnail" style="width: 100px;">
+                            </td>
+                            <td>@item.Price.ToString("#,##0") VNĐ</td>
+                            <td>@item.Price.ToString("#,##0") VNĐ</td>
+                            <td>
+                                <button class="btn btn-danger btn-delete" data-product-id="@item.Id">Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="text-right">
+                <h4>Total: <span class="total-amount">@Model.Sum(item => item.Price).ToString("#,##0") VNĐ</span></h4>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-success" id="checkoutBtn">Thanh toán</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account", new { returnUrl = "/checkout.html" })" class="btn btn-primary"
+                        id="checkoutBtn">
+                        Đăng
+                        nhập để thanh toán
+                    </a>
+                }
+            </div>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function calculateTotal() {
+            var total = 0;
+
+            // Duyệt qua các checkbox đã chọn và cộng giá của sản phẩm tương ứng
+            $('.checkbox-item:checked').each(function () {
+                var price = parseFloat($(this).data('price'));  // Lấy giá từ data-price
+                total += price;
+            });
+
+            // Cập nhật tổng giá trị vào phần hiển thị tổng tiền
+            $('.total-amount').text(total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+        }
+
+        $(document).ready(function () {
+            // Hiển thị tổng giá trị của tất cả sản phẩm ban đầu
+            var initialTotal = @Model.Sum(item => item.Price);
+            $('.total-amount').text(initialTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+            // Khi thay đổi trạng thái của checkbox, tính lại tổng giá trị
+            $('.checkbox-item').on('change', function () {
+                if ($('.checkbox-item:checked').length > 0) {
+                    calculateTotal();  // Tính lại tổng khi có checkbox được chọn
+                } else {
+                    // Nếu không có checkbox nào được chọn, hiển thị tổng ban đầu
+                    $('.total-amount').text(initialTotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                }
+            });
+
+            // Xử lý khi nhấn nút "Xóa"
+            $('.btn-delete').on('click', function () {
+                var courseId = $(this).data('product-id');
+                $.ajax({
+                    url: '/api/cart/remove',
+                    method: 'POST',
+                    data: {
+                        courseID: courseId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload(); // Reload page after successful delete
+                        } else {
+                            alert('Failed to delete item from cart: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Failed to delete item from cart.'); // Handle error scenario
+                    }
+                });
+            });
+
+            $('#checkoutBtn').on('click', function () {
+                var selectedProductIds = [];
+                $('.checkbox-item:checked').each(function () {
+                    selectedProductIds.push($(this).data('product-id'));
+                });
+                if (selectedProductIds.length > 0) {
+                    var productIdsString = selectedProductIds.join(',');
+                    // Điều hướng đến trang Checkout kèm productIds trong query string
+                    window.location.href = '/Order/Checkout?productIds=' + encodeURIComponent(productIdsString);
+                } else {
+                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+                }
+            });
+        });
+    </script>
+}

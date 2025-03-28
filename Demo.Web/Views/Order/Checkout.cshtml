@@ -1,0 +1,120 @@
+﻿@using Demo.Core.Models;
+@using Demo.Core.ValueObjects;
+@using Demo.Web.Models;
+@using Demo.Web.Extensions;
+@using Demo.Web.Helpers;
+@model OrderViewModel
+@{
+    var course = ViewBag.Course as Demo.Core.Models.Course;
+}
+
+<section class="order_section mt-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="secTitle">Hoàn tất đơn hàng</h2>
+        </div>
+
+        <form asp-action="Checkout" method="post">
+            <input type="hidden" asp-for="CourseId" />
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h3>Thông tin khách hàng</h3>
+                    <div class="form-group">
+                        <label class="fw-bold">Tên khách hàng</label>
+                        <input type="text" name="customerName" value="@Model.CustomerName"
+                               class="form-control" placeholder="Nhập tên của bạn" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="fw-bold">Số điện thoại</label>
+                        <input type="tel" name="customerPhone" value="@Model.CustomerPhone"
+                               class="form-control" placeholder="Nhập số điện thoại của bạn" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="fw-bold">Email</label>
+                        <input type="email" name="customerEmail" value="@Model.CustomerEmail"
+                               class="form-control" placeholder="Nhập email của bạn" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h3>Sản phẩm đã đặt mua</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Tên khóa học</th>
+                                    <th>Ảnh</th>
+                                    <th>Nội dung</th>
+                                    <th>Giá tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@course.Title</td>
+                                    <td><img src="@course.Image" alt="@course.Title" class="img-fluid" style="max-width: 100px;"></td>
+                                    <td>@Html.Raw(@course.Description)</td>
+                                    <td>@(course.DiscountPrice > 0 ? course.DiscountPrice?.ToString("#,##0 VNĐ") : course.Price.ToString("#,##0 VNĐ"))</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <input type="hidden" name="CourseIds" value="@course.Id" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="fw-bold">Hình thức thanh toán</label>
+                @Html.DropDownListFor(x => x.PaymentOptions, Model.PaymentOptions, "Chọn hình thức thanh toán",
+                         new { @class = "form-control" })
+            </div>
+
+            <div class="text-center my-4">
+                <h4>Tổng tiền: <span class="text-success">@course.Price.ToString("#,##0 VNĐ")</span></h4>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary px-4" type="submit">Hoàn thành</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", "#confirmCheckout", function () {
+                CreateOrder();
+            });
+
+            function CreateOrder() {
+                var paymentOption = $("#PaymentOption").val();
+                if (paymentOption != '1' && paymentOption != '2') {
+                    alert("Chưa chọn loại thanh toán!");
+                    return;
+                }
+
+                $('#loadingModal').modal();
+                setTimeout(function () {
+                    var model = $("#frmOrder").serializeObject();
+                    var courses = [];
+                    $(".course:checked").each(function () {
+                        courses.push({ 'Id': $(this).attr("data-courseid") });
+                    });
+                    var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Checkout", { model: model, productIds: courses });
+                    if (result && result.success) {
+                        $('#loadingModal').modal('hide');
+                        alert("Đặt hàng thành công!");
+                        setTimeout(function () {
+                            window.location = "/Order/MyOrder";
+                        }, 1000);
+                    } else {
+                        $('#loadingModal').modal('hide');
+                        alert(result.message);
+                    }
+                }, 300);
+            }
+        });
+    </script>
+}

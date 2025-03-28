@@ -1,0 +1,61 @@
+@inject Demo.Core.Services.IUserGroupManager _userGroupManager
+<!-- BEGIN Navbar Buttons -->
+@if (User.Identity.IsAuthenticated)
+{
+    var user = _userGroupManager.GetUser(User.Identity.Name);
+    <form method="post" enctype="multipart/form-data" asp-controller="Account" asp-action="Logout" asp-area=""
+    id="logoutForm" class="navbar-right  d-none hidden">
+</form>
+    <ul class="nav flaty-nav pull-right">
+    <!-- BEGIN Button User -->
+    <li class="user-profile">
+        <!-- BEGIN User Dropdown -->
+        <ul class="dropdown-menu dropdown-navbar" id="user_menu">
+            <span class="hhh" id="user_info">
+                Hi, @User.Identity.Name!
+            </span>
+            <li class="nav-header">
+                <i class="fa fa-clock-o"></i>
+                Logined at @user.LoginTime?.ToString("dd/MM/yy hh:mm")
+            </li>
+            @if (!_userGroupManager.GetUser(User.Identity.Name).Logins.Any())
+                {
+                    <li>
+                        <a href="/Account/ChangePassword">
+                            <i class="fa fa-cog"></i>
+                            Account Settings
+                        </a>
+                    </li>
+                }
+
+                <li class="divider"></li>
+
+                <li>
+                    <a href="javascript:void(0)" onclick="$('#logoutForm').submit()">
+                        <i class="fa fa-off"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+            <!-- BEGIN User Dropdown -->
+        </li>
+        <!-- END Button User -->
+    </ul>
+    <!-- END Navbar Buttons -->
+}
+else
+{
+    <ul class="nav flaty-nav pull-right">
+    <li class="user-profile">
+        <!-- BEGIN User Dropdown -->
+        <ul class="dropdown-menu dropdown-navbar" id="user_menu">
+            <li>
+                <a href="/Account/Login">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>
+}

@@ -1,0 +1,239 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+﻿
+<div class="row">
+    <div class="col-lg-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="m-b-0 text-muted">Doanh số</p>
+                                <h2 class="m-b-0">85.000.000 VNĐ</h2>
+                            </div>
+                            <span class="badge badge-pill badge-cyan font-size-12">
+                                <i class="anticon anticon-arrow-up"></i>
+                                <span class="font-weight-semibold m-l-5">6.71%</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="m-b-0 text-muted">Khách hàng</p>
+                                <h2 class="m-b-0">85</h2>
+                            </div>
+                            <span class="badge badge-pill badge-red font-size-12">
+                                <i class="anticon anticon-arrow-down"></i>
+                                <span class="font-weight-semibold m-l-5">3.26%</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="m-b-0 text-muted">Đơn hàng</p>
+                                <h2 class="m-b-0">120</h2>
+                            </div>
+                            <span class="badge badge-pill badge-cyan font-size-12">
+                                <i class="anticon anticon-arrow-up"></i>
+                                <span class="font-weight-semibold m-l-5">6.71%</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body">
+                <h5>Đơn hàng gần đây</h5>
+                <div class="m-t-30">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#101</td>
+                                    <td>0123456789</td>
+                                    <td>11/03/2025</td>
+                                    <td style="color: green;">Đã giao</td>
+                                </tr>
+                                <tr>
+                                    <td>#102</td>
+                                    <td>0123456789</td>
+                                    <td>10/03/2025</td>
+                                    <td style="color: green;">Đã giao</td>
+                                </tr>
+                                <tr>
+                                    <td>#103</td>
+                                    <td>0123456789</td>
+                                    <td>09/03/2025</td>
+                                    <td style="color: red;">Đã hủy</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Doanh thu</h5>
+                    <div>
+                        <a href="javascript:void(0);" class="btn btn-sm btn-default">Xem chi tiết</a>
+                    </div>
+                </div>
+                <div class="m-t-30">
+                    <div class="d-md-flex">
+                        <div class="pr-4 m-v-10 border-right border-hide-md">
+                            <p class="m-b-0">Doanh thu thuần</p>
+                            <h3 class="m-b-0">
+                                <span>85.000.000 VNĐ</span>
+                                <span class="text-success m-l-10 font-size-14">+6.71%</span>
+                            </h3>
+                        </div>
+                        <div class="px-md-4 m-v-10 border-right border-hide-md">
+                            <p class="m-b-0">Doanh số bán hàng</p>
+                            <h3 class="m-b-0">
+                                <span>78.500.000 VNĐ</span>
+                                <span class="text-danger m-l-10 font-size-14">+1.82%</span>
+                            </h3>
+                        </div>
+                        <div class="px-md-4 m-v-10">
+                            <p class="m-b-0">Chi phí</p>
+                            <h3 class="m-b-0">
+                                <span>65.200.000 VNĐ</span>
+                                <span class="text-success m-l-10 font-size-14">+11.2%</span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-t-50" style="height: 240px">
+                    <canvas class="chart" id="revenue-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Sản phẩm phổ biến</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item p-h-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex">
+                                <div class="avatar avatar-image m-r-15">
+                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
+                                </div>
+                                <div>
+                                    <h6 class="m-b-0">Joint Care Plus</h6>
+                                    <span class="text-muted font-size-13">Bổ khớp</span>
+                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item p-h-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex">
+                                <div class="avatar avatar-image m-r-15">
+                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
+                                </div>
+                                <div>
+                                    <h6 class="m-b-0">Calcium Boost</h6>
+                                    <span class="text-muted font-size-13">Tăng cường xương</span>
+                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item p-h-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex">
+                                <div class="avatar avatar-image m-r-15">
+                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
+                                </div>
+                                <div>
+                                    <h6 class="m-b-0">Glucosamine Pro</h6>
+                                    <span class="text-muted font-size-13">Hỗ trợ khớp</span>
+                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("revenue-chart").getContext("2d");
+
+        var revenueChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: ["16th", "17th", "18th", "19th", "20th", "21th", "22th", "23th", "24th", "25th", "26th"],
+                datasets: [{
+                    label: "Doanh thu",
+                    data: [30, 60, 40, 50, 45, 70, 90, 75, 80, 55, 65],
+                    borderColor: "#00c9a7",
+                    backgroundColor: "rgba(0, 201, 167, 0.2)",
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: "#00c9a7",
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value + "M";
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>

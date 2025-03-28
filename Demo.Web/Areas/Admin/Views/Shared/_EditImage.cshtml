@@ -1,0 +1,63 @@
+﻿@model string
+<style>
+    img {
+        max-width: 100%; /* important */
+    }
+
+    input[type=file]::file-selector-button {
+        margin-right: 20px;
+        border: none;
+        background: #1c9a06;
+        padding: 10px 20px;
+        border-radius: 10px;
+        color: #fff;
+        cursor: pointer;
+        transition: background .2s ease-in-out;
+    }
+
+        input[type=file]::file-selector-button:hover {
+            background: #0d45a5;
+        }
+</style>
+<p>
+    <a class="btgreen" onclick="document.getElementById('fileInput').click(); return;">Chọn ảnh</a>
+    <input type="file" id="fileInput" name="fileInput" accept="image/*" style="display:none"/>
+</p>
+@if (Model != null)
+{
+    <img id="img-origin" src="@Model" style="width: 80%" />
+}
+<div>
+    <canvas id="canvas" style="width: 70%" height="0">
+        Your browser does not support the HTML5 canvas element.
+    </canvas>
+</div>
+
+<script>
+    document.getElementById("fileInput").addEventListener("change", function (event) {
+        var file = event.target.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    var canvas = document.getElementById("canvas");
+                    var ctx = canvas.getContext("2d");
+
+                    // Đặt kích thước canvas theo ảnh
+                    canvas.width = img.width * 0.7;
+                    canvas.height = img.height * 0.7;
+
+                    // Vẽ ảnh lên canvas
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
