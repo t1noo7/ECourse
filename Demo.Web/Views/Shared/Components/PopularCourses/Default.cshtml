@@ -1,0 +1,22 @@
+﻿@using Demo.Core.Models
+@model List<Course>
+
+<div class="widget">
+    <h3 class="widget_title">Khóa Học Phổ Biến</h3>
+    <ul class="course_list">
+        @if(Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a href="#">
+                        <i class="twi-angle-right"></i> @item.Title
+                    </a>
+                </li>
+            }
+        } else
+        {
+            
+        }
+    </ul>
+</div>

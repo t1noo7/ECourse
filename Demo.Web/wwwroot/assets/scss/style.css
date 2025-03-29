@@ -1,4 +1,4 @@
-.header-wrap .header-top .header-top-left,
+﻿.header-wrap .header-top .header-top-left,
 .course-card.style1 .course-metainfo .course-metainfo-left ul,
 .course-card.style2 .course-metainfo .course-metainfo-left ul,
 .course-card.style3 .course-metainfo .course-metainfo-left ul,
@@ -9915,4 +9915,58 @@ input:checked + .slider:before {
 .buy-now-btn:hover {
   color: #fff;
   background-color: #94be5d;
+}
+
+.news-list .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Đảm bảo khoảng cách giữa các tin tức */
+    justify-content: space-between;
+}
+
+.news-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.news-thumb {
+    width: 100%;
+    height: 180px; /* Cố định chiều cao ảnh */
+    overflow: hidden;
+}
+
+    .news-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.news-content {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .news-content h4 {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .news-content small {
+        font-size: 14px;
+        color: #666;
+    }
+
+/* Sidebar căn chỉnh lại */
+.sidebar {
+    margin-top: 20px;
+    padding-left: 20px;
 }

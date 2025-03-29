@@ -13,10 +13,11 @@
         public static string MyOrdersFrUrl = "/don-hang-cua-toi";
         public static string MyProfileFrUrl = "/thong-tin-cua-toi";
         public static string CourseShopFrUrl = "/mua-khoa-hoc";
-        public static string NewsFrUrl = "/tin-tuc/{url}";
-        public static string NewsListFrUrl = "/dach-sach-tin";
+        public static string NewDetailsFrUrl = "/tin-tuc/{url}";
+        public static string NewListFrUrl = "/dach-sach-tin";
         public static string AboutUsFrUrl = "/ve-chung-toi";
         public static string MyLessonFrUrl = "/lop-hoc-cua-toi";
+        public static string ContactFrUrl = "/lien-he";
 
         public static string Login
         {
@@ -56,6 +57,10 @@
         {
             return MyProfileFrUrl;
         }
+        public static string Contact()
+        {
+            return ContactFrUrl;
+        }
         public static string CourseShop()
         {
             return CourseShopFrUrl;
@@ -64,14 +69,14 @@
         {
             return BookShopFrUrl;
         }
-        public static string NewsList()
+        public static string NewList()
         {
-            return NewsListFrUrl;
+            return NewListFrUrl;
         }
 
-        public static string News(string url)
+        public static string NewDetails(string url)
         {
-            return TrimStar(NewsFrUrl).Replace("{url}", url);
+            return TrimStar(NewDetailsFrUrl).Replace("{url}", url);
         }
         public static string AboutUs()
         {

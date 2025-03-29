@@ -71,19 +71,24 @@ app.MapControllerRoute(
     defaults: new { controller = "Account", action = "MyProfile" });
 
 app.MapControllerRoute(
+    name: "lienhe",
+    pattern: FriendlyUrl.ContactFrUrl,
+    defaults: new { controller = "Home", action = "Contact" });
+
+app.MapControllerRoute(
     name: "muakhoahoc",
     pattern: FriendlyUrl.CourseShopFrUrl,
     defaults: new { controller = "Orders", action = "Checkout" });
 
 app.MapControllerRoute(
     name: "danhsachtin",
-    pattern: FriendlyUrl.NewsListFrUrl,
-    defaults: new { controller = "News", action = "List" });
+    pattern: FriendlyUrl.NewListFrUrl,
+    defaults: new { controller = "New", action = "List" });
 
 app.MapControllerRoute(
     name: "tintuc",
-    pattern: FriendlyUrl.NewsFrUrl,
-    defaults: new { controller = "News", action = "Detail" });
+    pattern: FriendlyUrl.NewDetailsFrUrl,
+    defaults: new { controller = "New", action = "Details" });
 
 app.MapControllerRoute(
     name: "vechungtoi",
