@@ -1,13 +1,8 @@
 @model Demo.Web.Areas.Admin.Models.LoginViewModel
 
 @{
-    ViewBag.Title = "Account login";
+    ViewBag.Title = "Đăng Nhập Tài Khoản";
 }
-
-<!--
-    Tuỳ chọn: Sử dụng font-awesome để hiển thị icon mạng xã hội
-    <link rel="stylesheet" href="~/Content/fontawesome-all.min.css" />
--->
 
 <section class="login-section"
          style="
@@ -16,7 +11,7 @@
             background-size: cover;
             position: relative;
          ">
-    <!-- Overlay tối, nếu muốn -->
+    <!-- Lớp phủ nền tối -->
     <div class="overlay"
          style="
             position: absolute;
@@ -28,15 +23,13 @@
          ">
     </div>
 
-    <!-- Nội dung chính, đặt position: relative để hiển thị trên overlay -->
     <div class="container" style="position: relative; z-index: 1;">
         <div class="row align-items-center" style="min-height: 100vh;">
-            <!-- Cột trái: Welcome Back text + Social icons -->
+            <!-- Cột trái: Chào mừng và Mạng xã hội -->
             <div class="col-lg-6 text-white d-flex flex-column justify-content-center mb-5 mb-lg-0">
-                <h1 class="mb-3 fw-semi-bold">Welcome Back</h1>
+                <h1 class="mb-3 fw-semi-bold">Chào Mừng Trở Lại</h1>
                 <p class="mb-4">
-                    It is a long established fact that a reader will be distracted
-                    by the readable content of a page when looking at its layout.
+                    Đây là nền tảng giúp bạn phát triển bản thân và kinh doanh bền vững thông qua các khóa học chất lượng.
                 </p>
                 <div class="social-icons">
                     <a href="#" class="me-3 text-white">
@@ -58,40 +51,35 @@
             <div class="col-lg-5 offset-lg-1">
                 <div class="card border-0 shadow">
                     <div class="card-body p-4">
-                        <h2 class="text-center mb-4">Sign in</h2>
+                        <h2 class="text-center mb-4">Đăng Nhập</h2>
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                         @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl ?? "/" }, FormMethod.Post))
                         {
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email Address</label>
-                                <input type="email" asp-for="UserName" class="form-control" placeholder="Email Address" />
+                                <label for="email" class="form-label" >Tên Đăng Nhập (Email / Số Điện Thoại)</label>
+                                <input type="text" asp-for="UserName" class="form-control" placeholder="Nhập tên đăng nhập" />
                                 <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" asp-for="Password" class="form-control" placeholder="Password" />
+                                <label for="password" class="form-label">Mật Khẩu</label>
+                                <input type="password" asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="rememberMe" />
-                                <label class="form-check-label" for="rememberMe">Remember Me</label>
+                                <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 mb-2">Sign in now</button>
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Đăng Nhập</button>
 
-                            <div class="d-flex justify-content-between">
-                                <a href="#">Lost your password?</a>
+@*                             <div class="d-flex justify-content-between">
+                                <a href="#">Quên mật khẩu?</a>
+                            </div> *@
+
+                            <div class="register-links text-center mt-3">
+                                <a class="register-link me-2" href="phoneregister">Đăng ký bằng Số Điện Thoại</a> |
+                                <a class="register-link ms-2" href="usernameregister">Đăng ký bằng Email</a>
                             </div>
-
-                            <div class="mt-3 text-center">
-                                <small>
-                                    By clicking on “Sign in now” you agree to
-                                    <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a>
-                                </small>
-                            </div>
-
-                            <a class="link" href="phoneregister">Đăng kí sđt</a>
-                            <a class="link" href="usernameregister">Đăng kí email</a>
                         }
                     </div>
                 </div>
@@ -99,3 +87,21 @@
         </div>
     </div>
 </section>
+
+<style>
+    .register-links {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .register-link {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.3s ease-in-out;
+    }
+
+        .register-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+</style>
