@@ -1,0 +1,43 @@
+﻿@model Demo.Core.Models.Lesson
+
+<style>
+    .section-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+</style>
+
+@if (Model != null)
+{
+    <div class="section-wrapper">
+        <h2 class="section-title bg-white text-center text-primary px-3">@Model.Title</h2>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.YouTubeUrl))
+    {
+        <div class="video-container">
+            <iframe width="100%" height="400" src="@GetEmbeddedUrl(Model.YouTubeUrl)" frameborder="0" allowfullscreen></iframe>
+        </div>
+    }
+
+    <p>@Html.Raw(Model.Content)</p>
+} else
+{
+    <h3>Chọn bài học để xem nội dung</h3>
+}
+
+@functions {
+    public string GetEmbeddedUrl(string youtubeUrl)
+    {
+        if (youtubeUrl.Contains("youtu.be/"))
+        {
+            var videoId = youtubeUrl.Split('/').Last().Split('?').First();
+            return $"https://www.youtube.com/embed/{videoId}";
+        } else if (youtubeUrl.Contains("watch?v="))
+        {
+            return youtubeUrl.Replace("watch?v=", "embed/");
+        }
+        return youtubeUrl;
+    }
+}

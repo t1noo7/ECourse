@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
+using Demo.Web.ViewModels;
 
 namespace Demo.Web.Controllers
 {
@@ -175,12 +176,6 @@ namespace Demo.Web.Controllers
             var suggestCourses = _courseRepository.GetAll();
             var model = (myCourses, suggestCourses);
             return View(model);
-        }
-
-        public IActionResult MyLessons(Guid courseId)
-        {
-            var lessons = _lessonRepository.Find(x => x.CourseId == courseId).ToList();
-            return View(lessons);
         }
 
         private async Task<string> RenderRazorViewToStringAsync(string viewName, object model)

@@ -1,0 +1,71 @@
+﻿@using Demo.Web.Models
+@model UserViewModel
+
+<!-- Header Start -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header text-center">
+    <div class="container py-5">
+        <h1 class="display-3 text-white animated fadeInDown">Thông Tin Cá Nhân</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a class="text-white" href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Thông Tin Cá Nhân</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Header End -->
+
+<section class="contact-info-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4">
+                    <h2 class="text-center text-primary mb-4">Cập nhật thông tin cá nhân</h2>
+                    @using (Html.BeginForm("MyProfile", "Account", FormMethod.Post, new { @class = "needs-validation", novalidate = "" }))
+                    {
+                        @Html.HiddenFor(x => x.UserName)
+                        @Html.HiddenFor(x => x.Email)
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="text" class="form-control" value="@Model.Email" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" class="form-control" value="@Model.UserName" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Họ và Tên</label>
+                            @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Nhập tên của bạn", required = "required" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "form-control", placeholder = "Nhập số điện thoại", required = "required" })
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>
+    @if (TempData["success"] != null && (bool)TempData["success"] == true)
+    {
+        <script>
+            $(document).ready(function () {
+                toastr.success("Cập nhật thông tin thành công!");
+            });
+        </script>
+    }
+}

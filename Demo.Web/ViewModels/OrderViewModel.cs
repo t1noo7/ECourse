@@ -4,7 +4,7 @@ using Demo.Core.ValueObjects;
 using Demo.Web.Helpers;
 using System.ComponentModel.DataAnnotations;
 
-namespace Demo.Web.Models
+namespace Demo.Web.ViewModels
 {
     public class OrderViewModel
     {
