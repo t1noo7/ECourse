@@ -1,0 +1,108 @@
+﻿@using Demo.Core.Models
+@using Demo.Web.Helpers
+@model List<Lesson>
+
+
+<style>
+    .lesson-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Header Start -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header text-center">
+    <div class="container py-5">
+        <h1 class="display-3 text-white animated fadeInDown">Bài Học Của Tôi</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a class="text-white" href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a class="text-white" href="@FriendlyUrl.MyCourses()">Khóa Học Của Tôi</a></li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Bài Học Của Tôi</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Header End -->
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Danh sách bài học -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h4 class="text-center mb-3">Danh Sách Bài Học</h4>
+                <ul class="list-group list-group-flush">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <li class="list-group-item lesson-item" onclick="loadLesson('@Model[i].Id')">
+                            <span class="lesson-number">@((i + 1))</span> @Model[i].Title
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Nội dung bài học -->
+        <div class="col-md-8">
+            <div id="lessonContent" class="content-container animated fadeIn">
+                @await Component.InvokeAsync("Lesson", new { lessonId = (Guid?)null })
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    .lesson-item {
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .lesson-item:hover {
+        background-color: #00B9CD;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .content-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .animated {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function loadLesson(lessonId) {
+        $.get('/Lesson/LoadLessonContent', { lessonId: lessonId }, function (data) {
+            $('#lessonContent').html(data).addClass('animated');
+        });
+    }
+</script>

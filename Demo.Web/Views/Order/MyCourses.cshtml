@@ -1,5 +1,25 @@
-﻿@using Demo.Core.Models
+﻿@using Demo.Web.Helpers
+@using Demo.Core.Models
 @model (List<Course> MyCourses, List<Course> SuggestedCourses)
+
+
+<!-- Header Start -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <h1 class="display-3 text-white animated slideInDown">Khóa Học Của Tôi</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item text-white active" href="@FriendlyUrl.MyCourses">Khóa Học Của Tôi</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Header End -->
 
 <div class="container-xxl py-5">
     <div class="container">
@@ -15,7 +35,7 @@
                     <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="course-item bg-light">
                             <div class="position-relative overflow-hidden">
-                                <a href="@Url.Action("MyLessons", "Order", new { courseId = item.Id })">
+                                <a href="@Url.Action("MyLessons", "Lesson", new { courseId = item.Id })">
                                     <img class="img-fluid" src="@item.Image" alt="@item.Title">
                                     </a>
                                 <div class="progress" style="height: 5px;">

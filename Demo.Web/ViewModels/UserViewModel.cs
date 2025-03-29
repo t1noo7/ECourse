@@ -14,9 +14,5 @@ namespace Demo.Web.Models
         [Display(Name = "Điện thoại")]
         [Required(ErrorMessage = "Điện thoại không được để trống")]
         public string PhoneNumber { get; set; }
-
-        [Display(Name = "Địa chỉ")]
-        [Required(ErrorMessage = "Địa chỉ không được để trống")]
-        public string Address { get; set; }
     }
 }

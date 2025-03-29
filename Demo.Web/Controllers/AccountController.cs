@@ -182,9 +182,23 @@ namespace Demo.Web.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Address = user.Address ?? "",
                 Name = user.FullName
             };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult MyProfile(UserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _userRepository.GetByUsername(User.Identity.Name);
+                user.PhoneNumber = model.PhoneNumber;
+                user.FullName = model.Name;
+                _userRepository.UpdateAsync(user);
+                TempData["success"] = true;
+                return RedirectToAction("Profile");
+            }
             return View(model);
         }
 

@@ -45,15 +45,10 @@ app.MapControllerRoute(
     pattern: FriendlyUrl.CourseDetailFrm,
     defaults: new { controller = "Course", action = "Detail" });
 
-/*app.MapControllerRoute(
-name: "cuahangsach",
-pattern: FriendlyUrl.BookShopFrUrl,
-defaults: new { controller = "BookShop", action = "List" });
-
 app.MapControllerRoute(
-name: "sukien",
-pattern: FriendlyUrl.EventsListFrUrl,
-defaults: new { controller = "Event", action = "List" });*/
+    name: "baihoccuatoi",
+    pattern: FriendlyUrl.MyLessonFrUrl,
+    defaults: new { controller = "Lesson", action = "MyLessons" });
 
 app.MapControllerRoute(
     name: "khoahoccuatoi",
