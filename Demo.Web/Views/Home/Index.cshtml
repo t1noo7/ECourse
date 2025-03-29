@@ -91,43 +91,7 @@
 @await Component.InvokeAsync("Course")
 <!-- Courses End -->
 <!-- Contact Start -->
-<div class="container contact-section">
-    <div class="row">
-        <div class="col-md-6">
-            <img src="~/assets/img/brand-1.png" alt="Contact Image" class="img-fluid rounded">
-        </div>
-        <div class="col-md-6">
-            <div class="contact-form">
-                <h4 class="text-uppercase fw-bold text-center nav-item nav-link active">Liên Hệ</h4>
-                <p class="text-center text-muted">Để được nhận khóa học về đầu tư bất động sản từ Nguyễn Văn A:</p>
-                <form>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Họ tên*" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Tuổi">
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Tỉnh/Thành phố">
-                    </div>
-                    <div class="mb-3">
-                        <input type="email" class="form-control" placeholder="E-mail*" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Lĩnh vực kinh doanh">
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Số điện thoại*" required>
-                    </div>
-                    <div class="mb-3">
-                        <textarea class="form-control" placeholder="Khó khăn thường gặp khi đầu tư bất động sản*" rows="3" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary py-3 px-5 mt-2">Gửi Khóa Học Miễn Phí Cho Tôi</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+@await Component.InvokeAsync("Contact")
 <!-- Contact End -->
 <!-- New Start -->
 @await Component.InvokeAsync("New")

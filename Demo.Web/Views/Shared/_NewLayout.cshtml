@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    @RenderSection("Styles", required: false)
+}
+
+@RenderSection("Banner", required: true)
+
+<section class="singleBlog">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 col-lg-8">
+                @RenderBody()
+            </div>
+            <div class="col-xl-3 col-lg-4">
+                <aside class="sidebar">
+                    <div class="widget">
+                        @await Component.InvokeAsync("PopularCourses")
+                    </div>
+                    <div class="widget">
+                        @await Component.InvokeAsync("CourseCategory")
+                    </div>
+                    <div class="widget">
+                        <h3 class="widget_title">Theo dõi chúng tôi</h3>
+                        <div class="socialLinks">
+                            <a href="#"><i class="twi-facebook-f"></i></a>
+                            <a href="#"><i class="twi-twitter"></i></a>
+                            <a href="#"><i class="twi-instagram"></i></a>
+                            <a href="#"><i class="twi-youtube"></i></a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

@@ -1,0 +1,67 @@
+﻿@using Demo.Web.Extensions
+@using Demo.Web.Helpers
+@using Demo.Core.Models
+@model List<New>
+
+@{
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+@section Banner {
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 mb-5 page-header">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">Tin Tức</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a class="text-white" href="/">Trang Chủ</a></li>
+                            <li class="breadcrumb-item text-white active" href="@FriendlyUrl.NewList">Tin Tức</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+}
+
+@if (Model?.Any() == true)
+{
+    <section class="news-list py-5">
+        <div class="container">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-6 col-md-6 mb-4">
+                        <div class="news-item bg-light rounded shadow-sm">
+                            <div class="news-thumb overflow-hidden">
+                                <img src="@item.Image" alt="@item.Title" class="img-fluid w-100">
+                            </div>
+                            <div class="news-content text-center p-4">
+                                <h4 class="mb-3">
+                                    <a href="@FriendlyUrl.NewDetails(item.FriendlyUrl)" class="text-dark">
+                                        @item.Title
+                                    </a>
+                                </h4>
+                                <small class="text-muted d-block mb-2">
+                                    By @item.Author - @item.Created.ToString("dd/MM/yyyy")
+                                </small>
+                                <a href="@FriendlyUrl.NewDetails(item.FriendlyUrl)" class="btn btn-primary btn-sm">
+                                    Đọc thêm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <div class="container py-5">
+        <p class="text-center text-muted">Không có bài viết nào.</p>
+    </div>
+}

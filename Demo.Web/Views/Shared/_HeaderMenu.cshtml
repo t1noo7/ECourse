@@ -10,16 +10,17 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto p-4 p-lg-0">
             <a href="/" class="nav-item nav-link active">Trang Chủ</a>
-            <a href="about.html" class="nav-item nav-link">Về Chúng Tôi</a>
+            <a href="@FriendlyUrl.AboutUs()" class="nav-item nav-link">Về Chúng Tôi</a>
             <a href="@FriendlyUrl.CourseList()" class="nav-item nav-link">Khóa Học</a>
+            <a href="@FriendlyUrl.NewList()" class="nav-item nav-link">Tin Tức</a>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Danh Mục Trang</a>
                 <div class="dropdown-menu fade-down m-0">
-                    <a href="team.html" class="dropdown-item">Đội Ngũ</a>
-                    <a href="testimonial.html" class="dropdown-item">Phản Hồi</a>
+                    <a href="/" class="dropdown-item">Đội Ngũ</a>
+                    <a href="/" class="dropdown-item">Phản Hồi</a>
                 </div>
             </div>
-            <a href="contact.html" class="nav-item nav-link">Liên Hệ</a>
+            <a href="@FriendlyUrl.Contact()" class="nav-item nav-link">Liên Hệ</a>
         </div>
         @await Component.InvokeAsync("AccountMenuList")
         
