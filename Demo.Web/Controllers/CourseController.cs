@@ -9,14 +9,17 @@ namespace Demo.Web.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly ICourseRepository _courseRepository;
+        private readonly ILessonRepository _lessonRepository;
         // private readonly IFileService _fileService;
 
         public CourseController(ILogger<CourseController> logger,
-            ICourseRepository courseRepository)
+            ICourseRepository courseRepository,
+            ILessonRepository lessonRepository)
         // IFileService fileService)
         {
             _logger = logger;
             _courseRepository = courseRepository;
+            _lessonRepository = lessonRepository;
             // _fileService = fileService;
         }
 
@@ -29,6 +32,9 @@ namespace Demo.Web.Controllers
         public IActionResult Detail(string url)
         {
             var course = _courseRepository.Find(x => x.FriendlyUrl == url && x.Deleted == false && x.Status).ToList().FirstOrDefault();
+            var lessons = _lessonRepository.Find(x => x.CourseId == course.Id).ToList();
+
+            ViewBag.Lesson = lessons;
             return View(course);
         }
 

@@ -1,417 +1,88 @@
-﻿@using Demo.Web.Components;
-@using Demo.Web.Extensions
-@using Demo.Web.Helpers
-@model Demo.Core.Models.Course
+﻿@using Demo.Core.Models
+@model Course
+@{
+    var lesson = ViewBag.Lesson as List<Demo.Core.Models.Lesson>;
+}
 
-<section class="breadcrumb-wrap bg-f br-bg-2">
-    <div class="overlay op-6 bg-black"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 col-md-10 offset-md-1">
-                <div class="breadcrumb-title">
-                    <h2>@Model.Title</h2>
-                    <ul class="breadcrumb-menu">
-                        <li><a href="index.html">Home </a></li>
-                        <li><a href="course.html">Course </a></li>
-                        <li>Course Details</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<section class="course-details-wrap ptb-100">
+<section class="course-details-wrap py-5">
     <div class="container">
         <div class="row gx-5">
+            <!-- Thông tin khóa học -->
             <div class="col-lg-8">
-                <div class="course-details">
-                    <div class="course-details-img">
-                        <img src="@Model.Image" alt="@Model.Title">
+                <div class="course-details shadow rounded p-4">
+                    <div class="course-details-img text-center mb-4">
+                        <img src="@Model.Image" alt="Khóa học Đầu tư chứng khoán" class="img-fluid rounded">
                     </div>
-                    <ul class="course-details-meta">
-                        <li><i class="las la-clock"></i>4 Hours</li>
-                        <li><i class="las la-graduation-cap"></i>45 Students</li>
-                        <li><i class="lar la-calendar"></i>26th Jun,
-                            <script data-cfasync="false"
-                                src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-                            <script src="assets/js/fslightbox.js"></script>
-                        </li>
+                    <h2 class="mb-3">@Model.Title</h2>
+                    <p>@Html.Raw(@Model.Description)</p>
+                    <button class="btn btn-success w-100" onclick="joinCourse('@Model.Id')">Bắt đầu học ngay</button>
+                    <div class="d-flex justify-content-between bg-light p-3 rounded">
+                        <span><i class="fa-solid fa-star"></i> 4.9</span>
+                        <span><i class="fa-solid fa-user"></i> 4890 học viên</span>
+                        @if(Model.DiscountPrice > 0 && Model.DiscountPrice != null)
+                        {
+                            <span><i class="fa-solid fa-dollar-sign"></i> @Model.DiscountPrice</span>
+                        }
+                        else
+                        {
+                            <span><i class="fa-solid fa-dollar-sign"></i> @Model.Price</span>
+                        }
+                    </div>
+
+                    <!-- Lộ trình khóa học -->
+                    <h4 class="mt-4">Lộ trình khóa học</h4>
+                    <ul class="list-group list-group-flush">
+                        @for (int i = 0; i < lesson.Count; i++)
+                        {
+                            <li class="list-group-item lesson-item">
+                                <span class="lesson-number">@((i + 1))</span> @lesson[i].Title
+                            </li>
+                        }
                     </ul>
-                    <ul class="nav nav-tabs course-tablist" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab_1" type="button"
-                                role="tab">Description</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link " data-bs-toggle="tab" data-bs-target="#tab_2" type="button"
-                                role="tab">Lectures</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab_3" type="button"
-                                role="tab">Instructor</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab_4" type="button"
-                                role="tab">Reviews</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content course-tab-content">
-                        <div class="tab-pane fade show active" id="tab_1" role="tabpanel">
-                            @Model.Description
-                        </div>
-                        <div class="tab-pane fade" id="tab_2" role="tabpanel">
-                            <div class="accordion" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingOne">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                                            aria-expanded="false" aria-controls="collapseOne">
-                                            Internation Business
-                                        </button>
-                                    </h2>
-                                    <div id="collapseOne" class="accordion-collapse collapse "
-                                        aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body  lecture-accordion">
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 01</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>20 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 02</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>30 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 03</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>35 min</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingTwo">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-                                            aria-expanded="false" aria-controls="collapseTwo">
-                                            Financial Accounting
-                                        </button>
-                                    </h2>
-                                    <div id="collapseTwo" class="accordion-collapse collapse "
-                                        aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body  lecture-accordion">
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 01</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>20 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 02</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>30 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 03</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>35 min</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingThree">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseThree"
-                                            aria-expanded="false" aria-controls="collapseThree">
-                                            Business Communication
-                                        </button>
-                                    </h2>
-                                    <div id="collapseThree" class="accordion-collapse collapse"
-                                        aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body  lecture-accordion">
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 01</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>20 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 02</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>30 min</span>
-                                                </div>
-                                            </div>
-                                            <div class="lecture-item">
-                                                <div class="lecture-name">
-                                                    <p><i class="las la-file-alt"></i>Lecture 03</p>
-                                                </div>
-                                                <div class="lecture-time">
-                                                    <span>35 min</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="tab_3" role="tabpanel">
-                            <div class="row justify-content-cetner">
-                                <div class="col-lg-6 col-md-6 col-sm-6">
-                                    <div class="team-member">
-                                        <div class="team-member-img">
-                                            <img src="assets/img/team/team-member-1.jpg" alt="Image">
-                                            <ul class="social-profile style1">
-                                                <li><a target="_blank" href="https://facebook.com/"><i
-                                                            class="ri-facebook-fill"></i> </a></li>
-                                                <li><a target="_blank" href="https://linkedin.com/"> <i
-                                                            class="ri-linkedin-fill"></i> </a></li>
-                                                <li><a target="_blank" href="https://twitter.com/"> <i
-                                                            class="ri-twitter-fill"></i> </a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="team-member-info">
-                                            <h4>Tony Stark</h4>
-                                            <p>Founder & CEO</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6">
-                                    <div class="team-member">
-                                        <div class="team-member-img">
-                                            <img src="assets/img/team/team-member-2.jpg" alt="Image">
-                                            <ul class="social-profile style1">
-                                                <li><a target="_blank" href="https://facebook.com/"><i
-                                                            class="ri-facebook-fill"></i> </a></li>
-                                                <li><a target="_blank" href="https://linkedin.com/"> <i
-                                                            class="ri-linkedin-fill"></i> </a></li>
-                                                <li><a target="_blank" href="https://twitter.com/"> <i
-                                                            class="ri-twitter-fill"></i> </a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="team-member-info">
-                                            <h4>Mark Toen</h4>
-                                            <p>Co-Founder</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="tab_4" role="tabpanel">
-                            <div class="post-comment-wrap mb-0 review-box">
-                                <div class="comment-item">
-                                    <div class="comment-author_img">
-                                        <img src="assets/img/blog/avatar-1.jpg" alt="Image">
-                                    </div>
-                                    <div class="comment-author_text">
-                                        <div class="comment-author_info">
-                                            <h6>Anthony J. Ruiz</h6>
-                                            <div class="course-rating">
-                                                <ul>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-line"></i> </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                                            eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-                                            voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-                                    </div>
-                                </div>
-                                <div class="comment-item">
-                                    <div class="comment-author_img">
-                                        <img src="assets/img/blog/avatar-2.jpg" alt="Image">
-                                    </div>
-                                    <div class="comment-author_text">
-                                        <div class="comment-author_info">
-                                            <h6>Andrea F. Kelley</h6>
-                                            <div class="course-rating">
-                                                <ul>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-fill"></i></li>
-                                                    <li> <i class="ri-star-line"></i> </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                                            eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-                                            voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+                    <!-- Lợi ích nhận được -->
+                    <div class="mt-4 p-3 border rounded bg-light">
+                        <h4>Bạn sẽ học được</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fa-solid fa-check-circle text-success"></i> Hiểu cách thị trường chứng khoán hoạt động</li>
+                            <li><i class="fa-solid fa-check-circle text-success"></i> Xác định các chiến lược đầu tư phù hợp</li>
+                            <li><i class="fa-solid fa-check-circle text-success"></i> Đọc hiểu báo cáo tài chính</li>
+                            <li><i class="fa-solid fa-check-circle text-success"></i> Quản lý rủi ro trong đầu tư</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Sidebar khóa học -->
             <div class="col-lg-4">
-                <div class="course-details-widget sidebar-box">
-                    <ul>
-                        <li>
-                            <p><i class="las la-user-graduate"></i>Students</p>
-                            <p>45</p>
-                        </li>
-                        <li>
-                            <p><i class="las la-file-alt"></i>Lectures</p>
-                            <p>45</p>
-                        </li>
-                        <li>
-                            <p><i class="las la-clock"></i>Duration</p>
-                            <p>45</p>
-                        </li>
-                        <li>
-                            <p><i class="las la-question-circle"></i>Quiz</p>
-                            <p>45</p>
-                        </li>
-                        <li>
-                            <p><i class="las la-check-square"></i>Assesment</p>
-                            <p>45</p>
-                        </li>
-                    </ul>
+                <div class="course-details-widget bg-white shadow p-4 rounded">
+                    @await Component.InvokeAsync("PopularCourses")
+                    @await Component.InvokeAsync("CourseCategory")
                 </div>
-                <div class="course-enroll-widget sidebar-box">
-                    <div class="single-course-price">
-                        @Model.Price
-                    </div>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                            <a id="add-to-cart" class="btn v3">Add to cart</a>
-                            <input hidden asp-for="Id" />
-                        @* <input id="txtQuantity" name="txtQuantity" value="1" type="text"> *@
-                            <hr />
-                            <a href="javascript:void(0)" class="btn v3">Enroll</a>
-                    }
-                    else
-                    {
-                            <a href="~/account/login" class="btn"><img src="~/assets/img/wishlist.png" alt="@Model.Title"></a>
-                            <a href="~/account/login" class="btn v3">Add to Cart</a>
-                            <hr />
-                            <a href="~/account/login" class="btn v3">Enroll</a>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-
-<section class="related-course pb-70">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="section-title style1 text-center mb-40">
-                    <span>Our Popular Course</span>
-                    <h2>Related Courses</h2>
-                </div>
-            </div>
-        </div>
-        <div class="row justify-content-md-center">
-            <div class="col-xl-4 col-lg-4 col-md-6">
-                <div class="course-card style2">
-                    <div class="course-img">
-                        <a href="course-details.html"><img src="assets/img/course/course-9.jpg" alt="Image"></a>
-                    </div>
-                    <div class="course-info">
-                        <span class="course-price">$35.50</span>
-                        <h3><a href="course-details.html">Diploma in Teaching skills:
-                                Educators</a></h3>
-                        <div class="course-rating">
-                            <ul>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-line"></i> </li>
-                            </ul>
-                            <span>4 Ratings</span>
+                <!-- Đánh giá khóa học -->
+                <div class="mt-4">
+                    <h4>Đánh giá khóa học</h4>
+                    <div class="d-flex align-items-center border-bottom py-3">
+                        <img src="~/assets/img/testimonial-1.jpg" alt="User" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Lê Hải</h6>
+                            <p class="text-muted">Tuyệt vời!</p>
                         </div>
-                        <p>Lorem ipsum dolor sit consectetur adipisicing eiusmo tempor </p>
                     </div>
-                    <div class="course-metainfo">
-                        <p><i class="ri-user-line"></i>13 students</p>
-                        <p><i class="ri-book-open-line"></i><a href="course-details.html">4 Lessons</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6">
-                <div class="course-card style2">
-                    <div class="course-img">
-                        <a href="course-details.html"><img src="assets/img/course/course-10.jpg" alt="Image"></a>
-                    </div>
-                    <div class="course-info">
-                        <span class="course-price">$55.50</span>
-                        <h3><a href="course-details.html">Diploma in Teaching skills:
-                                Educators</a></h3>
-                        <div class="course-rating">
-                            <ul>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-line"></i> </li>
-                            </ul>
-                            <span>9 Ratings</span>
+                    <div class="d-flex align-items-center border-bottom py-3">
+                        <img src="~/assets/img/testimonial-2.jpg" alt="User" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Trung Kiên</h6>
+                            <p class="text-muted">Khóa học rất hữu ích</p>
                         </div>
-                        <p>Lorem ipsum dolor sit consectetur adipisicing eiusmo tempor </p>
                     </div>
-                    <div class="course-metainfo">
-                        <p><i class="ri-user-line"></i>23 students</p>
-                        <p><i class="ri-book-open-line"></i><a href="course-details.html">10 Lessons</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6">
-                <div class="course-card style2">
-                    <div class="course-img">
-                        <a href="course-details.html"><img src="assets/img/course/course-11.jpg" alt="Image"></a>
-                    </div>
-                    <div class="course-info">
-                        <span class="course-price">$95.50</span>
-                        <h3><a href="course-details.html">Information About UI/UX
-                                Design</a></h3>
-                        <div class="course-rating">
-                            <ul>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-fill"></i></li>
-                                <li> <i class="ri-star-line"></i> </li>
-                            </ul>
-                            <span>10 Ratings</span>
+                    <div class="d-flex align-items-center border-bottom py-3">
+                        <img src="~/assets/img/testimonial-3.jpg" alt="User" class="rounded-circle me-3" width="50">
+                        <div>
+                            <h6 class="mb-1">Thu Phương</h6>
+                            <p class="text-muted">Giảng viên dạy dễ hiểu!</p>
                         </div>
-                        <p>Lorem ipsum dolor sit consectetur adipisicing eiusmo tempor </p>
-                    </div>
-                    <div class="course-metainfo">
-                        <p><i class="ri-user-line"></i>22 students</p>
-                        <p><i class="ri-book-open-line"></i><a href="course-details.html">12 Lessons</a></p>
                     </div>
                 </div>
             </div>
@@ -419,39 +90,34 @@
     </div>
 </section>
 
-@section Scripts {
-        <script>
-            $(document).ready(function () {
-                $(function () {
-                    $("#add-to-cart").click(function () {
-                        var courseId = $('#Id').val();
-                        $.ajax({
+<style>
+    .lesson-item {
+        display: flex;
+        align-items: center;
+        gap: 10px; 
+        cursor: pointer;
+        border-bottom: 1px solid #ddd; 
+        padding: 10px 0;
+    }
 
-                            url: '/api/cart/add',
-                            type: "POST",
-                            dataType: "JSON",
-                            data: {
-                                courseID: courseId
-                            },
-                            success: function (response) {
+    .lesson-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: #007bff; 
+        color: #fff;
+        font-weight: bold;
+        border-radius: 50%; 
+        text-align: center;
+        font-size: 14px;
+    }
 
-                                loadHeaderCart(); // Add Product sucsess
-                                location.reload();
-                            },
-                            error: function (error) {
-                                alert("Lỗi: Không thể thêm sản phẩm vào giỏ hàng");
-                            }
-                        });
-                    });
-                });
+</style>
 
-                function loadHeaderCart() {
-                    $("#miniCart").load("/AjaxContent/HeaderCart");
-                }
-
-                function loadHeaderWishList() {
-                    $("#numberWishList").load("/AjaxContent/NumberWishList");
-                }
-            });
-        </script>
-}
+<script>
+    function joinCourse(courseId) {
+        window.location.href = '/Order/Checkout?courseId=' + courseId;
+    }
+</script>

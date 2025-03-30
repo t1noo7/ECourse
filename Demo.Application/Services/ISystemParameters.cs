@@ -29,8 +29,5 @@ namespace Demo.Application.Services
 
         [Description("Tên miền")]
         public string? Domain { get; }
-
-        [Description("Thời gian tối đa để thanh toán sau khi đặt hàng (ngày)")]
-        public int PaymentPendingDays { get; }
     }
 }
