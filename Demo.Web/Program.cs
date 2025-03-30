@@ -25,11 +25,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapAreaControllerRoute(
-//     name: "Admin",
-//     areaName: "Admin",
-//     pattern: "admin/{controller=Home}/{action=Index}"
-// );
+app.MapAreaControllerRoute(
+    name: "Admin",
+    areaName: "Admin",
+    pattern: "admin/{controller=Home}/{action=Index}"
+);
 
 app.MapControllerRoute(
     name: "areaRoute",
@@ -42,7 +42,7 @@ defaults: new { controller = "Course", action = "List" });
 
 app.MapControllerRoute(
     name: "thongtinkhoahoc",
-    pattern: FriendlyUrl.CourseDetailFrm,
+    pattern: FriendlyUrl.CourseDetailFrUrl,
     defaults: new { controller = "Course", action = "Detail" });
 
 app.MapControllerRoute(

@@ -6,7 +6,7 @@
     public static class FriendlyUrl
     {
         public static string CoursesListFrUrl = "/dach-sach-khoa-hoc";
-        public static string CourseDetailFrm = "/thong-tin-khoa-hoc/{url}";
+        public static string CourseDetailFrUrl = "/thong-tin-khoa-hoc/{url}";
         public static string EventsListFrUrl = "/su-kien-sap-toi";
         public static string MyCoursesFrUrl = "/khoa-hoc-cua-toi";
         public static string BookShopFrUrl = "/cua-hang-sach";
@@ -35,7 +35,7 @@
         }
         public static string CourseDetail(string url)
         {
-            return TrimStar(CourseDetailFrm).Replace("{url}", url);
+            return TrimStar(CourseDetailFrUrl).Replace("{url}", url);
         }
         public static string EventList()
         {
