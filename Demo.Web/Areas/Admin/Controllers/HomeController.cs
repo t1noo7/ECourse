@@ -7,6 +7,7 @@ using System.Diagnostics;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
+    //[WebAuthorize(RoleList.Admin)]
     [Area("Admin")]
     public class HomeController : Controller
     {

@@ -7,6 +7,7 @@ using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
 using Demo.Database.Repositories;
+using Demo.Web.Areas.Admin.Models;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -28,16 +29,24 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public IActionResult Index(Guid courseId)
         {
-            if (courseId != Guid.Empty)
+            List<LessonViewModel> lessonViewModels = new List<LessonViewModel>();
+
+            var lessons = _lessonRepository.Find(x => x.Deleted == false &&
+                                                      (courseId == Guid.Empty || x.CourseId == courseId)).ToList();
+
+            var courseIds = lessons.Select(x => x.CourseId).Distinct().ToList();
+            var courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList(); // Lấy danh sách khóa học
+
+            lessonViewModels = lessons.Select(lesson => new LessonViewModel
             {
-                var lessons = _lessonRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
-                return View(lessons);
-            }
-            else
-            {
-                var lessons = _lessonRepository.Find(x => x.Deleted == false).ToList();
-                return View(lessons);
-            }
+                Id = lesson.Id,
+                Title = lesson.Title,
+                CourseId = lesson.CourseId,
+                CourseName = courses.FirstOrDefault(c => c.Id == lesson.CourseId)?.Title ?? "Không xác định",
+                Created = lesson.Created
+            }).ToList();
+
+            return View(lessonViewModels);
         }
 
         public IActionResult Edit(Guid? id)

@@ -8,12 +8,15 @@
 <div class="side-nav">
     <div class="side-nav-inner">
         <ul class="side-nav-menu scrollable">
+            @* @if (allRoles.Contains(RoleList.Admin))
+            { *@
             <li>
                 <a href="/admin" data-href="/admin" class="br-menu-link">
                     <i class="fas fa-chart-line"></i>
                     <span>Thống Kê</span>
                 </a>
             </li>
+            @* } *@
 
             @* @if (allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
             { *@
