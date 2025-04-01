@@ -9,5 +9,6 @@ namespace Demo.Core.Permission
         public const string Product = "Quản lý sản phẩm";
         public const string Customer = "Quản lí khách hàng";
         public const string Sale = "Quản lí sales";
+        public const string Student = "Quản lí học viên";
     }
 }

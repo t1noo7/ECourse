@@ -18,6 +18,5 @@ namespace Demo.Core.Models
 
         public DateTime? LoginTime { get; set; }
         public DateTime? LogoutTime { get; set; }
-        public List<Course> CartItem { get; set; } = new List<Course>();
     }
 }
