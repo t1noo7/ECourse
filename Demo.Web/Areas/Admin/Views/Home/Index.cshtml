@@ -1,7 +1,21 @@
-﻿@{
+﻿@using Demo.Web.Areas.Admin.Models
+@using Demo.Common.Extensions
+@model DashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
 }
 
+<div class="row mb-3">
+    <div class="col-lg-4">
+        <form method="get" asp-action="Index">
+            <label for="filterType" class="font-weight-bold">Lọc theo:</label>
+            <select name="filterType" id="filterType" class="form-control">
+                <option value="1">Tuần</option>
+                <option value="2">Tháng</option>
+            </select>
+        </form>
+    </div>
+</div>
 ﻿
 <div class="row">
     <div class="col-lg-5">
@@ -12,11 +26,11 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="m-b-0 text-muted">Doanh số</p>
-                                <h2 class="m-b-0">85.000.000 VNĐ</h2>
+                                <h2 class="m-b-0">@Model.Revenue.ToString("#,##0") VNĐ</h2>
                             </div>
                             <span class="badge badge-pill badge-cyan font-size-12">
                                 <i class="anticon anticon-arrow-up"></i>
-                                <span class="font-weight-semibold m-l-5">6.71%</span>
+                                <span class="font-weight-semibold m-l-5">@Model.RevenueChange %</span>
                             </span>
                         </div>
                     </div>
@@ -27,8 +41,8 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <p class="m-b-0 text-muted">Khách hàng</p>
-                                <h2 class="m-b-0">85</h2>
+                                <p class="m-b-0 text-muted">Học viên</p>
+                                <h2 class="m-b-0">@Model.TotalStudents</h2>
                             </div>
                             <span class="badge badge-pill badge-red font-size-12">
                                 <i class="anticon anticon-arrow-down"></i>
@@ -46,11 +60,11 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="m-b-0 text-muted">Đơn hàng</p>
-                                <h2 class="m-b-0">120</h2>
+                                <h2 class="m-b-0">@Model.TotalOrders</h2>
                             </div>
                             <span class="badge badge-pill badge-cyan font-size-12">
                                 <i class="anticon anticon-arrow-up"></i>
-                                <span class="font-weight-semibold m-l-5">6.71%</span>
+                                <span class="font-weight-semibold m-l-5">@Model.OrderChange %</span>
                             </span>
                         </div>
                     </div>
@@ -61,37 +75,35 @@
     <div class="col-lg-7">
         <div class="card">
             <div class="card-body">
-                <h5>Đơn hàng gần đây</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Đơn hàng gần đây</h5>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-default">Xem chi tiết</a>
+                </div>
                 <div class="m-t-30">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Email</th>
                                     <th>Số điện thoại</th>
-                                    <th>Ngày đặt</th>
+                                    <th>Khóa học đăng ký</th>
+                                    <th>Ngày tạo</th>
                                     <th>Trạng thái</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>#101</td>
-                                    <td>0123456789</td>
-                                    <td>11/03/2025</td>
-                                    <td style="color: green;">Đã giao</td>
-                                </tr>
-                                <tr>
-                                    <td>#102</td>
-                                    <td>0123456789</td>
-                                    <td>10/03/2025</td>
-                                    <td style="color: green;">Đã giao</td>
-                                </tr>
-                                <tr>
-                                    <td>#103</td>
-                                    <td>0123456789</td>
-                                    <td>09/03/2025</td>
-                                    <td style="color: red;">Đã hủy</td>
-                                </tr>
+                                @foreach(var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>@order.OrderCode</td>
+                                        <td>@order.Email</td>
+                                        <td>@order.PhoneNumber</td>
+                                        <td>@order.CourseName</td>
+                                        <td>@order.OrderDate</td>
+                                        <td>@order.Status.GetEnumDescription()</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -99,6 +111,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <div class="row">
@@ -107,31 +120,14 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5>Doanh thu</h5>
-                    <div>
-                        <a href="javascript:void(0);" class="btn btn-sm btn-default">Xem chi tiết</a>
-                    </div>
                 </div>
                 <div class="m-t-30">
                     <div class="d-md-flex">
                         <div class="pr-4 m-v-10 border-right border-hide-md">
-                            <p class="m-b-0">Doanh thu thuần</p>
+                            <p class="m-b-0">Doanh thu</p>
                             <h3 class="m-b-0">
-                                <span>85.000.000 VNĐ</span>
+                                <span>@Model.Revenue.ToString("#,##0") VNĐ</span>
                                 <span class="text-success m-l-10 font-size-14">+6.71%</span>
-                            </h3>
-                        </div>
-                        <div class="px-md-4 m-v-10 border-right border-hide-md">
-                            <p class="m-b-0">Doanh số bán hàng</p>
-                            <h3 class="m-b-0">
-                                <span>78.500.000 VNĐ</span>
-                                <span class="text-danger m-l-10 font-size-14">+1.82%</span>
-                            </h3>
-                        </div>
-                        <div class="px-md-4 m-v-10">
-                            <p class="m-b-0">Chi phí</p>
-                            <h3 class="m-b-0">
-                                <span>65.200.000 VNĐ</span>
-                                <span class="text-success m-l-10 font-size-14">+11.2%</span>
                             </h3>
                         </div>
                     </div>
@@ -145,50 +141,24 @@
     <div class="col-lg-4">
         <div class="card">
             <div class="card-body">
-                <h5>Sản phẩm phổ biến</h5>
+                <h5>Khóa học phổ biến</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item p-h-0">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex">
-                                <div class="avatar avatar-image m-r-15">
-                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
-                                </div>
-                                <div>
-                                    <h6 class="m-b-0">Joint Care Plus</h6>
-                                    <span class="text-muted font-size-13">Bổ khớp</span>
-                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item p-h-0">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex">
-                                <div class="avatar avatar-image m-r-15">
-                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
-                                </div>
-                                <div>
-                                    <h6 class="m-b-0">Calcium Boost</h6>
-                                    <span class="text-muted font-size-13">Tăng cường xương</span>
-                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
+                    @foreach(var course in Model.PopularCourses)
+                    {
+                        <li class="list-group-item p-h-0">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex">
+                                    <div class="avatar avatar-image m-r-15">
+                                        <img src="@course.Image" alt="@course.CourseName">
+                                    </div>
+                                    <div>
+                                        <h6 class="m-b-0">@course.CourseName</h6>
+                                        <p class="m-b-0 font-size-13">Số lượng học viên đã tham gia: <strong>@course.EnrolledStudents</strong> học viên</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item p-h-0">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex">
-                                <div class="avatar avatar-image m-r-15">
-                                    <img src="https://jex.com.vn/wp-content/uploads/2023/03/7259-jex-tvc-giam-dau-xuong-khop.jpg" alt="">
-                                </div>
-                                <div>
-                                    <h6 class="m-b-0">Glucosamine Pro</h6>
-                                    <span class="text-muted font-size-13">Hỗ trợ khớp</span>
-                                    <p class="m-b-0 font-size-13">Đã bán: <strong>1,200</strong> hộp</p>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
@@ -235,5 +205,13 @@
                 }
             }
         });
+    });
+
+    document.getElementById("btnFilter").addEventListener("click", function () {
+        this.closest("form").submit();
+    });
+
+    document.getElementById("filterType").addEventListener("change", function () {
+        this.form.submit();
     });
 </script>

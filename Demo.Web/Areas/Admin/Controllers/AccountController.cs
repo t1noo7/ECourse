@@ -98,22 +98,36 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             ViewBag.SearchModel = model;
 
-            var orders = _orderRepository.Find(o => o.Deleted == false).ToList();
+            var orders = new List<Order>();
+            if(model.CourseName != null)
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true && o.Course.Title == model.CourseName).ToList();
+            }
+            else
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true).ToList();
+            }
 
             var usersWithOrders = orders.Select(o => o.Username).Distinct().ToHashSet();
 
             // Lọc danh sách user: chỉ giữ lại những người có đơn hàng
-            var users = (await _userRepository.FindAsync(model)).Where(u => usersWithOrders.Contains(u.UserName)).ToList();
+            var users = (await _userRepository.FindAsync(model))
+                        .Where(u => usersWithOrders.Contains(u.UserName))
+                        .ToList();
 
             var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
-
-            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList(); 
+            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
 
             List<StudentViewModel> studentViewModels = users.Select(user =>
             {
                 // Lấy danh sách các khóa học mà User đã đặt hàng
-                var userCourseIds = orders.Where(o => o.Username == user.UserName).Select(o => o.Course.Id).Distinct().ToList();
+                var userCourseIds = orders
+                    .Where(o => o.Username == user.UserName)
+                    .Select(o => o.Course.Id)
+                    .Distinct()
+                    .ToList();
 
+                var userCourses = courses.Where(c => userCourseIds.Contains(c.Id)).ToList();
 
                 return new StudentViewModel
                 {
@@ -121,12 +135,13 @@ namespace Demo.Web.Areas.Admin.Controllers
                     UserName = user.UserName,
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
-                    Course = courses
+                    Course = userCourses
                 };
             }).ToList();
 
             return View(studentViewModels);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> StudentDetails(string id)
@@ -150,31 +165,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             };
 
             return View(studentViewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StudentDetails(User model, string returnUrl)
-        {
-            if (model.Email != null)
-                model.Email = model.Email.Trim().ToLower();
-
-            var user = await _userRepository.GetByIdAsync(model.Id.ToString());
-            user.Email = model.Email ?? user.Email;
-            user.FullName = model.FullName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Address = model.Address;
-            user.Updated = DateTimeExtensions.UTCNowVN;
-
-            var emailExisted = _userRepository.Find(m => m.Email != null && m.Email == model.Email && m.Id != model.Id).Any();
-            if (emailExisted)
-            {
-                ViewBag.Error = $"Email {model.Email} đã tồn tại";
-                return View(user);
-            }
-
-            await _userRepository.UpdateAsync(user);
-            return Redirect(returnUrl);
         }
         #endregion
 
@@ -259,7 +249,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 var user = await _userManager.FindByIdAsync(id);
                 await _userManager.RemovePasswordAsync(user);
-                await _userManager.AddPasswordAsync(user, "nongtraintc");
+                await _userManager.AddPasswordAsync(user, "demo1");
                 TempData["Success"] = $"{DateTimeExtensions.UTCNowVN.ToString("dd/MM/yyyy hh:mm:ss")}: Reset mật khẩu thành công";
             }
             catch (Exception e)

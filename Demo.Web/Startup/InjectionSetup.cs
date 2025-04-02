@@ -20,6 +20,7 @@ namespace Demo.Web.Startup
             services.AddTransient<ISystemParameters, SystemParameters>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<IFileService, StorageAccount>();
             services.AddTransient<IUserGroupManager, UserGroupManager>();
 

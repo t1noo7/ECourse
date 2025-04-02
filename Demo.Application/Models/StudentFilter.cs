@@ -10,5 +10,6 @@ namespace Demo.Application.Models
     public class StudentFilter : FilterModel
     {
         public string CourseName { get; set; }
+        public string ClassName { get; set; }
     }
 }
