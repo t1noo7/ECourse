@@ -8,13 +8,13 @@
 <section class="login-section"
          style="
             min-height: 100vh;
-            /* Thay đường dẫn ảnh của bạn */
+            /* Thay đường dẫn ảnh nền phù hợp */
             background: url('@Url.Content("~/assets/img/carousel-1.jpg")') no-repeat center center;
             background-size: cover;
             position: relative;
          ">
 
-    <!-- Overlay mờ -->
+    <!-- Lớp phủ tối -->
     <div class="overlay"
          style="
             position: absolute;
@@ -26,12 +26,14 @@
          ">
     </div>
 
+    <!-- Nội dung chính -->
     <div class="container" style="position: relative; z-index: 1;">
         <div class="row align-items-center" style="min-height: 100vh;">
+            <!-- Cột trái: Giới thiệu -->
             <div class="col-lg-6 text-white d-flex flex-column justify-content-center mb-5 mb-lg-0">
-                <h1 class="mb-3 fw-semi-bold">Tham Gia Cùng Chúng Tôi</h1>
+                <h1 class="mb-3 fw-semi-bold">Tham gia cùng chúng tôi</h1>
                 <p class="mb-4">
-                    Hãy trở thành một phần của cộng đồng chúng tôi và mở khóa vô hạn cơ hội học tập.
+                    Đăng ký ngay để khám phá khoá học chất lượng và nâng cao kiến thức đầu tư bất động sản của bạn!
                 </p>
                 <div class="social-icons">
                     <a href="#" class="me-3 text-white">
@@ -56,31 +58,36 @@
 
                         @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
-                        @using (Html.BeginForm("PhoneRegister", "Account", FormMethod.Post))
+                        @using (Html.BeginForm("PhoneRegister", "Account", new { ReturnUrl = ViewBag.ReturnUrl ?? "/" }, FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
 
+                            <!-- Số điện thoại -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.Phone, new { @class = "form-label" })
-                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", placeholder = "Số điện thoại *" })
+                                @Html.LabelFor(x => x.Phone, "Số điện thoại", new { @class = "form-label" })
+                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", placeholder = "Nhập số điện thoại *" })
                                 @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
                             </div>
 
+                            <!-- Mật khẩu -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.Password, new { @class = "form-label" })
-                                @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Mật khẩu *" })
+                                @Html.LabelFor(x => x.Password, "Mật khẩu", new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Nhập mật khẩu *" })
                                 @Html.ValidationMessageFor(x => x.Password, "", new { @class = "text-danger" })
                             </div>
 
+                            <!-- Xác nhận mật khẩu -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.PasswordConfirm, new { @class = "form-label" })
-                                @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "form-control", placeholder = "Xác nhận mật khẩu *" })
+                                @Html.LabelFor(x => x.PasswordConfirm, "Xác nhận mật khẩu", new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "form-control", placeholder = "Nhập lại mật khẩu *" })
                                 @Html.ValidationMessageFor(x => x.PasswordConfirm, "", new { @class = "text-danger" })
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mb-2">Đăng Ký</button>
+                            <!-- Nút đăng ký -->
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Đăng ký ngay</button>
 
-@*                             <div class="text-center mt-2">
+                            <!-- Đăng ký qua mạng xã hội -->
+                            <div class="text-center mt-2">
                                 <span>Hoặc đăng ký bằng</span>
                                 <ul class="social-profile list-inline d-inline-block mb-0 ms-2">
                                     <li class="list-inline-item">
@@ -101,6 +108,7 @@
                                 </ul>
                             </div> *@
 
+                            <!-- Chuyển sang trang đăng nhập -->
                             <div class="mt-3 text-center">
                                 <p class="mb-0">
                                     Bạn đã có tài khoản?

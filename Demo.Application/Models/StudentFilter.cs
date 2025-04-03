@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Demo.Application.Models
 {
-    public class LessonFilter : FilterModel
+    public class StudentFilter : FilterModel
     {
-        public Guid CourseId { get; set; }
-        public string CourseName {  get; set; }
+        public string CourseName { get; set; }
+        public string ClassName { get; set; }
     }
 }

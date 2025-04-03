@@ -1,0 +1,54 @@
+﻿@model Demo.Core.Models.User
+@using Microsoft.AspNetCore.Http.Extensions
+@inject Demo.Core.Services.IUserGroupManager _roleManager
+@using Demo.Core.Permission
+@{
+    ViewData["Title"] = "Thông tin khách hàng";
+    var isAdmin = _roleManager.HasPermission(User.Identity.Name, RoleList.Admin);
+    var provider = Model.Logins.FirstOrDefault();
+    var providerName = provider == null ? "System" : provider.ProviderDisplayName;
+}
+
+<partial name="_TopMessage" model="(ViewBag.Success, ViewBag.Error)" />
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+
+        <div class="row">
+            <div class="col-md-6 mg-t-20 mg-md-t-0-force">
+                <ul class="list-group list-group-striped">
+                    <li class="list-group-item rounded-top-0">
+                        <p class="mg-b-0"><i class="fa fa-check tx-success mg-r-8"></i> <span class="text-muted">Tình trạng: </span> <strong class="tx-inverse tx-medium text-info">@(Model.IsLocked ? "Đang khóa" : "Đang hoạt động")</strong></p>
+                    </li>
+                    <li class="list-group-item">
+                        <p class="mg-b-0"><i class="fa fa-check tx-success mg-r-8"></i><span class="text-muted">Provider: </span> <strong class="tx-inverse tx-medium">@providerName</strong> </p>
+                    </li>
+                    <li class="list-group-item rounded-top-0">
+                        <p class="mg-b-0"><i class="fa fa-check tx-success mg-r-8"></i> <span class="text-muted">Tài Khoản: </span> <strong class="tx-inverse tx-medium">@Model.UserName</strong></p>
+                    </li>
+                    <li class="list-group-item rounded-top-0">
+                        <p class="mg-b-0">
+                            <i class="fa fa-check tx-success mg-r-8"></i> <span class="text-muted">Họ tên: </span>
+                            <strong class="tx-inverse tx-medium">@Model.FullName</strong>
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <p class="mg-b-0">
+                            <i class="fa fa-check tx-success mg-r-8"></i><span class="text-muted">Email: </span>
+                            <strong class="tx-inverse tx-medium">@Model.Email</strong>
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <p class="mg-b-0">
+                            <i class="fa fa-check tx-success mg-r-8"></i><span class="text-muted">Số Điện Thoại: </span>
+                            <strong class="tx-inverse tx-medium">@Model.PhoneNumber</strong>
+                        </p>
+                    </li>
+                </ul>
+                <hr />
+                <div class="mb-2">
+                    <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

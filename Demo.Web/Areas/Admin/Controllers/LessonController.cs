@@ -7,6 +7,8 @@ using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
 using Demo.Database.Repositories;
+using Demo.Web.Areas.Admin.Models;
+using Demo.Application.Models;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -26,19 +28,37 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index(Guid courseId)
+        public IActionResult Index(LessonFilter model)
         {
-            if (courseId != Guid.Empty)
+            List<LessonViewModel> lessonViewModels = new List<LessonViewModel>();
+
+            var lessons = _lessonRepository.Find(x => !x.Deleted &&
+                                                      (model.CourseId == Guid.Empty || x.CourseId == model.CourseId))
+                                           .ToList();
+
+            var courseIds = lessons.Select(x => x.CourseId).Distinct().ToList();
+            var courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
+
+            if (!string.IsNullOrEmpty(model.CourseName))
             {
-                var lessons = _lessonRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
-                return View(lessons);
+                var filteredCourseIds = courses.Where(c => c.Title == model.CourseName)
+                                               .Select(c => c.Id)
+                                               .ToList();
+                lessons = lessons.Where(l => filteredCourseIds.Contains(l.CourseId)).ToList();
             }
-            else
+
+            lessonViewModels = lessons.Select(lesson => new LessonViewModel
             {
-                var lessons = _lessonRepository.Find(x => x.Deleted == false).ToList();
-                return View(lessons);
-            }
+                Id = lesson.Id,
+                Title = lesson.Title,
+                CourseId = lesson.CourseId,
+                CourseName = courses.FirstOrDefault(c => c.Id == lesson.CourseId)?.Title ?? "Không xác định",
+                Created = lesson.Created
+            }).ToList();
+
+            return View(lessonViewModels);
         }
+
 
         public IActionResult Edit(Guid? id)
         {

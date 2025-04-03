@@ -1,11 +1,22 @@
 ﻿@using Demo.Application.Models
-@model LessonFilter
+@model StudentFilter
 @using (Html.BeginForm(null, null, FormMethod.Get, new { role = "form", id = "frmSearch" }))
 {
     <div class="row mb-2">
         <div class="col-md-3 col-sm-9 col-xs-12 search-item">
-            <label for="query">Khóa học</label>
+            <label for="query">Tài Khoản, Email, Số Điện Thoại, Tên</label>
+            @Html.TextBoxFor(x => x.query, new { Class = "form-control form-control-sm" })
+
+        </div>
+        <div class="col-md-3 col-sm-9 col-xs-12 search-item">
+            <label for="query">Tên Khóa Học</label>
             @Html.TextBoxFor(x => x.CourseName, new { Class = "form-control form-control-sm" })
+
+        </div>
+        <div class="col-md-3 col-sm-9 col-xs-12 search-item">
+            <label for="query">Tên Lớp Học</label>
+            @Html.TextBoxFor(x => x.ClassName, new { Class = "form-control form-control-sm" })
+
         </div>
     </div>
     <br>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+/*using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Demo.Core.Models;
 using Microsoft.AspNetCore.Identity;
@@ -121,4 +121,4 @@ namespace Demo.Web.Controllers
                 : Json(new { success = false, message = "Error removing course" });
         }
     }
-}
+}*/

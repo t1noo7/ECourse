@@ -1,5 +1,5 @@
-@using Demo.Core.Models
-@model List<Lesson>
+@using Demo.Web.Areas.Admin.Models
+@model List<LessonViewModel>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách bài giảng";
@@ -38,6 +38,9 @@
                     Tên bài giảng
                 </th>
                 <th>
+                    Thuộc khóa học
+                </th>
+                <th>
                     Ngày tạo
                 </th>
                 <th></th>
@@ -45,7 +48,7 @@
 
             @{
                 var stt = 1;
-                foreach (var item in Model.OrderBy(x => x.Created))
+                foreach (var item in Model)
                 {
                     <tr class="stat even">
                         <td class="ac">
@@ -53,6 +56,9 @@
                         </td>
                         <td>
                             @item.Title
+                        </td>
+                        <td>
+                            @item.CourseName
                         </td>
                         <td>@item.Created</td>
                         <td>
