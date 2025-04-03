@@ -11,23 +11,29 @@ namespace Demo.Common.Extensions
 
         public static (DateTime startDate, DateTime endDate) GetDateRange(DashboardEnum filterType)
         {
-            DateTime now = DateTime.UtcNow;
+            // Lấy múi giờ UTC+7
+            TimeZoneInfo utcPlus7 = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+            // Chuyển đổi từ UTC sang UTC+7
+            DateTime nowUtc7 = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, utcPlus7);
+
             DateTime startDate, endDate;
 
             switch (filterType)
             {
                 case DashboardEnum.Week:
-                    startDate = now.AddDays(-7).Date;
-                    endDate = now;
+                    startDate = nowUtc7.AddDays(-7).Date;
+                    endDate = nowUtc7; // Giữ nguyên giờ phút giây hiện tại
                     break;
                 case DashboardEnum.Month:
                 default:
-                    startDate = new DateTime(now.Year, now.Month, 1);
-                    endDate = now;
+                    startDate = new DateTime(nowUtc7.Year, nowUtc7.Month, 1);
+                    endDate = nowUtc7; // Giữ nguyên giờ phút giây hiện tại
                     break;
             }
 
             return (startDate, endDate);
         }
+
     }
 }

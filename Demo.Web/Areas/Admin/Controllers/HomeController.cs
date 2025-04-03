@@ -33,25 +33,30 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public IActionResult Index(DashboardEnum filterType)
         {
+            if (filterType == null || filterType == 0)
+            {
+                filterType = DashboardEnum.Week;
+            }
             var (startDate, endDate) = DateTimeExtensions.GetDateRange(filterType);
 
             // Tổng doanh thu từ khóa học đã bán
-            var totalRevenue = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created < endDate)
+            var totalRevenue = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
                                 .Sum(o => o.Price);
 
             // Tổng số khách hàng đã mua ít nhất một khóa học
-            var totalCustomers = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created < endDate)
+            var totalCustomers = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
                                 .Select(o => o.Username).Distinct().Count();
 
             // Tổng số đơn hàng đã thanh toán
-            var totalOrders = _orderRepository.Find(o => o.Deleted != true && o.Created >= startDate && o.Created < endDate).Count();
+            var totalOrders = _orderRepository.Find(o => o.Deleted != true && o.Created >= startDate && o.Created <= endDate).Count();
 
             // Tỷ lệ thay đổi
-            decimal revenueChange = _dashboardService.GetRevenueChangeRate(startDate, endDate);
-            decimal orderChange = _dashboardService.GetOrderChangeRate(startDate, endDate);
+            var (revenueChange, isRevenueIncrease) = _dashboardService.GetRevenueChangeRate(startDate, endDate, filterType);
+            var (orderChange, isOrderIncrease) = _dashboardService.GetOrderChangeRate(startDate, endDate, filterType);
+            var (customerChange, isCustomerIncrease) = _dashboardService.GetCustomerChangeRate(startDate, endDate, filterType);
 
             // Đơn hàng gần đây
-            var recentOrders = _orderRepository.Find(o => o.Deleted != true && o.Created >= startDate && o.Created < endDate)
+            var recentOrders = _orderRepository.Find(o => o.Deleted != true && o.Created >= startDate && o.Created <= endDate)
                     .OrderByDescending(o => o.Created)
                     .Take(3)
                     .Select(o => new RecentOrderViewModel
@@ -65,7 +70,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                     }).ToList();
 
             // Khóa học phổ biến
-            var popularCourses = _orderRepository.Find(o => o.Course != null && o.Created >= startDate && o.Created < endDate)
+            var popularCourses = _orderRepository.Find(o => o.Course != null && o.Created >= startDate && o.Created <= endDate)
                     .GroupBy(o => o.Course)
                     .Select(g => new
                     {
@@ -82,17 +87,35 @@ namespace Demo.Web.Areas.Admin.Controllers
                     })
                     .ToList();
 
+            // Nhóm đơn hàng theo ngày
+            var orders = _orderRepository.Find(o => o.Deleted != true && o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
+                             .ToList(); // Fetch trước, xử lý sau
+
+            var ordersByDay = orders.GroupBy(o => o.Created.Date)
+                                    .Select(g => new OrderByDayViewModel
+                                    {
+                                        OrderDate = g.Key,
+                                        OrderCount = g.Count()
+                                    })
+                                    .OrderBy(g => g.OrderDate)
+                                    .ToList();
+
+
             // Gán dữ liệu vào ViewModel
             var dashboardViewModel = new DashboardViewModel
             {
                 Revenue = totalRevenue,
                 TotalStudents = totalCustomers,
                 TotalOrders = totalOrders,
-                RevenueChange = revenueChange,
-                OrderChange = orderChange,
                 RecentOrders = recentOrders,
                 PopularCourses = popularCourses,
-                /*FilterType = filterType*/
+                OrdersByDay = ordersByDay,
+                RevenueChange = revenueChange,
+                IsRevenueIncrease = isRevenueIncrease,
+                OrderChange = orderChange,
+                IsOrderIncrease = isOrderIncrease,
+                CustomerChange = customerChange,
+                IsCustomerIncrease = isCustomerIncrease,
             };
 
             return View(dashboardViewModel);

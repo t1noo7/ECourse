@@ -65,15 +65,10 @@ namespace Demo.Web.Controllers
         { 
             if (User?.Identity?.IsAuthenticated != true)
             {
-                return RedirectToAction("Login", "Account", new { returnUrl = "/Checkout" });
+                return RedirectToAction("Login", "Account", new { returnUrl = $"/Order/Checkout?courseId={courseId}" });
             }
 
             var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
-
-            if (course == null)
-            {
-                return RedirectToAction("Cart");
-            }
 
             var model = new OrderViewModel();
             var currentUser = _userRepository.GetByUsername(User.Identity.Name);
@@ -172,7 +167,7 @@ namespace Demo.Web.Controllers
                 return RedirectToAction("Login", "Account");
             }
             var myOrders = _orderService.GetActiveCourse(User.Identity.Name);
-            var myCourses = myOrders.Select(o => o.Course).ToList();
+            var myCourses = myOrders.Select(o => o.Course).GroupBy(c => c.Id).Select(g => g.First()).ToList();
             var suggestCourses = _courseRepository.GetAll();
             var model = (myCourses, suggestCourses);
             return View(model);

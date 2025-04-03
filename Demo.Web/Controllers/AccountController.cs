@@ -38,7 +38,7 @@ namespace Demo.Web.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(string returnUrl)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
@@ -51,6 +51,7 @@ namespace Demo.Web.Controllers
             await CreateAdminUserIfNeeded();
             var model = new LoginViewModel();
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
 
@@ -92,7 +93,7 @@ namespace Demo.Web.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> PhoneRegister()
+        public async Task<IActionResult> PhoneRegister(string returnUrl)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
@@ -102,13 +103,14 @@ namespace Demo.Web.Controllers
                 });
                 return hasAdminPermission ? RedirectToAction("Index", "Home", new { Area = "Admin" }) : RedirectToAction("Index", "Home");
             }
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> PhoneRegister(PhoneRegisterViewModel model)
+        public async Task<ActionResult> PhoneRegister(PhoneRegisterViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
             {
@@ -131,23 +133,24 @@ namespace Demo.Web.Controllers
             var result = await _signInManager.PasswordSignInAsync(model.Phone, model.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return Redirect("/");
+                returnUrl = returnUrl ?? "/";
+                return Redirect(returnUrl);
             }
-
             TempData["success"] = true;
             return View(model);
         }
 
         [AllowAnonymous]
-        public ActionResult UsernameRegister()
+        public ActionResult UsernameRegister(string returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UsernameRegister(RegisterViewModel model)
+        public async Task<ActionResult> UsernameRegister(RegisterViewModel model, string returnUrl)
         {
             try
             {
@@ -161,7 +164,8 @@ namespace Demo.Web.Controllers
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {
-                        return Redirect("/");
+                        returnUrl = returnUrl ?? "/";
+                        return Redirect(returnUrl);
                     }
 
                     AddErrors(result);

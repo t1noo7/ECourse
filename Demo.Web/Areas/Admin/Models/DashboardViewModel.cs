@@ -13,11 +13,19 @@ namespace Demo.Web.Areas.Admin.Models
         /// Tổng số học viên
         /// </summary>
         public int TotalStudents { get; set; } 
-        public int TotalOrders { get; set; } 
-        public decimal RevenueChange { get; set; } // Tỷ lệ thay đổi doanh số
-        public decimal OrderChange { get; set; } // Tỷ lệ thay đổi đơn hàng
-        public decimal CustomerChange { get; set; } // Tỷ lệ thay đổi số khách hàng
+        public int TotalOrders { get; set; }
+        // Thay đổi doanh số
+        public decimal RevenueChange { get; set; }
+        public bool IsRevenueIncrease { get; set; }
 
+        // Thay đổi đơn hàng
+        public decimal OrderChange { get; set; }
+        public bool IsOrderIncrease { get; set; }
+
+        // Thay đổi số học viên
+        public decimal CustomerChange { get; set; }
+        public bool IsCustomerIncrease { get; set; }
+        public List<OrderByDayViewModel> OrdersByDay { get; set; }
         public List<RecentOrderViewModel> RecentOrders { get; set; } 
         public List<PopularCourseViewModel> PopularCourses { get; set; } 
     }
@@ -48,5 +56,9 @@ namespace Demo.Web.Areas.Admin.Models
         public int EnrolledStudents { get; set; } 
     }
 
-    
+    public class OrderByDayViewModel
+    {
+        public DateTime OrderDate { get; set; }
+        public int OrderCount { get; set; }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Demo.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace Demo.Application.Services
 {
     public interface IDashboardService
     {
-        decimal GetRevenueChangeRate(DateTime startDate, DateTime endDate);
-        decimal GetOrderChangeRate(DateTime startDate, DateTime endDate);
-        /*decimal GetCustomerChangeRate();*/
+        (decimal rate, bool isIncrease) GetRevenueChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType);
+        (decimal rate, bool isIncrease) GetOrderChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType);
+        (decimal rate, bool isIncrease) GetCustomerChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType);
     }
 }

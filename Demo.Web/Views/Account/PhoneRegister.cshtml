@@ -1,24 +1,20 @@
-﻿@model Demo.Web.Areas.Admin.Models.PhoneRegisterViewModel
+﻿@using Demo.Web.Helpers
+@model Demo.Web.Areas.Admin.Models.PhoneRegisterViewModel
 
 @{
-    ViewBag.Title = "Account Register";
+    ViewBag.Title = "Đăng ký tài khoản";
 }
-
-<!--
-    Tuỳ chọn: Sử dụng font-awesome hoặc la-* để hiển thị icon mạng xã hội
-    <link rel="stylesheet" href="~/Content/fontawesome-all.min.css" />
--->
 
 <section class="login-section"
          style="
             min-height: 100vh;
-            /* Thay đường dẫn ảnh của bạn */
+            /* Thay đường dẫn ảnh nền phù hợp */
             background: url('@Url.Content("~/assets/img/carousel-1.jpg")') no-repeat center center;
             background-size: cover;
             position: relative;
          ">
 
-    <!-- Overlay mờ -->
+    <!-- Lớp phủ tối -->
     <div class="overlay"
          style="
             position: absolute;
@@ -30,14 +26,14 @@
          ">
     </div>
 
-    <!-- Nội dung chính trên overlay -->
+    <!-- Nội dung chính -->
     <div class="container" style="position: relative; z-index: 1;">
         <div class="row align-items-center" style="min-height: 100vh;">
-            <!-- Cột trái: giới thiệu, text, social icons -->
+            <!-- Cột trái: Giới thiệu -->
             <div class="col-lg-6 text-white d-flex flex-column justify-content-center mb-5 mb-lg-0">
-                <h1 class="mb-3 fw-semi-bold">Join Us</h1>
+                <h1 class="mb-3 fw-semi-bold">Tham gia cùng chúng tôi</h1>
                 <p class="mb-4">
-                    Become a part of our community and unlock limitless learning opportunities.
+                    Đăng ký ngay để khám phá khoá học chất lượng và nâng cao kiến thức đầu tư bất động sản của bạn!
                 </p>
                 <div class="social-icons">
                     <a href="#" class="me-3 text-white">
@@ -59,41 +55,41 @@
             <div class="col-lg-5 offset-lg-1">
                 <div class="card border-0 shadow">
                     <div class="card-body p-4">
-                        <h2 class="text-center mb-4">Register</h2>
+                        <h2 class="text-center mb-4">Đăng ký</h2>
 
                         @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
-                        @using (Html.BeginForm("PhoneRegister", "Account", FormMethod.Post))
+                        @using (Html.BeginForm("PhoneRegister", "Account", new { ReturnUrl = ViewBag.ReturnUrl ?? "/" }, FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
 
-                            <!-- Trường Phone -->
+                            <!-- Số điện thoại -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.Phone, new { @class = "form-label" })
-                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", placeholder = "Phone No. *" })
+                                @Html.LabelFor(x => x.Phone, "Số điện thoại", new { @class = "form-label" })
+                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", placeholder = "Nhập số điện thoại *" })
                                 @Html.ValidationMessageFor(x => x.Phone, "", new { @class = "text-danger" })
                             </div>
 
-                            <!-- Trường Password -->
+                            <!-- Mật khẩu -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.Password, new { @class = "form-label" })
-                                @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Password *" })
+                                @Html.LabelFor(x => x.Password, "Mật khẩu", new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Nhập mật khẩu *" })
                                 @Html.ValidationMessageFor(x => x.Password, "", new { @class = "text-danger" })
                             </div>
 
-                            <!-- Trường Confirm Password -->
+                            <!-- Xác nhận mật khẩu -->
                             <div class="mb-3">
-                                @Html.LabelFor(x => x.PasswordConfirm, new { @class = "form-label" })
-                                @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "form-control", placeholder = "Confirm Password *" })
+                                @Html.LabelFor(x => x.PasswordConfirm, "Xác nhận mật khẩu", new { @class = "form-label" })
+                                @Html.PasswordFor(x => x.PasswordConfirm, new { @class = "form-control", placeholder = "Nhập lại mật khẩu *" })
                                 @Html.ValidationMessageFor(x => x.PasswordConfirm, "", new { @class = "text-danger" })
                             </div>
 
-                            <!-- Nút Register -->
-                            <button type="submit" class="btn btn-primary w-100 mb-2">Register</button>
+                            <!-- Nút đăng ký -->
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Đăng ký ngay</button>
 
-                            <!-- Đăng ký bằng mạng xã hội (tuỳ chọn) -->
+                            <!-- Đăng ký qua mạng xã hội -->
                             <div class="text-center mt-2">
-                                <span>Or Register With</span>
+                                <span>Hoặc đăng ký bằng</span>
                                 <ul class="social-profile list-inline d-inline-block mb-0 ms-2">
                                     <li class="list-inline-item">
                                         <a target="_blank" href="https://instagram.com/">
@@ -113,11 +109,11 @@
                                 </ul>
                             </div>
 
-                            <!-- Liên kết tới trang Login -->
+                            <!-- Chuyển sang trang đăng nhập -->
                             <div class="mt-3 text-center">
                                 <p class="mb-0">
-                                    Already Have An Account?
-                                    <a class="link" href="account/login">Login</a>
+                                    Bạn đã có tài khoản?
+                                    <a class="link" href="@FriendlyUrl.Login">Đăng nhập</a>
                                 </p>
                             </div>
                         }

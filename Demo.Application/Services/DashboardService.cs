@@ -1,5 +1,7 @@
 ﻿using Demo.Application.Repositories;
+using Demo.Core.Enums;
 using Demo.Core.Repositories;
+using Demo.Core.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,67 +12,127 @@ namespace Demo.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        public IOrderRepository _orderReposiory;
-        public IUserRepository _userReposiory;
+        public readonly IOrderRepository _orderRepository;
 
-        public DashboardService(IOrderRepository orderRepository, 
-            IUserRepository userRepository)
+        public DashboardService(IOrderRepository orderRepository)
         {
-            _orderReposiory = orderRepository;
-            _userReposiory = userRepository;
+            _orderRepository = orderRepository;
         }
-        public decimal GetRevenueChangeRate(DateTime startDate, DateTime endDate)
-        {
-            // Xác định khoảng thời gian của kỳ trước
-            var previousStartDate = startDate.AddMonths(-1);
-            var previousEndDate = endDate.AddMonths(-1);
 
-            // Doanh thu kỳ trước
-            var lastPeriodRevenue = _orderReposiory
-                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate)
+        /// <summary>
+        /// % Tăng giảm của Doanh thu
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="filterType"></param>
+        /// <returns></returns>
+        public (decimal rate, bool isIncrease) GetRevenueChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType)
+        {
+            DateTime previousStartDate, previousEndDate;
+
+            if (filterType.GetHashCode() == 1) 
+            {
+                previousStartDate = startDate.AddDays(-7);
+                previousEndDate = endDate.AddDays(-7);
+            } else 
+            {
+                previousStartDate = startDate.AddMonths(-1);
+                previousEndDate = endDate.AddMonths(-1);
+            }
+
+            var lastPeriodRevenue = _orderRepository
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
                 .Sum(o => (decimal?)o.Price) ?? 0;
 
-            // Doanh thu kỳ hiện tại
-            var currentPeriodRevenue = _orderReposiory
-                .Find(o => o.Created >= startDate && o.Created <= endDate)
+            var currentPeriodRevenue = _orderRepository
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
                 .Sum(o => (decimal?)o.Price) ?? 0;
 
-            // Tính tỷ lệ thay đổi doanh thu
-            return lastPeriodRevenue == 0 ? 0 : ((currentPeriodRevenue - lastPeriodRevenue) / lastPeriodRevenue) * 100;
+            return CalculateChangeRate(lastPeriodRevenue, currentPeriodRevenue);
         }
 
-        public decimal GetOrderChangeRate(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// % Tăng giảm của Đơn hàng
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="filterType"></param>
+        /// <returns></returns>
+        public (decimal rate, bool isIncrease) GetOrderChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType)
         {
-            // Xác định khoảng thời gian của kỳ trước
-            var previousStartDate = startDate.AddMonths(-1);
-            var previousEndDate = endDate.AddMonths(-1);
+            DateTime previousStartDate, previousEndDate;
 
-            // Số lượng đơn hàng kỳ trước
-            var lastPeriodOrders = _orderReposiory
-                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate)
+            if (filterType.GetHashCode() == 1) 
+            {
+                previousStartDate = startDate.AddDays(-7);
+                previousEndDate = endDate.AddDays(-7);
+            } else 
+            {
+                previousStartDate = startDate.AddMonths(-1);
+                previousEndDate = endDate.AddMonths(-1);
+            }
+
+            var lastPeriodOrders = _orderRepository
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
                 .Count();
 
-            // Số lượng đơn hàng kỳ hiện tại
-            var currentPeriodOrders = _orderReposiory
-                .Find(o => o.Created >= startDate && o.Created <= endDate)
+            var currentPeriodOrders = _orderRepository
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
                 .Count();
 
-            // Tính tỷ lệ thay đổi số lượng đơn hàng
-            return lastPeriodOrders == 0 ? 0 : ((currentPeriodOrders - lastPeriodOrders) / (decimal)lastPeriodOrders) * 100;
+            return CalculateChangeRate(lastPeriodOrders, currentPeriodOrders);
         }
 
+        /// <summary>
+        /// % Tăng giảm của Học viên
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="filterType"></param>
+        /// <returns></returns>
+        public (decimal rate, bool isIncrease) GetCustomerChangeRate(DateTime startDate, DateTime endDate, DashboardEnum filterType)
+        {
+            DateTime previousStartDate, previousEndDate;
 
-        /*        public decimal GetCustomerChangeRate()
-                {
-                    var lastMonthCustomers = _userReposiory
-                        .Find(c => c.Created.Month == DateTime.Now.AddMonths(-1).Month)
-                        .Count();
+            if (filterType.GetHashCode() == 1) 
+            {
+                previousStartDate = startDate.AddDays(-7);
+                previousEndDate = endDate.AddDays(-7);
+            } else 
+            {
+                previousStartDate = startDate.AddMonths(-1);
+                previousEndDate = endDate.AddMonths(-1);
+            }
 
-                    var thisMonthCustomers = _userReposiory
-                        .Find(c => c.Created.Month == DateTime.Now.Month)
-                        .Count();
+            var lastPeriodCustomers = _orderRepository
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
+                .Select(o => o.Username)
+                .Distinct()
+                .Count();
 
-                    return lastMonthCustomers == 0 ? 100 : ((thisMonthCustomers - lastMonthCustomers) / (decimal)lastMonthCustomers) * 100;
-                }*/
+            var thisPeriodCustomers = _orderRepository
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
+                .Select(o => o.Username)
+                .Distinct()
+                .Count();
+
+            return CalculateChangeRate(lastPeriodCustomers, thisPeriodCustomers);
+        }
+
+        /// <summary>
+        /// Check giá trị % tăng giảm
+        /// </summary>
+        /// <param name="previousValue"></param>
+        /// <param name="currentValue"></param>
+        /// <returns></returns>
+        private (decimal rate, bool isIncrease) CalculateChangeRate(decimal previousValue, decimal currentValue)
+        {
+            if (previousValue == 0) return (0, false); 
+
+            decimal changeRate = ((currentValue - previousValue) / previousValue) * 100;
+            bool isIncrease = changeRate > 0; // true nếu tăng, false nếu giảm hoặc không thay đổi
+
+            return (changeRate, isIncrease);
+        }
     }
 }

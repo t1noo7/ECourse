@@ -3,6 +3,13 @@
 @model DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
+
+    // Mặc định filter là tuần
+    var defaultFilter = Context.Request.Query["filterType"].ToString();
+    if (string.IsNullOrEmpty(defaultFilter))
+    {
+        defaultFilter = "1"; 
+    }
 }
 
 <div class="row mb-3">
@@ -10,12 +17,13 @@
         <form method="get" asp-action="Index">
             <label for="filterType" class="font-weight-bold">Lọc theo:</label>
             <select name="filterType" id="filterType" class="form-control">
-                <option value="1">Tuần</option>
-                <option value="2">Tháng</option>
+                <option value="1" selected="@(defaultFilter == "1")">Tuần</option>
+                <option value="2" selected="@(defaultFilter == "2")">Tháng</option>
             </select>
         </form>
     </div>
 </div>
+
 ﻿
 <div class="row">
     <div class="col-lg-5">
@@ -28,10 +36,20 @@
                                 <p class="m-b-0 text-muted">Doanh số</p>
                                 <h2 class="m-b-0">@Model.Revenue.ToString("#,##0") VNĐ</h2>
                             </div>
-                            <span class="badge badge-pill badge-cyan font-size-12">
-                                <i class="anticon anticon-arrow-up"></i>
-                                <span class="font-weight-semibold m-l-5">@Model.RevenueChange %</span>
-                            </span>
+                            @if(Model.IsRevenueIncrease)
+                            {
+                                <span class="badge badge-pill badge-cyan font-size-12">
+                                    <i class="anticon anticon-arrow-up"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.RevenueChange.ToString("0.0")%</span>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-pill badge-red font-size-12">
+                                    <i class="anticon anticon-arrow-down"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.RevenueChange.ToString("0.0")%</span>
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -44,10 +62,19 @@
                                 <p class="m-b-0 text-muted">Học viên</p>
                                 <h2 class="m-b-0">@Model.TotalStudents</h2>
                             </div>
-                            <span class="badge badge-pill badge-red font-size-12">
-                                <i class="anticon anticon-arrow-down"></i>
-                                <span class="font-weight-semibold m-l-5">3.26%</span>
-                            </span>
+                            @if (Model.IsRevenueIncrease)
+                            {
+                                <span class="badge badge-pill badge-cyan font-size-12">
+                                    <i class="anticon anticon-arrow-up"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.CustomerChange.ToString("0.0")%</span>
+                                </span>
+                            } else
+                            {
+                                <span class="badge badge-pill badge-red font-size-12">
+                                    <i class="anticon anticon-arrow-down"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.CustomerChange.ToString("0.0")%</span>
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -62,10 +89,19 @@
                                 <p class="m-b-0 text-muted">Đơn hàng</p>
                                 <h2 class="m-b-0">@Model.TotalOrders</h2>
                             </div>
-                            <span class="badge badge-pill badge-cyan font-size-12">
-                                <i class="anticon anticon-arrow-up"></i>
-                                <span class="font-weight-semibold m-l-5">@Model.OrderChange %</span>
-                            </span>
+                            @if (Model.IsRevenueIncrease)
+                            {
+                                <span class="badge badge-pill badge-cyan font-size-12">
+                                    <i class="anticon anticon-arrow-up"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.OrderChange.ToString("0.0")%</span>
+                                </span>
+                            } else
+                            {
+                                <span class="badge badge-pill badge-red font-size-12">
+                                    <i class="anticon anticon-arrow-down"></i>
+                                    <span class="font-weight-semibold m-l-5">@Model.OrderChange.ToString("0.0")%</span>
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -93,7 +129,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var order in Model.RecentOrders)
+                                @foreach (var order in Model.RecentOrders)
                                 {
                                     <tr>
                                         <td>@order.OrderCode</td>
@@ -127,13 +163,25 @@
                             <p class="m-b-0">Doanh thu</p>
                             <h3 class="m-b-0">
                                 <span>@Model.Revenue.ToString("#,##0") VNĐ</span>
-                                <span class="text-success m-l-10 font-size-14">+6.71%</span>
+                                @if(Model.IsRevenueIncrease)
+                                {
+                                    <span class="text-success m-l-10 font-size-14">@Model.RevenueChange.ToString("0.0")%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger m-l-10 font-size-14">@Model.RevenueChange.ToString("0.0")%</span>
+                                }
                             </h3>
                         </div>
                     </div>
                 </div>
-                <div class="m-t-50" style="height: 240px">
-                    <canvas class="chart" id="revenue-chart"></canvas>
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Số lượng đơn hàng theo ngày</h5>
+                        <div style="height: 240px">
+                            <canvas id="order-chart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,7 +191,7 @@
             <div class="card-body">
                 <h5>Khóa học phổ biến</h5>
                 <ul class="list-group list-group-flush">
-                    @foreach(var course in Model.PopularCourses)
+                    @foreach (var course in Model.PopularCourses)
                     {
                         <li class="list-group-item p-h-0">
                             <div class="d-flex align-items-center justify-content-between">
@@ -168,21 +216,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var ctx = document.getElementById("revenue-chart").getContext("2d");
+        var ctx = document.getElementById("order-chart").getContext("2d");
 
-        var revenueChart = new Chart(ctx, {
-            type: "line",
+        var orderData = @Html.Raw(Json.Serialize(Model.OrdersByDay));
+
+        var labels = orderData.map(o => new Date(o.orderDate).toLocaleDateString("vi-VN"));
+        var data = orderData.map(o => o.orderCount);
+
+        var orderChart = new Chart(ctx, {
+            type: "line", 
             data: {
-                labels: ["16th", "17th", "18th", "19th", "20th", "21th", "22th", "23th", "24th", "25th", "26th"],
+                labels: labels,
                 datasets: [{
-                    label: "Doanh thu",
-                    data: [30, 60, 40, 50, 45, 70, 90, 75, 80, 55, 65],
-                    borderColor: "#00c9a7",
-                    backgroundColor: "rgba(0, 201, 167, 0.2)",
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: "#00c9a7",
-                    pointBorderWidth: 2
+                    label: "Số lượng đơn hàng",
+                    data: data,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    backgroundColor: "rgba(75, 192, 192, 0.2)", 
+                    borderWidth: 2,
+                    pointBackgroundColor: "rgba(75, 192, 192, 1)", 
+                    pointRadius: 5,  
+                    tension: 0.3 
                 }]
             },
             options: {
@@ -191,24 +244,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return value + "M";
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
+                        stepSize: 1
                     }
                 }
             }
         });
-    });
-
-    document.getElementById("btnFilter").addEventListener("click", function () {
-        this.closest("form").submit();
     });
 
     document.getElementById("filterType").addEventListener("change", function () {
