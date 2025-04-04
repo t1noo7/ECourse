@@ -13,11 +13,11 @@ namespace Demo.Web.Areas.Admin.Controllers
     [Area("Admin")]
     public class AdminController : Controller
     {
-        private readonly ILogger<AccountController> _logger;
+        private readonly ILogger<AdminController> _logger;
         private readonly ISystemParameters _systemParameters;
         private readonly IMailService _mailService;
 
-        public AdminController(ILogger<AccountController> logger,
+        public AdminController(ILogger<AdminController> logger,
             ISystemParameters systemParameters,
             IMailService mailService
             )

@@ -17,7 +17,7 @@ namespace Demo.Web.Controllers
 {
     public class OrderController : Demo
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<OrderController> _logger;
         private readonly ICourseRepository _courseRepository;
         private readonly IOrderService _orderService;
         private readonly IOrderRepository _orderRepository;
@@ -31,7 +31,7 @@ namespace Demo.Web.Controllers
         private readonly ITempDataProvider _tempDataProvider;
         private readonly ILessonRepository _lessonRepository;
 
-        public OrderController(ILogger<HomeController> logger,
+        public OrderController(ILogger<OrderController> logger,
             ICourseRepository courseRepository,
             IOrderService orderService,
             IOrderRepository orderRepository,

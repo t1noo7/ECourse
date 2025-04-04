@@ -5,9 +5,11 @@ namespace Demo.Web.Controllers
 {
     public class NewController : Controller
     {
+        private readonly ILogger<NewController> _logger;
         private readonly INewRepository _newRepository;
-        public NewController(INewRepository newRepository)
+        public NewController(ILogger<NewController> logger, INewRepository newRepository)
         {
+            _logger = logger;
             _newRepository = newRepository;
         }
 
