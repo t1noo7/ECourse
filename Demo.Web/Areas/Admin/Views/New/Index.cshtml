@@ -59,7 +59,7 @@
                         <td>
                             <img src="@item.Image" class="img64x64" />
                         </td>
-                        <td>@item.Author</td>
+                        <td>@item.CreatedBy</td>
                         <td>@item.Created</td>
                         <td>
                             <a href="@Url.Action("ChangeStatus", new { id = item.Id, status = !item.Status })" onclick="return confirm('Bạn có chắc chắn muốn đổi trạng thái?')" class="text-info">
