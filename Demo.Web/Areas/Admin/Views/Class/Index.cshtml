@@ -1,10 +1,60 @@
 @using Demo.Core.Models
-@model List<Lesson>
+@model List<Class>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
-    ViewData["Title"] = "Danh sách bài giảng";
-    var searchModel = ViewBag.SearchModel as Demo.Application.Models.LessonFilter;
+    ViewData["Title"] = "Danh sách lớp";
+    var searchModel = ViewBag.SearchModel as Demo.Application.Models.ClassFilter;
 }
+
+<style>
+    .modal.fade .modal-dialog {
+        transform: translateY(-50px);
+        opacity: 0;
+        transition: all 0.5s ease-out;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .modal-content {
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        border: none;
+    }
+
+    .modal-header {
+        background: linear-gradient(to right, #4e54c8, #8f94fb);
+        color: white;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+
+    .modal-body {
+        background-color: #f9f9f9;
+    }
+
+    .modal-backdrop.show {
+        background-color: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(2px);
+    }
+
+    .btn-close {
+        background-color: white;
+        border-radius: 50%;
+        padding: 0.3rem;
+    }
+
+    .table th {
+        background-color: #e3e6f0;
+        text-align: center;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+</style>
 
 <div class="page-header">
     <div class="header-sub-title">
@@ -12,20 +62,23 @@
             <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item">
                 <i class="anticon anticon-home m-r-5"></i>Home
             </a>
-            <span class="breadcrumb-item active">Danh sách Bài giảng</span>
+            <span class="breadcrumb-item active">Danh sách Lớp</span>
         </nav>
     </div>
 </div>
 <div class="card mt-2 mb-2 shadow-base" id="searchBox">
     <div class="card-body pb-0">
-        <partial name="_SearchLesson" model="@searchModel" />
+        <partial name="_SearchClass" model="@searchModel" />
     </div>
 </div>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Danh sách Bài giảng</h4>
+    <h4 class="mb-0">Danh sách Lớp</h4>
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-primary btn-sm">
         <i class="anticon anticon-plus-circle m-r-5"></i>Thêm Mới
     </a>
+    <button class="btn btn-success" onclick="openAssignStudentsPopup()">
+        <i class="fa fa-user-plus"></i> Gán học viên
+    </button>
 </div>
 
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
@@ -34,10 +87,13 @@
             <tr>
                 <th>STT</th>
                 <th>
-                    Tên bài giảng
+                    Tên lớp
                 </th>
                 <th>
-                    Thuộc khoá học
+                    Khoá học
+                </th>
+                <th>
+                    Học viên
                 </th>
                 <th>
                     Ngày tạo
@@ -54,15 +110,21 @@
                             @(stt++)
                         </td>
                         <td>
-                            @item.Title
+                            <a href="@Url.Action("Details", new { id = item.Id })">@item.ClassName</a>
                         </td>
                         <td>
                             @item.Course?.Title
+                        </td>
+                        <td>
+                            @item.StudentIds.Count học viên
                         </td>
                         <td>@item.Created</td>
                         <td>
                             <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})"
                                 class="btn btn-success m-r-5"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="javascript:void(0)" onclick="openViewStudentsPopup('@item.Id')" class="btn btn-info m-r-5">
+                                <i class="fa-solid fa-people-group"></i>
+                            </a>
                             <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})"
                                 class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i
                                     class="fas fa-trash"></i></a>
@@ -85,3 +147,22 @@
         </div>
     </div>
 </div>
+
+<div id="modalContainer"></div>
+
+<script>
+    function openViewStudentsPopup(classId) {
+        $.get('/Admin/Class/ViewStudentsInClass', { classId: classId }, function (html) {
+            $('#modalContainer').html(html);
+            $('#viewStudentsModal').modal('show');
+        });
+    }
+
+    function openAssignStudentsPopup() {
+        $.get('/Admin/Class/AssignStudentsPopup', function (html) {
+            $('#modalContainer').html(html);
+            const modal = new bootstrap.Modal(document.getElementById('assignStudentsModal'));
+            modal.show();
+        });
+    }
+</script>

@@ -7,6 +7,9 @@ using Demo.Core.Permission;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
 using Demo.Web.Areas.Admin.Models;
+using Demo.Application.Services;
+using Demo.Application.Repositories;
+using Demo.Application.Models;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -19,12 +22,16 @@ namespace Demo.Web.Areas.Admin.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupManager _userGroupManager;
         private readonly IUserGroupRepository _groupRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly ICourseRepository _courseRepository;
 
         public AccountController(ILogger<AccountController> logger,
             UserManager<User> userManager,
             IUserRepository userRepository,
             IUserGroupManager userGroupManager,
-            IUserGroupRepository groupRepository
+            IUserGroupRepository groupRepository,
+            IOrderRepository orderRepository,
+            ICourseRepository courseRepository
             )
         {
             _logger = logger;
@@ -32,8 +39,11 @@ namespace Demo.Web.Areas.Admin.Controllers
             _userRepository = userRepository;
             _userGroupManager = userGroupManager;
             _groupRepository = groupRepository;
+            _orderRepository = orderRepository;
+            _courseRepository = courseRepository;
         }
 
+        #region User
         public async Task<IActionResult> Users(FilterModel model)
         {
             if (model == null) model = new FilterModel();
@@ -43,6 +53,141 @@ namespace Demo.Web.Areas.Admin.Controllers
             var users = await _userRepository.FindAsync(model);
             return View(users);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UserDetails(string id)
+        {
+            ViewBag.Error = TempData["Error"];
+            ViewBag.Success = TempData["Success"];
+            var user = await _userRepository.GetByIdAsync(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UserDetails(User model, string returnUrl)
+        {
+            if (model.Email != null)
+                model.Email = model.Email.Trim().ToLower();
+
+            var user = await _userRepository.GetByIdAsync(model.Id.ToString());
+            user.Email = model.Email ?? user.Email;
+            user.FullName = model.FullName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Address = model.Address;
+            user.Updated = DateTimeExtensions.UTCNowVN;
+
+            var emailExisted = _userRepository.Find(m => m.Email != null && m.Email == model.Email && m.Id != model.Id).Any();
+            if (emailExisted)
+            {
+                ViewBag.Error = $"Email {model.Email} đã tồn tại";
+                return View(user);
+            }
+
+            await _userRepository.UpdateAsync(user);
+            return Redirect(returnUrl);
+        }
+        #endregion
+
+        #region Student
+        public async Task<IActionResult> Students(StudentFilter model)
+        {
+            if (model == null) model = new StudentFilter();
+            if (!_userGroupManager.HasPermission(User.Identity.Name, RoleList.Admin))
+                model.custom = "Khách hàng";
+
+            ViewBag.SearchModel = model;
+
+            var orders = new List<Order>();
+            if (model.CourseName != null)
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true && o.Course.Title == model.CourseName).ToList();
+            }
+            else
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true).ToList();
+            }
+
+            var usersWithOrders = orders.Select(o => o.Username).Distinct().ToHashSet();
+
+            // Lọc danh sách user: chỉ giữ lại những người có đơn hàng
+            var users = (await _userRepository.FindAsync(model))
+                        .Where(u => usersWithOrders.Contains(u.UserName))
+                        .ToList();
+
+            var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
+            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
+
+            List<StudentViewModel> studentViewModels = users.Select(user =>
+            {
+                // Lấy danh sách các khóa học mà User đã đặt hàng
+                var userCourseIds = orders
+                    .Where(o => o.Username == user.UserName)
+                    .Select(o => o.Course.Id)
+                    .Distinct()
+                    .ToList();
+
+                var userCourses = courses.Where(c => userCourseIds.Contains(c.Id)).ToList();
+
+                return new StudentViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    PhoneNumber = user.PhoneNumber,
+                    Email = user.Email,
+                    Course = userCourses
+                };
+            }).ToList();
+
+            return View(studentViewModels);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> StudentDetails(string id)
+        {
+            ViewBag.Error = TempData["Error"];
+            ViewBag.Success = TempData["Success"];
+            var user = await _userRepository.GetByIdAsync(id);
+
+            var orders = _orderRepository.Find(o => o.Username == user.UserName && !o.Deleted).ToList();
+            var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
+            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
+
+            var studentViewModel = new StudentViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                FullName = user.FullName,
+                Course = courses
+            };
+
+            return View(studentViewModel);
+        }
+        #endregion
+
+        #region Customer
+        public async Task<IActionResult> Customers(FilterModel model)
+        {
+            if (model == null) model = new FilterModel();
+
+            model.custom = "Khách hàng";
+
+            ViewBag.SearchModel = model;
+            var users = await _userRepository.FindAsync(model);
+            return View(users);
+        }
+
+        public async Task<IActionResult> CustomerDetails(string id)
+        {
+            ViewBag.Error = TempData["Error"];
+            ViewBag.Success = TempData["Success"];
+            var user = await _userRepository.GetByIdAsync(id);
+            return View(user);
+        }
+        #endregion
 
         public ActionResult AddUser()
         {
@@ -104,7 +249,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 var user = await _userManager.FindByIdAsync(id);
                 await _userManager.RemovePasswordAsync(user);
-                await _userManager.AddPasswordAsync(user, "nongtraintc");
+                await _userManager.AddPasswordAsync(user, "demo1");
                 TempData["Success"] = $"{DateTimeExtensions.UTCNowVN.ToString("dd/MM/yyyy hh:mm:ss")}: Reset mật khẩu thành công";
             }
             catch (Exception e)
@@ -169,40 +314,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             }
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Users));
             else return Redirect(returnUrl);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> UserDetails(string id)
-        {
-            ViewBag.Error = TempData["Error"];
-            ViewBag.Success = TempData["Success"];
-            var user = await _userRepository.GetByIdAsync(id);
-            return View(user);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UserDetails(User model, string returnUrl)
-        {
-            if (model.Email != null)
-                model.Email = model.Email.Trim().ToLower();
-
-            var user = await _userRepository.GetByIdAsync(model.Id.ToString());
-            user.Email = model.Email ?? user.Email;
-            user.FullName = model.FullName;
-            user.PhoneNumber = model.PhoneNumber;
-            user.Address = model.Address;
-            user.Updated = DateTimeExtensions.UTCNowVN;
-
-            var emailExisted = _userRepository.Find(m => m.Email != null && m.Email == model.Email && m.Id != model.Id).Any();
-            if (emailExisted)
-            {
-                ViewBag.Error = $"Email {model.Email} đã tồn tại";
-                return View(user);
-            }
-
-            await _userRepository.UpdateAsync(user);
-            return Redirect(returnUrl);
         }
         private void AddErrors(IdentityResult result)
         {

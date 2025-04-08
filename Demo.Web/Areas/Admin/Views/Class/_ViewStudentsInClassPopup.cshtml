@@ -1,0 +1,45 @@
+@model List<Demo.Core.Models.User>
+
+<div class="modal fade" id="viewStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Danh sách học viên trong lớp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <table class="table table-bordered">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên học viên</th>
+                            <th>Email</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            var stt = 1;
+                            foreach (var student in Model)
+                            {
+                                <tr>
+                                    <td>@(stt++)</td>
+                                    <td>@student.FullName</td>
+                                    <td>@student.Email</td>
+                                    <td>@student.Created.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Không có học viên nào trong lớp</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

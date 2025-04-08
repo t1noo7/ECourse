@@ -1,5 +1,5 @@
-﻿@using Demo.Core.Models;
-@using Demo.Core.ValueObjects;
+﻿@using Demo.Core.Enums
+@using Demo.Core.Models;
 @using Demo.Web.Models;
 @using Demo.Web.Extensions;
 @using Demo.Web.Helpers;
@@ -21,20 +21,20 @@
                     <h3>Thông tin khách hàng</h3>
                     <div class="form-group">
                         <label class="fw-bold">Tên khách hàng</label>
-                        <input type="text" name="customerName" value="@Model.CustomerName"
-                               class="form-control" placeholder="Nhập tên của bạn" required>
+                        <input type="text" name="customerName" value="@Model.CustomerName" class="form-control"
+                            placeholder="Nhập tên của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label class="fw-bold">Số điện thoại</label>
-                        <input type="tel" name="customerPhone" value="@Model.CustomerPhone"
-                               class="form-control" placeholder="Nhập số điện thoại của bạn" required>
+                        <input type="tel" name="customerPhone" value="@Model.CustomerPhone" class="form-control"
+                            placeholder="Nhập số điện thoại của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label class="fw-bold">Email</label>
-                        <input type="email" name="customerEmail" value="@Model.CustomerEmail"
-                               class="form-control" placeholder="Nhập email của bạn" required>
+                        <input type="email" name="customerEmail" value="@Model.CustomerEmail" class="form-control"
+                            placeholder="Nhập email của bạn" required>
                     </div>
                 </div>
 
@@ -53,9 +53,14 @@
                             <tbody>
                                 <tr>
                                     <td>@course.Title</td>
-                                    <td><img src="@course.Image" alt="@course.Title" class="img-fluid" style="max-width: 100px;"></td>
+                                    <td><img src="@course.Image" alt="@course.Title" class="img-fluid"
+                                            style="max-width: 100px;"></td>
                                     <td>@Html.Raw(@course.Description)</td>
-                                    <td>@(course.DiscountPrice > 0 ? course.DiscountPrice?.ToString("#,##0 VNĐ") : course.Price.ToString("#,##0 VNĐ"))</td>
+                                    <td id="coursePrice" data-price="@course.Price"
+                                        data-discount="@course.DiscountPrice">
+                                        @(course.DiscountPrice > 0 ? course.DiscountPrice?.ToString("#,##0 VNĐ") :
+                                            course.Price.ToString("#,##0 VNĐ"))
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -66,12 +71,37 @@
 
             <div class="form-group">
                 <label class="fw-bold">Hình thức thanh toán</label>
-                @Html.DropDownListFor(x => x.PaymentOptions, Model.PaymentOptions, "Chọn hình thức thanh toán",
-                         new { @class = "form-control" })
+                @Html.DropDownListFor(x => x.PaymentOption, Model.PaymentOptions, new
+                    {
+                        @class = "form-control"
+                    })
+                <p>Số tiền được giảm trừ: <span id="paymentOptionDiscountPrice" class="text-success">0</span> VNĐ</p>
+            </div>
+            <div class="form-group">
+                <label class="fw-bold">Mã giảm giá</label>
+                @Html.TextBoxFor(x => x.VoucherCode, new { @class = "form-control" })
+                <span id="spVoucher" class="green"></span><br />
+                <span id="paymentVoucherPrice" class="green" data-price="-1"></span>
+                <button class="form-control" id="btVoucher">Áp dụng</button>
+            </div>
+            <div class="form-group">
+                <label class="fw-bold">Thông tin thanh toán</label>
+                <p>@Html.Raw(ViewData["BankInfo"])</p>
+            </div>
+            <div class="form-group">
+                <label class="fw-bold">Xác thực thanh toán (* Lưu ý: Vui lòng chụp lại ảnh chuyển khoản thành công để
+                    tải lên.)</label>
+                @Html.HiddenFor(m => m.VerifyImageUrl)
+                <partial name="~/Areas/Admin/Views/Shared/_EditImage.cshtml" model="@Model.VerifyImageUrl" />
+            </div>
+            <div class="form-group">
+                <label class="fw-bold">Ghi chú</label>
+                @Html.TextAreaFor(x => x.CustomerNote, new { @class = "form-control" })
             </div>
 
             <div class="text-center my-4">
-                <h4>Tổng tiền: <span class="text-success">@course.Price.ToString("#,##0 VNĐ")</span></h4>
+                <h4>Tổng tiền phải thanh toán (áp dụng mã giảm giá nếu có): <span id="paymentTotalPrice"
+                        class="text-success">0</span> VNĐ</h4>
             </div>
 
             <div class="text-center">
@@ -114,6 +144,123 @@
                         alert(result.message);
                     }
                 }, 300);
+            }
+
+            function voucher(code) {
+                var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Voucher", { code: code });
+                if (result && result.success) {
+                    var price = $("#paymentOptionDiscountPrice").attr("data-price") * 1;
+                    var discount = 0;
+
+                    if (result.message.includes('%')) {
+                        var percent = result.message.replace('%', '') * 1;
+                        discount = price * percent / 100;
+                    } else if (result.message.includes('vnd')) {
+                        discount = result.message.replace('vnd', '') * 1;
+                    }
+
+                    $("#spVoucher").html("Giảm giá: " + result.message);
+                    $("#paymentVoucherPrice").attr("data-price", discount);
+                    $("#paymentVoucherPrice").html("Số tiền sau khi áp dụng voucher: " + discount.toLocaleString() + " vnd");
+                    totalPrice();
+                } else {
+                    toastr.error(result.message);
+                }
+            }
+
+            function totalPrice() {
+                var coursePrice = $("#coursePrice").data("price") * 1 || 0;
+                var discountPrice = $("#coursePrice").data("discount") * 1 || 0;
+                var finalPrice = discountPrice > 0 ? discountPrice : coursePrice;
+
+                var paymentDiscount = $("#paymentOptionDiscountPrice").attr("data-price") * 1 || 0;
+                var voucherDiscount = $("#paymentVoucherPrice").attr("data-price") * 1 || 0;
+
+                var total = (finalPrice - paymentDiscount - voucherDiscount);
+                total = total > 0 ? total : 0;
+
+                $("#paymentTotalPrice").text(total.toLocaleString() + " VNĐ");
+            }
+
+            $("#PaymentOptions").change(function () {
+                var discount = $(this).find(":selected").data("discount") * 1 || 0;
+                $("#paymentOptionDiscountPrice").text(discount.toLocaleString());
+                totalPrice();
+            });
+
+            $("#btVoucher").click(function (e) {
+                e.preventDefault();
+                var code = $("#VoucherCode").val();
+                if (!code) {
+                    alert("Vui lòng nhập mã giảm giá.");
+                    return;
+                }
+                $.post("/Order/Voucher", { code: code }, function (result) {
+                    if (result.success) {
+                        var discount = result.discount * 1;
+                        $("#spVoucher").text("Giảm giá: " + discount.toLocaleString() + " VNĐ");
+                        $("#paymentOptionDiscountPrice").text(discount.toLocaleString());
+                        totalPrice();
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            });
+
+            totalPrice();
+
+            $('#PaymentOption').on('change', function () {
+                var val = $(this).val();
+                var coursePrice = parseFloat($("#coursePrice").data("price")) || 0;
+                var discount = 0;
+
+                if (val == '1') {
+                    discount = coursePrice * 0.10;
+                } else if (val == '2') {
+                    discount = coursePrice * 0.15;
+                }
+
+                var discountedPrice = coursePrice - discount;
+
+                $("#paymentOptionPrice").html(discountedPrice.toLocaleString() + " VNĐ");
+                $("#paymentOptionDiscountPrice").attr("data-price", discount);
+                $("#paymentOptionDiscountPrice").html(discount.toLocaleString() + " VNĐ");
+
+                totalPrice();
+            });
+
+            $('#fileInput').on('change', function () {
+                if (this.files && this.files[0]) {
+                    if (this.files[0].type.match(/^image\//)) {
+                        Upload(this.files[0]);
+                    }
+                }
+            });
+
+            function Upload(file) {
+                var fd = new FormData();
+                fd.append('file', file);
+
+                $.ajax({
+                    url: '/order/upload',
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    beforeSend: function () {
+                        $('#loadingModal').modal();
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $("#VerifyImageUrl").val(data.message);
+                        } else {
+                            toastr.error("Có lỗi xảy ra khi tải ảnh lên.");
+                        }
+                    },
+                    complete: function () {
+                        $('#loadingModal').modal('hide');
+                    }
+                });
             }
         });
     </script>

@@ -1,0 +1,89 @@
+@* @using Demo.Core.Models
+@model Class
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+ViewData["Title"] = "Danh sách học viên chi tiết";
+var searchModel = ViewBag.SearchModel as Demo.Application.Models.ClassFilter;
+}
+
+<div class="page-header">
+<div class="header-sub-title">
+<nav class="breadcrumb breadcrumb-dash">
+<a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item">
+<i class="anticon anticon-home m-r-5"></i>Home
+</a>
+<span class="breadcrumb-item active">Danh sách học viên chi tiết - <strong>Khóa học:</strong>
+@Model.Course.Title</span>
+</nav>
+</div>
+</div>
+<div class="card mt-2 mb-2 shadow-base" id="searchBox">
+<div class="card-body pb-0">
+<partial name="_SearchStudent" model="@searchModel" />
+</div>
+</div>
+
+<div class="card mt-2 mb-2 shadow-base pd-b-10">
+<div class="card-body pb-0">
+<table class="table mg-b-0" cellspacing="0">
+<tr>
+<th>STT</th>
+<th>
+Học viên
+</th>
+<th>
+Email
+</th>
+<th>
+Ngày tạo
+</th>
+<th></th>
+</tr>
+
+@{
+@if (Model.StudentIds == null || !Model.StudentIds.Any())
+{
+<p>Không có học viên nào trong lớp.</p>
+}
+else
+{
+var stt = 1;
+foreach (var item in Model.StudentIds.OrderBy(x => x.Created))
+{
+<tr class="stat even">
+<td class="ac">
+@(stt++)
+</td>
+<td>
+@item.FullName
+</td>
+<td>
+@item.Email
+</td>
+<td>@item.Created</td>
+<td>
+<a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})"
+class="btn btn-success m-r-5"><i class="fas fa-pencil-alt"></i></a>
+<a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})"
+class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i
+class="fas fa-trash"></i></a>
+</td>
+</tr>
+}
+}
+}
+</table>
+<div class="text-center">
+<nav aria-label="Page navigation">
+<ul class="pagination">
+@for (int i = 1; i <= ViewBag.TotalPages; i++)
+{
+<li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+<a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+</li>
+}
+</ul>
+</nav>
+</div>
+</div>
+</div> *@

@@ -124,7 +124,8 @@ namespace Demo.Web.Controllers
             {
                 UserName = model.Phone,
                 IsLocked = false,
-                PhoneNumber = model.Phone
+                PhoneNumber = model.Phone,
+                Created = DateTimeExtensions.UTCNowVN
             };
             await _userManager.CreateAsync(admin, model.Password);
 
@@ -157,6 +158,7 @@ namespace Demo.Web.Controllers
                     {
                         UserName = model.UserName,
                         Email = model.Email ?? "email@email.com",
+                        Created = DateTimeExtensions.UTCNowVN
                     };
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)

@@ -30,7 +30,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         {
             if (courseId != Guid.Empty)
             {
-                var lessons = _lessonRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
+                var lessons = _lessonRepository.Find(x => x.Deleted == false && x.Course.Id == courseId).ToList();
                 return View(lessons);
             }
             else

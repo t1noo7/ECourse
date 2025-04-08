@@ -1,9 +1,12 @@
 using System.ComponentModel;
 
-namespace Demo.Core.ValueObjects
+namespace Demo.Core.Enums
 {
     public enum PaymentOption
     {
+        [Description("Chọn hình thức thanh toán")]
+        None = 0,
+
         [Description("Đăng ký sớm trước 1 tháng giảm 10%")]
         OneMonth = 1,
 

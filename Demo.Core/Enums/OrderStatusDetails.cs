@@ -1,4 +1,4 @@
-namespace Demo.Core.ValueObjects
+namespace Demo.Core.Enums
 {
     public class OrderStatusDetails
     {

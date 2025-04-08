@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Demo.Core.ValueObjects
+namespace Demo.Core.Enums
 {
     public enum OrderStatus
     {
@@ -14,9 +14,12 @@ namespace Demo.Core.ValueObjects
         Canceled = 20,
 
         [Description("Đã duyệt")]
-        Paid = 30,
+        Approved = 30,
+
+        [Description("Kích hoạt")]
+        Active = 40,
 
         [Description("Đã hết hạn")]
-        Expired = 40
+        Expired = 50
     }
 }
