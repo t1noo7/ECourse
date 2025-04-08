@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
 using Demo.Web.ViewModels;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Controllers
 {
@@ -25,7 +26,7 @@ namespace Demo.Web.Controllers
         //private readonly IVoucherRepository _voucherRepository;
         private readonly ISystemParameters _systemParameters;
         private readonly IPaymentService _paymentService;
-        //private readonly IMailService _mailService;
+        private readonly IMailService _mailService;
         private readonly IRazorViewEngine _razorViewEngine;
         private readonly IServiceProvider _serviceProvider;
         private readonly ITempDataProvider _tempDataProvider;
@@ -39,7 +40,7 @@ namespace Demo.Web.Controllers
             //IVoucherRepository voucherRepository,
             ISystemParameters systemParameters,
             IPaymentService paymentService,
-            //IMailService mailService,
+            IMailService mailService,
             IRazorViewEngine razorViewEngine,
             IServiceProvider serviceProvider,
             ITempDataProvider tempDataProvider,
@@ -53,7 +54,7 @@ namespace Demo.Web.Controllers
             _systemParameters = systemParameters;
             _paymentService = paymentService;
             //_voucherRepository = voucherRepository;
-            //_mailService = mailService;
+            _mailService = mailService;
             _razorViewEngine = razorViewEngine;
             _serviceProvider = serviceProvider;
             _tempDataProvider = tempDataProvider;
@@ -144,7 +145,7 @@ namespace Demo.Web.Controllers
             _orderRepository.UpsertAsync(order);
 
             // Send email notification
-            //_mailService.OrderStatusChanged(order);
+            _mailService.OrderStatusChanged(order);
 
             // return Json(new JsonReturn(true, "Đặt hàng thành công!"));
             TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";

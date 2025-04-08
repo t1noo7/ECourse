@@ -4,9 +4,9 @@ using Demo.Application.Repositories;
 using Demo.Core.Permission;
 using Demo.Core.ValueObjects;
 using Demo.Web.Filters;
-using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {

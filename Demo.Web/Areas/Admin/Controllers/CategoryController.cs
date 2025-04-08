@@ -7,8 +7,8 @@ using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
 using Microsoft.Extensions.Logging;
-using Demo.Application.Services;
 using Demo.Database.Repositories;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Driver;
-using Demo.Application.Services;
 using Demo.Core.Models;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Database
 {

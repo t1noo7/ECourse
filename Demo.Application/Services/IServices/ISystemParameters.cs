@@ -1,7 +1,7 @@
 ﻿using Demo.Core.Models;
 using System.ComponentModel;
 
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface ISystemParameters
     {

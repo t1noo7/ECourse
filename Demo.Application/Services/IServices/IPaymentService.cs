@@ -1,7 +1,7 @@
 ﻿using Demo.Core.Models;
 using Demo.Core.ValueObjects;
 
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface IPaymentService
     {
