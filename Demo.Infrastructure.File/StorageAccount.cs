@@ -1,9 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
-using Demo.Application.Services;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Infrastructure.File
 {

@@ -39,9 +39,8 @@ namespace Demo.Web.Areas.Admin.Models
 
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
         [Display(Name = "Username")]
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         [Required(ErrorMessage = "Email không được để trống")]
         [Display(Name = "Email")]

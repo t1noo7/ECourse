@@ -1,6 +1,6 @@
 using Demo.Core.Models;
 
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface IMailService
     {
@@ -10,6 +10,8 @@ namespace Demo.Application.Services
         // void ScheduleReminderAWeek(Delivery delivery);
         // public void CourseToOpen(Course course);
         void OrderStatusChanged(Order order);
+
+        void RegisterVerification(string email, string code);
 
         void Send(string to, string subject, string body);
     }

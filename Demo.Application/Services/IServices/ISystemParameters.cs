@@ -1,7 +1,7 @@
 ﻿using Demo.Core.Models;
 using System.ComponentModel;
 
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface ISystemParameters
     {
@@ -29,5 +29,8 @@ namespace Demo.Application.Services
 
         [Description("Tên miền")]
         public string? Domain { get; }
+
+        [Description("Thời gian xem lại video bài giảng (Tháng)")]
+        public int RewatchTime { get; }
     }
 }

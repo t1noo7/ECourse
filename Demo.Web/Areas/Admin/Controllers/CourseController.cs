@@ -1,6 +1,6 @@
 
 using Demo.Application.Repositories;
-using Demo.Application.Services;
+using Demo.Application.Services.IServices;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
 using Demo.Core.Permission;
