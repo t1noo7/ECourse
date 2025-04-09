@@ -48,6 +48,17 @@ namespace Demo.Infrastructure.Mail
             }
         }
 
+        public void RegisterVerification(string email, string code)
+        {
+            if (!string.IsNullOrWhiteSpace(_systemParameters.AccountingEmails))
+            {
+                var body = _emailTemplate.GetTemplate("RegisterVerify.html");
+                body = body.Replace("__VerificationCode__", code);
+                Send(email, $"Mã xác thực của email {email}", body);
+                _logger.LogDebug($"Email sent accounting notified, email: {email}");
+            }
+        }
+
         private void AccountantOrderPending(Order order)
         {
             if (!string.IsNullOrWhiteSpace(_systemParameters.AccountingEmails))

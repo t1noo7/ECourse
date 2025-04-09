@@ -29,5 +29,8 @@ namespace Demo.Application.Services.IServices
 
         [Description("Tên miền")]
         public string? Domain { get; }
+
+        [Description("Thời gian xem lại video bài giảng (Tháng)")]
+        public int RewatchTime { get; }
     }
 }

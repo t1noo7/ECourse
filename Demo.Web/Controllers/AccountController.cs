@@ -8,6 +8,10 @@ using Demo.Core.Services;
 using Demo.Web.Models;
 using Demo.Core.Models;
 using Demo.Web.Areas.Admin.Models;
+using Demo.Application.Services.IServices;
+using Demo.Web.ViewModels;
+using MongoDB.Bson.IO;
+using Demo.Web.Extensions;
 
 namespace Demo.Web.Controllers
 {
@@ -19,6 +23,7 @@ namespace Demo.Web.Controllers
         private readonly IUserGroupManager _userGroupManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IUserRepository _userRepository;
+        private readonly IMailService _mailService;
 
         [TempData]
         public string ErrorMessage { get; set; }
@@ -27,7 +32,8 @@ namespace Demo.Web.Controllers
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IUserGroupManager userGroupManager,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IMailService mailService
             )
         {
             _logger = logger;
@@ -35,6 +41,7 @@ namespace Demo.Web.Controllers
             _userManager = userManager;
             _userGroupManager = userGroupManager;
             _userRepository = userRepository;
+            _mailService = mailService;
         }
 
         [AllowAnonymous]
@@ -92,6 +99,13 @@ namespace Demo.Web.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Account");
+        }
+
+        #region Đăng ký
         [AllowAnonymous]
         public async Task<IActionResult> PhoneRegister(string returnUrl)
         {
@@ -149,26 +163,22 @@ namespace Demo.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UsernameRegister(RegisterViewModel model, string returnUrl)
+        public async Task<ActionResult> UsernameRegister(RegisterViewModel model, string? returnUrl)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var user = new User
-                    {
-                        UserName = model.UserName,
-                        Email = model.Email ?? "email@email.com",
-                    };
-                    var result = await _userManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
-                        returnUrl = returnUrl ?? "/";
-                        return Redirect(returnUrl);
-                    }
+                    HttpContext.Session.SetObject("RegisterData", model); // đẩy data vào session và lấy lại khi xác thực mã thành công
 
-                    AddErrors(result);
+                    // tạo mã xác thực và gửi đến mail đăng ký
+                    var code = GenerateVerificationCode();
+                    HttpContext.Session.SetString("VerificationCode", code);
+                    HttpContext.Session.SetString("EmailToVerify", model.Email);
+                    _mailService.RegisterVerification(model.Email, code);
+                    ViewBag.ReturnUrl = returnUrl;
+
+                    return RedirectToAction("RegisterVerify", new { returnUrl, model.Email });
                 }
             }
             catch (Exception)
@@ -178,6 +188,59 @@ namespace Demo.Web.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
+        public IActionResult RegisterVerify(string email, string returnUrl)
+        {
+            var model = new RegisterVerifyViewModel { Email = email };
+            ViewBag.ReturnUrl = returnUrl;
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RegisterVerify(RegisterVerifyViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Kiểm tra mã xác minh từ session/tempdata/db
+            var expectedCode = HttpContext.Session.GetString("VerificationCode");
+            if (model.Code == expectedCode)
+            {
+                TempData["Success"] = "Xác minh thành công!";
+
+                // tạo người dùng
+                var registerData = HttpContext.Session.GetObject<RegisterViewModel>("RegisterData");
+
+                var user = new User
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    IsLocked = false
+                };
+                var result = await _userManager.CreateAsync(user, registerData.Password);
+                if (result.Succeeded)
+                {
+                    returnUrl = returnUrl ?? "/";
+                    return Redirect(returnUrl);
+                }
+                AddErrors(result);
+                TempData["Error"] = "Có lỗi xảy ra, vui lòng thử lại.";
+                return View();
+            }
+            else
+            {
+                ModelState.AddModelError("", "Mã xác minh không đúng.");
+                return View(model);
+            }
+        }
+
+        #endregion
+
+        #region User
         public ActionResult MyProfile()
         {
             var user = _userRepository.GetByUsername(User.Identity.Name);
@@ -227,13 +290,9 @@ namespace Demo.Web.Controllers
             }
             return View(model);
         }
+        #endregion
 
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
-        }
-
+        #region Private
         private async Task CreateAdminUserIfNeeded()
         {
             var username = "admin";
@@ -258,5 +317,14 @@ namespace Demo.Web.Controllers
                 ModelState.AddModelError("", error.Description);
             }
         }
+
+        private string GenerateVerificationCode()
+        {
+            var random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+        #endregion
+
+
     }
 }

@@ -1,35 +1,102 @@
 ﻿@using Demo.Core.Models
+@using Demo.Application.Services.IServices
 @model SystemParamData
+
 @{
     ViewBag.Title = "Cấu hình tham số hệ thống";
+    bool isRewatchTime = Model.Type == typeof(int).Name && Model.DataName == nameof(ISystemParameters.RewatchTime);
+    bool isUnlimited = isRewatchTime && Convert.ToInt32(Model.DataValue) == -1;
 }
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { role = "form" }))
 {
     <div class="card mt-2 mb-2 shadow-base">
         <div class="card-body">
-            @Html.HiddenFor(m=>m.DataName)
-            @Html.HiddenFor(m=>m.Description)
+            @Html.HiddenFor(m => m.DataName)
+            @Html.HiddenFor(m => m.Description)
             @Html.AntiForgeryToken()
-            <div class="row mb10 mt10">
+
+            <div class="row mb-3 mt-2">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>@Model.Description</label>
-                        @if(Model.Type == typeof(int).Name)
+                        <label>
+                            <label>@Model.Description</label>
+                            @if (isRewatchTime)
+                            {
+                                <div class="form-check mt-2">
+                                    <label class="form-check-label" for="unlimitedCheckbox">
+                                        Không giới hạn thời gian xem lại
+                                    </label>
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           id="unlimitedCheckbox"
+                                           onchange="toggleInput()"
+                                    @(isUnlimited ? "checked" : "") />
+                                </div>
+                            }
+                        </label>
+
+                        @if (Model.Type == typeof(int).Name)
                         {
-                            <input data-val="true" id="@nameof(Model.DataValue)" name="@nameof(Model.DataValue)" type="number" value="@Model.DataValue" class="form-control" />
-                        }else {
-                        <textarea data-val="true" id="@nameof(Model.DataValue)" name="@nameof(Model.DataValue)" value="@Model.DataValue" class="form-control">@Model.DataValue</textarea>
+                            <input data-val="true"
+                                   id="dataValueInput"
+                                   name="DataValue"
+                                   type="number"
+                                   value="@(isUnlimited ? "" : Model.DataValue?.ToString())"
+                                   class="form-control mt-2"
+                                   style="@(isUnlimited ? "display:none;" : "")" />
+
+                            // gửi giá trị -1 nếu set là không giới hạn thời gian
+                            <input type="hidden" id="hiddenUnlimitedInput" name="DataValue"
+                                   value="-1" @(isUnlimited ? "" : "disabled") />
+                        }
+                        else
+                        {
+                            <textarea data-val="true"
+                                      id="dataValueInput"
+                                      name="DataValue"
+                                      class="form-control mt-2">@Model.DataValue</textarea>
                         }
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-6">
             <button type="submit" class="btn btn-success">Lưu lại</button>
             <a class="btn bd bg-white" onclick="window.history.back()"><i class="fa fa-arrow-left"></i> Quay lại</a>
         </div>
     </div>
+}
+
+@section Scripts {
+    @if (isRewatchTime)
+    {
+        <script>
+            function toggleInput() {
+                const input = document.getElementById("dataValueInput");
+                const hidden = document.getElementById("hiddenUnlimitedInput");
+                const checkbox = document.getElementById("unlimitedCheckbox");
+
+                if (checkbox.checked) {
+                    input.style.display = "none";
+                    input.disabled = true;
+
+                    hidden.disabled = false;
+                } else {
+                    input.style.display = "block";
+                    input.disabled = false;
+
+                    hidden.disabled = true;
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                toggleInput(); // để đảm bảo trạng thái đúng khi load lại form
+            });
+
+        </script>
+    }
 }

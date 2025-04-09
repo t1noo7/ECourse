@@ -14,16 +14,26 @@
         <table class="table mg-b-0" cellspacing="0">
             @foreach (var item in allParams)
             {
-                var value = Model.FirstOrDefault(m => m.DataName == item.DataName)?.DataValue;
+                var param = Model.FirstOrDefault(m => m.DataName == item.DataName);
+                var value = param?.DataValue?.ToString();
+                var isRewatchTime = item.DataName == nameof(ISystemParameters.RewatchTime);
+
+                var displayValue = isRewatchTime && int.TryParse(value, out var intVal) && intVal == -1
+                ? "Không giới hạn thời gian"
+                : value;
+
                 <tr class="stat even">
                     <td class="ac">
                         @(stt++)
                     </td>
                     <td style="padding-bottom: 15px; padding-top: 15px;">
-                        <a href="@Url.Action("EditSystemParameter", new { name = item.DataName })">@item.Description: </a> <strong>@value</strong>
+                        <a href="@Url.Action("EditSystemParameter", new { name = item.DataName })">@item.Description:</a>
+                        <strong>@displayValue</strong>
                     </td>
                 </tr>
             }
+
+
         </table>
     </div>
 </div>

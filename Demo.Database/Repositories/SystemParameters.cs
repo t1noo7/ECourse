@@ -25,6 +25,8 @@ namespace Demo.Database
         public string? AccountingEmails => GetValue(nameof(AccountingEmails)) as string;
 
         public string? Domain => GetValue(nameof(Domain)) as string;
+
+        public int RewatchTime => int.Parse(GetValue(nameof(RewatchTime)) as string ?? "1"); 
         public List<SystemParamData> GetValues() => _memoryCache.GetOrCreate(nameof(SystemParameters), m => _collection.AsQueryable().ToList());
 
         public object? GetValue(string name) => GetValues().FirstOrDefault(m => m.DataName == name)?.DataValue;

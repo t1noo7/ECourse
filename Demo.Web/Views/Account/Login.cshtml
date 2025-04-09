@@ -54,10 +54,10 @@
                         <h2 class="text-center mb-4">Đăng Nhập</h2>
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl ?? "/" }, FormMethod.Post))
+                        @using (Html.BeginForm("Login", "Account", new { returnUrl = ViewBag.ReturnUrl ?? "/" }, FormMethod.Post))
                         {
                             <div class="mb-3">
-                                <label for="email" class="form-label" >Tên Đăng Nhập (Email / Số Điện Thoại)</label>
+                                <label for="email" class="form-label" >Tên Đăng Nhập (Email)</label>
                                 <input type="text" asp-for="UserName" class="form-control" placeholder="Nhập tên đăng nhập" />
                                 <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
@@ -66,10 +66,10 @@
                                 <input type="password" asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
-                            <div class="mb-3 form-check">
+@*                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="rememberMe" />
                                 <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
-                            </div>
+                            </div> *@
                             <button type="submit" class="btn btn-primary w-100 mb-2">Đăng Nhập</button>
 
 @*                             <div class="d-flex justify-content-between">
@@ -77,9 +77,12 @@
                             </div> *@
 
                             <div class="register-links text-center mt-3">
-                                <a class="register-link me-2" href="phoneregister">Đăng ký bằng Số Điện Thoại</a> |
-                                <a class="register-link ms-2" href="usernameregister">Đăng ký bằng Email</a>
+                                <a class="btn btn-primary w-100 mb-2" href="usernameregister?returnUrl=@ViewBag.ReturnUrl">
+                                    Đăng ký
+                                </a>
+
                             </div>
+
                         }
                     </div>
                 </div>

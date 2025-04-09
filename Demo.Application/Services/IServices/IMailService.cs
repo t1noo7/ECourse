@@ -11,6 +11,8 @@ namespace Demo.Application.Services.IServices
         // public void CourseToOpen(Course course);
         void OrderStatusChanged(Order order);
 
+        void RegisterVerification(string email, string code);
+
         void Send(string to, string subject, string body);
     }
 }
