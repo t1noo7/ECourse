@@ -2,12 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
-using Demo.Web.Filters;
-using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
-using Demo.Database.Repositories;
-using Demo.Web.Areas.Admin.Models;
+using Demo.Application.ViewModels;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -31,7 +28,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         {
             if (courseId != Guid.Empty)
             {
-                var classes = _classRepository.Find(x => x.Deleted == false && x.Course.Id == courseId).ToList();
+                var classes = _classRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
                 return View(classes);
             }
             else
@@ -63,10 +60,11 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 model = new Class
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    CourseId = Guid.Empty
                 };
             }
-            ViewBag.Courses = lscourse;
+            ViewBag.Courses = lscourse ?? new List<Course>();
             return View(model);
         }
 
@@ -89,7 +87,6 @@ namespace Demo.Web.Areas.Admin.Controllers
                 {
                     model.CreatedBy = model.ModifiedBy;
                     model.Created = DateTimeExtensions.UTCNowVN;
-                    model.Course = course;
                 }
 
                 if (string.IsNullOrEmpty(model.FriendlyUrl))
@@ -163,7 +160,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignStudentsToClass(Guid classId, List<Guid> studentIds)
+        public async Task<IActionResult> AssignStudentsToClass(Guid classId, List<string> studentIds)
         {
             await _classRepository.AddStudentsToClassAsync(classId, studentIds);
             return Ok();

@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Demo.Core.Models
@@ -10,13 +12,16 @@ namespace Demo.Core.Models
 
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }
-        public Course Course { get; set; }
+        public Guid CourseId { get; set; }
 
         [Display(Name = "Nội dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; }
 
-        [Display(Name = "Học viên")]
-        public List<Guid> StudentIds { get; set; } = new();
+        [BsonRepresentation(BsonType.ObjectId)]
+        public List<ObjectId> StudentIds { get; set; } = new();
+
+        [BsonIgnore]
+        public string StudentIdsDisplay => string.Join(", ", StudentIds.Select(x => x.ToString()));
     }
 }

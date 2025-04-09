@@ -32,79 +32,141 @@ namespace Demo.Database.Repositories
         {
             var classes = await GetAllAsync();
             return classes
-                .Where(c => c.Course != null && c.Course.Id == courseId && c.StudentIds.Count < 25)
+                .Where(c => c.CourseId != null && c.CourseId == courseId && c.StudentIds.Count < 25)
                 .ToList();
         }
 
         public async Task<List<ApprovedStudentViewModel>> GetApprovedStudentsWithCourseAsync()
         {
+            // 1. Lấy đơn hàng đã duyệt
             var orders = await _orderRepository.GetAllAsync();
-            var approvedOrders = orders.Where(o => o.Status == OrderStatus.Approved).ToList();
+            var approvedOrders = orders
+                .Where(o => o.Status == OrderStatus.Approved &&
+                            (!string.IsNullOrWhiteSpace(o.CustomerEmail) ||
+                             !string.IsNullOrWhiteSpace(o.CustomerName) ||
+                             !string.IsNullOrWhiteSpace(o.CustomerPhone)))
+                .GroupBy(o =>
+                {
+                    if (!string.IsNullOrWhiteSpace(o.CustomerEmail))
+                        return o.CustomerEmail.Trim().ToLower();
+                    if (!string.IsNullOrWhiteSpace(o.CustomerName))
+                        return o.CustomerName.Trim().ToLower();
+                    return o.CustomerPhone.Trim();
+                })
+                .Select(g => g.OrderByDescending(o => o.Created).First())
+                .ToList();
 
-            var usernames = approvedOrders.Select(o => o.Username).Distinct().ToList();
+            // 2. Lấy danh sách user
             var users = await _userRepository.GetAllAsync();
 
-            var approvedUsers = users.Where(u => usernames.Contains(u.UserName)).ToList();
-
-            var userDict = approvedUsers.ToDictionary(u => u.UserName, u => u);
-            var userCourses = approvedOrders
-                .Where(o => userDict.ContainsKey(o.Username))
-                .Select(o => new ApprovedStudentViewModel
+            var userDict = users
+                .Where(u => !string.IsNullOrWhiteSpace(u.Email) ||
+                            !string.IsNullOrWhiteSpace(u.UserName) ||
+                            !string.IsNullOrWhiteSpace(u.PhoneNumber))
+                .GroupBy(u =>
                 {
-                    Id = ToGuid(userDict[o.Username].Id),
-                    FullName = userDict[o.Username].FullName,
-                    Email = userDict[o.Username].Email,
-                    RegisteredCourseId = o.Course.Id,
-                    CourseTitle = o.Course.Title
+                    if (!string.IsNullOrWhiteSpace(u.Email))
+                        return u.Email.Trim().ToLower();
+                    if (!string.IsNullOrWhiteSpace(u.UserName))
+                        return u.UserName.Trim().ToLower();
+                    return u.PhoneNumber.Trim();
                 })
-                .DistinctBy(x => x.Id) // nếu nhiều đơn hàng → tránh duplicate
-                .ToList();
+                .ToDictionary(g => g.Key, g => g.First());
 
-            // Loại bỏ học viên đã được gán vào lớp
+            // 3. Lấy danh sách học viên đã được xếp lớp
             var allClasses = await GetAllAsync();
-            var assignedStudentIds = allClasses.SelectMany(c => c.StudentIds).Distinct().ToHashSet();
+            var assignedStudentIds = allClasses
+                .SelectMany(c => c.StudentIds)
+                .ToHashSet();
 
-            return userCourses
-                .Where(x => !assignedStudentIds.Contains(x.Id))
-                .ToList();
+            var students = new List<ApprovedStudentViewModel>();
+
+            foreach (var order in approvedOrders)
+            {
+                string? key = null;
+
+                if (!string.IsNullOrWhiteSpace(order.CustomerEmail))
+                    key = order.CustomerEmail.Trim().ToLower();
+                else if (!string.IsNullOrWhiteSpace(order.CustomerName))
+                    key = order.CustomerName.Trim().ToLower();
+                else if (!string.IsNullOrWhiteSpace(order.CustomerPhone))
+                    key = order.CustomerPhone.Trim();
+
+                if (string.IsNullOrEmpty(key))
+                {
+                    Console.WriteLine($"[WARN] Đơn hàng thiếu thông tin định danh: {order.Id}");
+                    continue;
+                }
+
+                if (!userDict.TryGetValue(key, out var user))
+                {
+                    Console.WriteLine($"[WARN] Không tìm thấy user với key: {key}");
+                    continue;
+                }
+
+                if (assignedStudentIds.Contains(user.Id)) continue;
+
+                students.Add(new ApprovedStudentViewModel
+                {
+                    Id = user.Id,
+                    FullName = order.CustomerName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    RegisteredCourseId = order.Course.Id,
+                    CourseTitle = order.Course.Title
+                });
+            }
+
+            return students;
         }
 
-        public async Task<List<User>> GetStudentsInClassAsync(Guid classId)
+        public async Task<List<StudentInClassViewModel>> GetStudentsInClassAsync(Guid classId)
         {
             var @class = await GetByIdAsync(classId);
-            if (@class == null || @class.StudentIds.Count == 0) return new();
+            if (@class == null) return new();
 
-            var allUsers = await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync();
+            var orders = await _orderRepository.GetAllAsync();
 
-            return allUsers
-                .Where(u => @class.StudentIds.Contains(ToGuid(u.Id)))
+            var students = users
+                .Where(u => @class.StudentIds.Contains(u.Id))
+                .Select(u =>
+                {
+                    // Match order theo Email
+                    var order = orders
+                        .Where(o => o.CustomerEmail?.ToLower() == u.Email?.ToLower())
+                        .OrderByDescending(o => o.Created) // Lấy đơn hàng mới nhất nếu có nhiều
+                        .FirstOrDefault();
+
+                    return new StudentInClassViewModel
+                    {
+                        Id = u.Id,
+                        Email = u.Email,
+                        PhoneNumber = u.PhoneNumber,
+                        CustomerName = order?.CustomerName ?? string.Empty,
+                        Created = order?.Created ?? DateTime.MinValue
+                    };
+                })
                 .ToList();
+
+            return students;
         }
 
-        public async Task AddStudentsToClassAsync(Guid classId, List<Guid> userIds)
+        public async Task AddStudentsToClassAsync(Guid classId, List<string> userIds)
         {
             var @class = await GetByIdAsync(classId);
             if (@class == null) return;
 
             foreach (var id in userIds)
             {
-                if (!@class.StudentIds.Contains(id) && @class.StudentIds.Count < 25)
+                var objectId = ObjectId.Parse(id);
+                if (!@class.StudentIds.Contains(objectId) && @class.StudentIds.Count < 25)
                 {
-                    @class.StudentIds.Add(id);
+                    @class.StudentIds.Add(objectId);
                 }
             }
 
             await UpdateAsync(@class);
-        }
-
-        public static Guid ToGuid(ObjectId objectId)
-        {
-            var bytes = objectId.ToByteArray();
-
-            var padded = new byte[16];
-            Array.Copy(bytes, padded, Math.Min(12, bytes.Length));
-
-            return new Guid(padded);
         }
     }
 }

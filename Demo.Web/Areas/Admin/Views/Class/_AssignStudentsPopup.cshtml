@@ -1,4 +1,4 @@
-@model Demo.Web.Areas.Admin.Models.AssignStudentsViewModel
+@model Demo.Application.ViewModels.AssignStudentsViewModel
 
 <div class="modal fade assign-students-modal" id="assignStudentsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -20,6 +20,7 @@
                                 <th></th>
                                 <th>Họ tên</th>
                                 <th>Email</th>
+                                <th>Số điện thoại</th>
                                 <th>📚 Khoá học đã đăng ký</th>
                             </tr>
                         </thead>
@@ -30,6 +31,7 @@
                                     <td><input type="checkbox" value="@s.Id" data-course="@s.RegisteredCourseId" /></td>
                                     <td>@s.FullName</td>
                                     <td>@s.Email</td>
+                                    <td>@s.PhoneNumber</td>
                                     <td>@s.CourseTitle</td>
                                 </tr>
                             }

@@ -30,31 +30,27 @@
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.Course.Id)
+                    @Html.LabelFor(m => m.CourseId)
                     <select class="form-control" id="courseSelection" name="CourseId">
-                        @if (courses != null)
+                        @if (Model != null && Model.CourseId != Guid.Empty)
                         {
-                            <!-- Display the selected course -->
-                            <option value="courses.Id" selected>courses.Title</option>
+                            var selectedCourse = courses?.FirstOrDefault(c => c.Id == Model.CourseId);
 
-                            <!-- Display the list of courses, excluding the selected one -->
-                            @foreach (var course in courses)
+                            if (selectedCourse != null)
                             {
-                                @if (course.Id != Model.Course.Id)
-                                {
-                                    <option value="@course.Id">@course.Title</option>
-                                }
+                                <option value="@selectedCourse.Id" selected disabled>@selectedCourse.Title</option>
+                            }
+                            else
+                            {
+                                <option value="">-- Khoá học không tồn tại --</option>
                             }
                         }
                         else
                         {
-                            <!-- Display "Select a Course" if no course is selected -->
-                            <option value="">-- Chọn khóa học --</option>
-                            @foreach (var course in courses)
+                            <option value="">-- Chọn khoá học --</option>
+                            @foreach (var course in courses ?? new List<Course>())
                             {
-                                <option value="@course.Id" selected="@(Model.Course.Id == course.Id ? "selected" : null)">
-                                    @course.Title
-                                </option>
+                                @Html.Raw($"<option value='{course.Id}' {(course.Id == Model?.CourseId ? "selected" : "")}>{course.Title}</option>")
                             }
                         }
                     </select>

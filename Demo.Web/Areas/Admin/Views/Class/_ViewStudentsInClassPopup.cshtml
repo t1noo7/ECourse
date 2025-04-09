@@ -1,4 +1,4 @@
-@model List<Demo.Core.Models.User>
+@model List<Demo.Application.ViewModels.StudentInClassViewModel>
 
 <div class="modal fade" id="viewStudentsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -25,7 +25,7 @@
                             {
                                 <tr>
                                     <td>@(stt++)</td>
-                                    <td>@student.FullName</td>
+                                    <td>@student.CustomerName</td>
                                     <td>@student.Email</td>
                                     <td>@student.Created.ToString("dd/MM/yyyy")</td>
                                 </tr>

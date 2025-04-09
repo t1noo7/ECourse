@@ -113,7 +113,7 @@
                             <a href="@Url.Action("Details", new { id = item.Id })">@item.ClassName</a>
                         </td>
                         <td>
-                            @item.Course?.Title
+                            @item.CourseId.ToString()
                         </td>
                         <td>
                             @item.StudentIds.Count học viên
