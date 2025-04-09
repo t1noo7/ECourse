@@ -58,7 +58,9 @@
                 </div>
 
                 <div class="text-end mt-4">
-                    <button class="btn btn-primary" onclick="submitAssignStudents()">Xác nhận thêm</button>
+                    <button id="confirmAddBtn" class="btn btn-primary" onclick="submitAssignStudents()" disabled>
+                        Xác nhận thêm
+                    </button>
                 </div>
             </div>
         </div>
@@ -104,17 +106,41 @@
             });
             $('#assignedClassSelect').html(options).prop('disabled', false);
         });
+
+        validateAssignState(); // validate lại khi chọn khoá học
     }
+
+    function validateAssignState() {
+        const hasCourse = $('#assignedCourseSelect').val();
+        const hasChecked = $('#assignStudentTable input:checked').length > 0;
+
+        $('#confirmAddBtn').prop('disabled', !(hasCourse && hasChecked));
+    }
+
+    $('#assignStudentTable input[type="checkbox"]').on('change', validateAssignState);
+    $('#assignedCourseSelect').on('change', validateAssignState);
 
     function submitAssignStudents() {
         const selectedStudentIds = $('#assignStudentTable input:checked').map((_, el) => el.value).get();
+        const courseId = $('#assignedCourseSelect').val();
         const classId = $('#assignedClassSelect').val();
 
-        if (!classId || selectedStudentIds.length === 0) {
-            alert("Vui lòng chọn học viên và lớp học.");
+        if (!courseId) {
+            alert("Vui lòng chọn khoá học để tiếp tục.");
             return;
         }
 
+        if (selectedStudentIds.length === 0) {
+            alert("Chưa chọn học viên để tiếp tục.");
+            return;
+        }
+
+        if (!classId) {
+            alert("Chưa chọn lớp để tiếp tục.");
+            return;
+        }
+
+        // Submit
         $.post('/Admin/Class/AssignStudentsToClass', {
             classId: classId,
             studentIds: selectedStudentIds
@@ -122,4 +148,9 @@
             location.reload(); // hoặc show toast
         });
     }
+
+    // Khi modal mở thì reset trạng thái nút
+    $('#assignStudentsModal').on('shown.bs.modal', function () {
+        validateAssignState();
+    });
 </script>
