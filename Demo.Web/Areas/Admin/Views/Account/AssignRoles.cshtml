@@ -6,31 +6,29 @@
         @using (Html.BeginForm(null, null, new { returnUrl = Context.Request.Query["returnUrl"] }, FormMethod.Post))
         {
             @Html.HiddenFor(m => m.ObjectId)
-            <div class="card shadow-base widget-11">
-                <div class="card-header">
-                    <div class="card-title">Phân quyền người dùng</div>
-                    <a href=""><i class="fa fa-angle-down"></i></a>
-                </div><!-- card-header -->
-                <div class="card-body">
-
+                <div class="card shadow-base widget-11">
+                    <div class="card-header">
+                        <div class="card-title">Phân quyền người dùng</div>
+                    </div><!-- card-header -->
+                    <div class="card-body">
                     @Html.AntiForgeryToken()
-                    <ul class="list-unstyled mg-b-0">
+                        <ul class="list-unstyled mg-b-0">
                         @foreach (var item in Model.Roles)
                         {
-                            <li>
-                                <label class="ckbox">
-                                    <input name="Roles" value="@item.Key" type="checkbox" @(item.Value ? "checked" : null)>
-                                    <span>@item.Key</span>
-                                </label>
-                            </li>
+                                    <li>
+                                        <label class="ckbox">
+                                            <input name="Roles" value="@item.Key" type="checkbox" @(item.Value ? "checked" : null)>
+                                            <span>@item.Key</span>
+                                        </label>
+                                    </li>
                         }
-                    </ul>
-                </div><!-- card-block -->
-            </div>
-            <div class="mb-2 mt-2">
-                <button class="btn btn-success" type="submit">Lưu lại</button>
-                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
-            </div>
+                        </ul>
+                    </div><!-- card-block -->
+                </div>
+                <div class="mb-2 mt-2">
+                    <button class="btn btn-success" type="submit">Lưu lại</button>
+                    <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+                </div>
         }
     </div>
 </div>

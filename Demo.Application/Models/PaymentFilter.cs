@@ -1,5 +1,5 @@
+using Demo.Core.Enums;
 using Demo.Core.Permission;
-using Demo.Core.ValueObjects;
 
 namespace Demo.Application.Models
 {

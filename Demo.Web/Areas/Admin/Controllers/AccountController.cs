@@ -99,7 +99,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             ViewBag.SearchModel = model;
 
             var orders = new List<Order>();
-            if(model.CourseName != null)
+            if (model.CourseName != null)
             {
                 orders = _orderRepository.Find(o => o.Deleted != true && o.Course.Title == model.CourseName).ToList();
             }
@@ -152,7 +152,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             var orders = _orderRepository.Find(o => o.Username == user.UserName && !o.Deleted).ToList();
             var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
-            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList(); 
+            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
 
             var studentViewModel = new StudentViewModel
             {
@@ -316,7 +316,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             else return Redirect(returnUrl);
         }
 
-        
+
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

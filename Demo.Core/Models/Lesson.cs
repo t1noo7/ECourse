@@ -21,5 +21,10 @@ namespace Demo.Core.Models
         [Display(Name = "Nội dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; }
+
+        // public string GetCourseNames()
+        // {
+        //     return Course != null ? string.Join(", ", Course.Title) : "No courses registered";
+        // }
     }
 }

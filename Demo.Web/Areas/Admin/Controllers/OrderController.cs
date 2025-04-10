@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Demo.Application.Models;
 using Demo.Application.Repositories;
-using Demo.Core.Permission;
-using Demo.Core.ValueObjects;
-using Demo.Web.Filters;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
 using Demo.Application.Services.IServices;
+using Demo.Core.Enums;
+using Demo.Core.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -19,16 +18,22 @@ namespace Demo.Web.Areas.Admin.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly ICourseRepository _courseRepository;
         private readonly IMailService _mailService;
+        private readonly IClassRepository _classRepository;
+        private readonly IUserRepository _userRepository;
 
         public OrderController(ILogger<OrderController> logger,
             IOrderRepository orderRepository,
             ICourseRepository courseRepository,
-            IMailService mailService)
+            IMailService mailService,
+            IClassRepository classRepository,
+            IUserRepository userRepository)
         {
             _logger = logger;
             _orderRepository = orderRepository;
             _courseRepository = courseRepository;
             _mailService = mailService;
+            _classRepository = classRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<IActionResult> Index(OrderFilter filter)
@@ -46,15 +51,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             ViewBag.Success = TempData["Success"];
             var model = _orderRepository.Get(id);
 
-            // var course = _courseRepository.Get(model.course.Id);
-            // if (course == null) ViewBag.CourseItems = new List<string>();
-            // else
-            // {
-            //     var courseItems = course.GetGardenItems().Where(m => m.Area == model.Garden.Area);
-            //     var gardenCodesUsed = _orderRepository.Find(m => m.Id != model.Id && m.Garden.Id == garden.Id).Select(m => m.GardenCode).Distinct().ToList();
-            //     ViewBag.GardenItems = gardenItems.Where(m => !gardenCodesUsed.Contains(m.Code)).Select(m => m.Code).OrderBy(m => m).ToList();
-            // }
-
             return View(model);
         }
 
@@ -67,18 +63,6 @@ namespace Demo.Web.Areas.Admin.Controllers
             order.Modified = DateTimeExtensions.UTCNowVN;
             order.CustomerAddress = model.CustomerAddress;
             order.CustomerNote = model.CustomerNote;
-
-            // if (model.FarmerId.HasValue)
-            // {
-            //     order.FarmerId = model.FarmerId;
-            //     var farmer = await _generalItemRepository.GetAsync(model.FarmerId.Value);
-            //     order.FarmerName = farmer?.Title;
-            // }
-            // foreach (var item in order.Combo.Vegetables)
-            // {
-            //     var vege = model.Combo.Vegetables.FirstOrDefault(m => m.Id == item.Id);
-            //     item.Area = vege == null ? item.Area : vege.Area;
-            // }
 
             await _orderRepository.UpsertAsync(order);
             TempData["Success"] = $"{DateTimeExtensions.UTCNowVN.ToString("dd/MM/yyyy hh:mm:ss")}: Cập nhật đơn hàng thành công";
@@ -95,6 +79,10 @@ namespace Demo.Web.Areas.Admin.Controllers
             order.StatusHistories.Add(new OrderStatusDetails { ActionTime = DateTimeExtensions.UTCNowVN, Status = status, Author = User?.Identity?.Name });
 
             await _orderRepository.UpsertAsync(order);
+            if (status == OrderStatus.Approved)
+            {
+                TempData["SuccessMessage"] = "Thay đổi trạng thái đơn hàng thành công. Vui lòng chuyển sang chức năng lớp học để thêm học viên vào lớp.";
+            }
 
             _logger.LogDebug($"Status updated to {status}, order Id: {order.Id}");
             _mailService.OrderStatusChanged(order);

@@ -1,6 +1,6 @@
+using Demo.Core.Enums;
 using Demo.Core.Models;
 using Demo.Core.Permission;
-using Demo.Core.ValueObjects;
 
 namespace Demo.Application.Models
 {

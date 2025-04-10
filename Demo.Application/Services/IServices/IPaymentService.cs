@@ -1,5 +1,5 @@
-﻿using Demo.Core.Models;
-using Demo.Core.ValueObjects;
+﻿using Demo.Core.Enums;
+using Demo.Core.Models;
 
 namespace Demo.Application.Services.IServices
 {

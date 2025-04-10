@@ -34,11 +34,12 @@ namespace Demo.Web.Startup
             services.AddTransient<IPaymentRepository, PaymentRepository>();
             services.AddTransient<IUserRequestRepository, UserRequestRepository>();
             //services.AddTransient<IContactRepository, ContactRepository>();
-            //services.AddTransient<IVoucherRepository, VoucherRepository>();
+            services.AddTransient<IVoucherRepository, VoucherRepository>();
             //services.AddTransient<IGeneralItemRepository, GeneralItemRepository>();
             services.AddTransient<ICourseRepository, CourseRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
             services.AddTransient<ILessonRepository, LessonRepository>();
+            services.AddTransient<IClassRepository, ClassRepository>();
             //services.AddTransient<IEventRepository, EventRepository>();
             //services.AddTransient<IBookRepository, BookRepository>();
             services.AddSingleton<IMongoClient>(s =>

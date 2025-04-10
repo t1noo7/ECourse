@@ -10,6 +10,7 @@ namespace Demo.Core.Models
         public string? FullName { get; set; }
         public string? Address { get; set; }
 
+        public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public bool IsLocked { get; set; }
 

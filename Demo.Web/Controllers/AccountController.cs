@@ -140,7 +140,8 @@ namespace Demo.Web.Controllers
             {
                 UserName = model.Phone,
                 IsLocked = false,
-                PhoneNumber = model.Phone
+                PhoneNumber = model.Phone,
+                Created = DateTimeExtensions.UTCNowVN
             };
             await _userManager.CreateAsync(admin, model.Password);
 

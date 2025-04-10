@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Demo.Core.ValueObjects;
 using Demo.Common.Extensions;
-using MongoDB.Bson.Serialization.Attributes;
+using Demo.Core.Enums;
 
 namespace Demo.Core.Models
 {
@@ -37,7 +36,9 @@ namespace Demo.Core.Models
         [Required(ErrorMessage = "Nội dung thanh toán không được để trống")]
         public string PaymentContent { get; set; }
         public Course Course { get; set; }
-        //public Voucher Voucher { get; set; } = new Voucher();
+
+        public List<Guid> CourseIds { get; set; } = new List<Guid>();
+        public Voucher Voucher { get; set; } = new Voucher();
         public PaymentOption PaymentOption { get; set; }
 
         public static IEnumerable<(OrderStatus value, string text)> GetPossibleStatuses()
@@ -47,10 +48,6 @@ namespace Demo.Core.Models
             {
                 yield return new(item, item.GetEnumDescription());
             }
-        }
-        public string GetCourseNames()
-        {
-            return Course != null ? string.Join(", ", Course.Title) : "No courses registered";
         }
     }
 }
