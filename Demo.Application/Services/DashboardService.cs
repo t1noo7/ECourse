@@ -1,12 +1,7 @@
 ﻿using Demo.Application.Repositories;
+using Demo.Application.Services.IServices;
 using Demo.Core.Enums;
-using Demo.Core.Repositories;
 using Demo.Core.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Demo.Application.Services
 {

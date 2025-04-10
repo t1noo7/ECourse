@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Demo.Application.Repositories;
-using Demo.Application.Services;
 using Demo.Core.Models;
 using Demo.Core.Repositories;
 using System.Net;
 using System.Net.Mail;
 using Demo.Core.Services;
-using Demo.Core.Enums;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Infrastructure.Mail
 {
@@ -36,12 +35,26 @@ namespace Demo.Infrastructure.Mail
                     // Gửi mail cho kế toán
                     AccountantOrderPending(order);
                     break;
+                case OrderStatus.Paid:
+                    SendCustomerOrder(order, "CustomerOrderApproved", $"{_systemParameters.Domain}/khoa-hoc-cua-toi", "Đơn hàng của bạn đã được duyệt");
+                    break;
                 case OrderStatus.Canceled:
                     SendCustomerOrder(order, "CustomerOrderCanceled", $"{_systemParameters.Domain}/don-hang-cua-toi", "Đơn hàng của bạn đã bị hủy");
                     break;
                 default:
                     break;
 
+            }
+        }
+
+        public void RegisterVerification(string email, string code)
+        {
+            if (!string.IsNullOrWhiteSpace(_systemParameters.AccountingEmails))
+            {
+                var body = _emailTemplate.GetTemplate("RegisterVerify.html");
+                body = body.Replace("__VerificationCode__", code);
+                Send(email, $"Mã xác thực của email {email}", body);
+                _logger.LogDebug($"Email sent accounting notified, email: {email}");
             }
         }
 
@@ -77,7 +90,7 @@ namespace Demo.Infrastructure.Mail
                 _logger.LogDebug($"Recipients is empty, subject: {subject}");
                 return;
             }
-            var fromAddress = new MailAddress(_systemParameters.SmtpEmail, "Nông trại NTC");
+            var fromAddress = new MailAddress(_systemParameters.SmtpEmail, "Website Bán Khóa Học");
 
             var smtp = new SmtpClient
             {

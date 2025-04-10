@@ -1,5 +1,5 @@
 ﻿using Demo.Application.Repositories;
-using Demo.Core.Enums;
+using Demo.Application.Services.IServices;
 using Demo.Core.Models;
 
 namespace Demo.Application.Services

@@ -2,7 +2,8 @@
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
 using Demo.Core.Models;
-using Demo.Core.Enums;
+using Demo.Core.ValueObjects;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Application.Services
 {

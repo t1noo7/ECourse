@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using Demo.Infrastructure.File;
 using Demo.Infrastructure.Mail;
 using Demo.Web.Helpers;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Startup
 {
@@ -31,6 +32,7 @@ namespace Demo.Web.Startup
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddTransient<IUserRequestRepository, UserRequestRepository>();
             //services.AddTransient<IContactRepository, ContactRepository>();
             services.AddTransient<IVoucherRepository, VoucherRepository>();
             //services.AddTransient<IGeneralItemRepository, GeneralItemRepository>();

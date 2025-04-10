@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Application.Repositories
 {
-    public interface IUserRequestRepository : IBaseRepository<UserRequest>
+    public interface IBannerRepository : IBaseRepository<Banner>
     {
     }
 }

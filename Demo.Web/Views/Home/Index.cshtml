@@ -99,3 +99,32 @@
 <!-- FeedBack Start -->
 @await Component.InvokeAsync("FeedBack")
 <!-- FeedBack End -->
+@section Scripts {
+    <script>
+        window.onload = function () {
+            var successToastEl = document.getElementById('toastSuccess');
+            var errorToastEl = document.getElementById('toastError');
+
+            if ('@TempData["Success"]' !== '') {
+                var toast = new bootstrap.Toast(successToastEl);
+                toast.show();
+            }
+
+            if ('@TempData["Error"]' !== '') {
+                var toast = new bootstrap.Toast(errorToastEl);
+                toast.show();
+            }
+        };
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            toastElList.forEach(function (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            });
+        });
+    </script>
+
+}

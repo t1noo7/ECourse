@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Driver;
 using Demo.Web.ViewModels;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Controllers
 {
@@ -24,7 +25,7 @@ namespace Demo.Web.Controllers
         private readonly IFileService _fileService;
         private readonly ISystemParameters _systemParameters;
         private readonly IPaymentService _paymentService;
-        //private readonly IMailService _mailService;
+        private readonly IMailService _mailService;
         private readonly IRazorViewEngine _razorViewEngine;
         private readonly IServiceProvider _serviceProvider;
         private readonly ITempDataProvider _tempDataProvider;
@@ -39,7 +40,7 @@ namespace Demo.Web.Controllers
             IFileService fileService,
             ISystemParameters systemParameters,
             IPaymentService paymentService,
-            //IMailService mailService,
+            IMailService mailService,
             IRazorViewEngine razorViewEngine,
             IServiceProvider serviceProvider,
             ITempDataProvider tempDataProvider,
@@ -196,7 +197,7 @@ namespace Demo.Web.Controllers
             _orderRepository.UpsertAsync(order);
 
             // Send email notification
-            //_mailService.OrderStatusChanged(order);
+            _mailService.OrderStatusChanged(order);
 
             // return Json(new JsonReturn(true, "Đặt hàng thành công!"));
             TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";

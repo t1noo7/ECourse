@@ -1,11 +1,6 @@
 ﻿using Demo.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface IDashboardService
     {

@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Demo.Database.Repositories;
 using Demo.Core.Enums;
 using Demo.Core.ValueObjects;
-using Demo.Application.Services;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {

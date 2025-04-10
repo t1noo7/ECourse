@@ -1,4 +1,4 @@
-namespace Demo.Application.Services
+namespace Demo.Application.Services.IServices
 {
     public interface IFileService
     {

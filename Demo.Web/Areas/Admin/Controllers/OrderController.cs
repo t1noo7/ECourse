@@ -2,11 +2,9 @@
 using Demo.Application.Models;
 using Demo.Application.Repositories;
 using Demo.Web.Filters;
-using Demo.Application.Services;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
-using Demo.Core.Enums;
-using Demo.Core.Repositories;
+using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
