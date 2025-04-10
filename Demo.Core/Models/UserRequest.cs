@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Demo.Core.Enums;
+using Demo.Core.ValueObjects;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -33,5 +35,7 @@ namespace Demo.Core.Models
         [Display(Name = "Khó khăn gặp phải")]
         [Required(ErrorMessage = "Khó khăn gặp phải không được để trống")]
         public string Difficulty { get; set; }
+
+        public bool Status { get; set; }
     }
 }
