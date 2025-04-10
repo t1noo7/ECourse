@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
-using Demo.Application.Services;
 using Demo.Core.Models;
 using Demo.Core.Repositories;
 using Demo.Web.Models;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Driver;
 using Demo.Web.ViewModels;
 using Demo.Application.Services.IServices;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Controllers
 {
@@ -55,7 +55,7 @@ namespace Demo.Web.Controllers
             _systemParameters = systemParameters;
             _paymentService = paymentService;
             _voucherRepository = voucherRepository;
-            //_mailService = mailService;
+            _mailService = mailService;
             _razorViewEngine = razorViewEngine;
             _serviceProvider = serviceProvider;
             _tempDataProvider = tempDataProvider;
@@ -94,138 +94,81 @@ namespace Demo.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult Checkout(OrderViewModel model, Guid courseId)
+        public async Task<IActionResult> Checkout(OrderViewModel model, Guid courseId)
         {
             if (!ModelState.IsValid)
-            {
-                string messages = base.GetModalStateErrorMsg();
-                return Json(new JsonReturn(false, messages));
-            }
+                return Json(new JsonReturn(false, base.GetModalStateErrorMsg()));
 
-            if (User.Identity?.IsAuthenticated != true)
-            {
+            if (!User.Identity?.IsAuthenticated ?? true)
                 return Json(new JsonReturn(false, "Vui lòng đăng nhập để tạo đơn hàng."));
-            }
 
-            // Ensure the product IDs are not empty
-            if (courseId == null)
-            {
-                return Json(new JsonReturn(false, "Vui lòng chọn ít nhất một sản phẩm để thanh toán."));
-            }
-
-            if (model.PaymentOption != PaymentOption.OneMonth.GetHashCode()
-                && model.PaymentOption != PaymentOption.ThreeMonths.GetHashCode())
-            {
-                return Json(new JsonReturn(false, $"Chưa chọn hình thức thanh toán!"));
-            }
-            // Fetch the selected courses from the repository
             var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
-            long price = 0;
-            if (model.PaymentOption == PaymentOption.OneMonth.GetHashCode())
-            {
-                price = course.Price * (100 - 10) / 100;
-            }
-            else if (model.PaymentOption == PaymentOption.ThreeMonths.GetHashCode())
-            {
-                price = course.Price * (100 - 15) / 100;
-            }
-
             if (course == null)
-            {
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
-            }
 
-            var order = new Order();
-            order.PaymentOption = (PaymentOption)model.PaymentOption;
-            if (!String.IsNullOrEmpty(model.VoucherCode))
-            {
-                var voucher = _voucherRepository.Find(x => x.Code == model.VoucherCode).FirstOrDefault();
-                if (voucher == null || voucher.StartDate.Date > DateTimeExtensions.UTCNowVN.Date)
-                {
-                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} không tồn tại!"));
-                }
-                if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
-                {
-                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} đã hết hạn!"));
-                }
-                if (voucher.Quantity <= 0)
-                {
-                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} đã hết!"));
-                }
-                if (voucher.DiscountRate > 0)
-                {
-                    price = price * (100 - voucher.DiscountRate) / 100;
-                }
-                else if (voucher.DiscountAmount > 0)
-                {
-                    price -= voucher.DiscountAmount;
-                }
-                order.Voucher = voucher;
-                var quantity = voucher.Quantity - 1 > 0 ? voucher.Quantity - 1 : 0;
-                _voucherRepository.UpdateQuantity(voucher.Id, quantity);
-            }
+            if (!Enum.IsDefined(typeof(PaymentOption), model.PaymentOption))
+                return Json(new JsonReturn(false, "Chưa chọn hình thức thanh toán!"));
 
-            order.Created = DateTimeExtensions.UTCNowVN;
-            order.CreatedBy = User?.Identity?.Name;
-            order.ModifiedBy = User?.Identity?.Name;
-            order.Modified = DateTimeExtensions.UTCNowVN;
-            order.Price = course.Price;
-            order.Status = OrderStatus.Pending;
-            order.Username = User.Identity.Name;
-            order.CustomerName = model.CustomerName;
-            order.CustomerPhone = model.CustomerPhone;
-            order.CustomerEmail = model.CustomerEmail;
-            order.Course = course;
-            order.CourseIds = new List<Guid> { courseId };
-            order.CustomerNote = model.CustomerNote;
-            order.VerifyImageUrl = model.VerifyImageUrl;
-            order.StatusHistories = new List<OrderStatusDetails>
+            long basePrice = model.PaymentOption switch
             {
-                new OrderStatusDetails
-                {
-                    ActionTime = DateTimeExtensions.UTCNowVN,
-                    Status = OrderStatus.Pending,
-                    Author = User?.Identity?.Name
-                }
+                (int)PaymentOption.OneMonth => course.Price * 90 / 100,
+                (int)PaymentOption.ThreeMonths => course.Price * 85 / 100,
+                _ => course.Price
             };
-            order.Code = User.Identity.Name.Length > 4
-                ? User.Identity.Name.Substring(0, 4) + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
-                : User.Identity.Name.Length + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss");
-            order.Price = course.Price;
 
-            // Save the order
-            _orderRepository.UpsertAsync(order);
+            // Áp dụng voucher
+            Voucher? appliedVoucher = null;
+            long finalPrice = basePrice;
+            if (!string.IsNullOrWhiteSpace(model.VoucherCode))
+            {
+                var (isValid, message, voucher, newPrice) = ValidateVoucher(model.VoucherCode, basePrice);
+                if (!isValid) return Json(new JsonReturn(false, message));
+                appliedVoucher = voucher;
+                finalPrice = newPrice;
+                _voucherRepository.UpdateQuantity(voucher.Id, Math.Max(0, voucher.Quantity - 1));
+            }
 
-            // Send email notification
-            _mailService.OrderStatusChanged(order);
-
-            // return Json(new JsonReturn(true, "Đặt hàng thành công!"));
-            TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
-            return RedirectToAction("MyOrders");
-        }
-
-        public IActionResult Voucher(string code)
+            var order = new Order
+            {
+                Created = DateTimeExtensions.UTCNowVN,
+                Modified = DateTimeExtensions.UTCNowVN,
+                CreatedBy = User.Identity.Name,
+                ModifiedBy = User.Identity.Name,
+                Username = User.Identity.Name,
+                CustomerName = model.CustomerName,
+                CustomerPhone = model.CustomerPhone,
+                CustomerEmail = model.CustomerEmail,
+                CustomerNote = model.CustomerNote,
+                VerifyImageUrl = model.VerifyImageUrl,
+                PaymentOption = (PaymentOption)model.PaymentOption,
+                Course = course,
+                CourseIds = new List<Guid> { courseId },
+                Status = OrderStatus.Pending,
+                StatusHistories = new List<OrderStatusDetails>
         {
-            if (String.IsNullOrEmpty(code))
+            new OrderStatusDetails
             {
-                return Json(new JsonReturn(false, $"Mã giảm giá trống!"));
+                ActionTime = DateTimeExtensions.UTCNowVN,
+                Status = OrderStatus.Pending,
+                Author = User.Identity.Name
             }
-            code = code.Trim();
-            var voucher = _voucherRepository.Find(x => x.Code == code).FirstOrDefault();
-            if (voucher == null
-                || new DateTime(voucher.StartDate.Year, voucher.StartDate.Month, voucher.StartDate.Day) > new DateTime(DateTimeExtensions.UTCNowVN.Year, DateTimeExtensions.UTCNowVN.Month, DateTimeExtensions.UTCNowVN.Day))
+        },
+                Code = $"{User.Identity.Name[..Math.Min(4, User.Identity.Name.Length)]}{DateTimeExtensions.UTCNowVN:yyMMddHHmmss}",
+                Price = finalPrice,
+                Voucher = appliedVoucher
+            };
+
+            var result = _orderRepository.UpsertAsync(order);
+            if (result != null)
             {
-                return Json(new JsonReturn(false, $"Mã giảm giá {code} không tồn tại!"));
+                _mailService.OrderStatusChanged(order);
+                TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
+                return RedirectToAction("MyOrders");
             }
-            if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
+            else
             {
-                return Json(new JsonReturn(false, $"Mã giảm giá {code} đã hết hạn!"));
+                return Json(new JsonReturn(false, "Có lỗi khi lưu đơn hàng, vui lòng thử lại."));
             }
-            if (voucher.Quantity <= 0)
-            {
-                return Json(new JsonReturn(false, $"Mã giảm giá {code} đã hết!"));
-            }
-            return Json(new JsonReturn(true, voucher.DiscountRate > 0 ? $"{voucher.DiscountRate}%" : $"{voucher.DiscountAmount}vnd"));
         }
 
         [HttpPost]
@@ -262,6 +205,29 @@ namespace Demo.Web.Controllers
             var model = (myCourses, suggestCourses);
             return View(model);
         }
+
+        private (bool isValid, string message, Voucher? voucher, long finalPrice) ValidateVoucher(string? code, long originalPrice)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return (false, "Mã giảm giá trống!", null, originalPrice);
+
+            var voucher = _voucherRepository.Find(x => x.Code == code.Trim()).FirstOrDefault();
+            if (voucher == null || voucher.StartDate.Date > DateTimeExtensions.UTCNowVN.Date)
+                return (false, $"Mã giảm giá {code} không tồn tại!", null, originalPrice);
+
+            if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
+                return (false, $"Mã giảm giá {code} đã hết hạn!", null, originalPrice);
+
+            if (voucher.Quantity <= 0)
+                return (false, $"Mã giảm giá {code} đã hết!", null, originalPrice);
+
+            var discountedPrice = voucher.DiscountRate > 0
+                ? originalPrice * (100 - voucher.DiscountRate) / 100
+                : originalPrice - voucher.DiscountAmount;
+
+            return (true, "", voucher, Math.Max(discountedPrice, 0));
+        }
+
 
         private async Task<string> RenderRazorViewToStringAsync(string viewName, object model)
         {

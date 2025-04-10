@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using Demo.Core.Services;
 using Demo.Application.Services.IServices;
+using Demo.Core.Enums;
 
 namespace Demo.Infrastructure.Mail
 {
@@ -35,7 +36,7 @@ namespace Demo.Infrastructure.Mail
                     // Gửi mail cho kế toán
                     AccountantOrderPending(order);
                     break;
-                case OrderStatus.Paid:
+                case OrderStatus.Approved:
                     SendCustomerOrder(order, "CustomerOrderApproved", $"{_systemParameters.Domain}/khoa-hoc-cua-toi", "Đơn hàng của bạn đã được duyệt");
                     break;
                 case OrderStatus.Canceled:

@@ -2,11 +2,8 @@
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
 using Demo.Web.Areas.Admin.Models;
-using Demo.Web.Models;
 using System.Diagnostics;
-using Demo.Database.Repositories;
 using Demo.Core.Enums;
-using Demo.Core.ValueObjects;
 using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
@@ -40,11 +37,11 @@ namespace Demo.Web.Areas.Admin.Controllers
             var (startDate, endDate) = DateTimeExtensions.GetDateRange(filterType);
 
             // Tổng doanh thu từ khóa học đã bán
-            var totalRevenue = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
+            var totalRevenue = _orderRepository.Find(o => o.Status == OrderStatus.Approved && o.Created >= startDate && o.Created <= endDate)
                                 .Sum(o => o.Price);
 
             // Tổng số khách hàng đã mua ít nhất một khóa học
-            var totalCustomers = _orderRepository.Find(o => o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
+            var totalCustomers = _orderRepository.Find(o => o.Status == OrderStatus.Approved && o.Created >= startDate && o.Created <= endDate)
                                 .Select(o => o.Username).Distinct().Count();
 
             // Tổng số đơn hàng đã thanh toán
@@ -88,7 +85,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                     .ToList();
 
             // Nhóm đơn hàng theo ngày
-            var orders = _orderRepository.Find(o => o.Deleted != true && o.Status == OrderStatus.Paid && o.Created >= startDate && o.Created <= endDate)
+            var orders = _orderRepository.Find(o => o.Deleted != true && o.Status == OrderStatus.Approved && o.Created >= startDate && o.Created <= endDate)
                              .ToList(); // Fetch trước, xử lý sau
 
             var ordersByDay = orders.GroupBy(o => o.Created.Date)

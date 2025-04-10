@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Demo.Application.Models;
 using Demo.Application.Repositories;
-using Demo.Web.Filters;
 using Demo.Common.Extensions;
 using Demo.Core.Models;
 using Demo.Application.Services.IServices;
+using Demo.Core.Enums;
+using Demo.Core.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
