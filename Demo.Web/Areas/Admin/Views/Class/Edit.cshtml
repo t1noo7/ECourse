@@ -1,0 +1,86 @@
+@using Demo.Core.Models
+@using Demo.Web.Extensions
+@model Class
+
+@{
+    ViewData["Title"] = "Thiết lập Lớp";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
+}
+
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+        <form method="post" enctype="multipart/form-data" asp-controller="Class" asp-action="Edit" id="editForm">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Created)
+            @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <p>Model ID: @Model.Id</p>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.ClassName) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.ClassName, new
+                        {
+                            Class = "form-control form-control-smy",
+                            required = "required"
+                        })
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.CourseId)
+                    <select class="form-control" id="courseSelection" name="CourseId">
+                        @if (Model != null && Model.CourseId != Guid.Empty)
+                        {
+                            var selectedCourse = courses?.FirstOrDefault(c => c.Id == Model.CourseId);
+
+                            if (selectedCourse != null)
+                            {
+                                <option value="@selectedCourse.Id" selected disabled>@selectedCourse.Title</option>
+                            }
+                            else
+                            {
+                                <option value="">-- Khoá học không tồn tại --</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="">-- Chọn khoá học --</option>
+                            @foreach (var course in courses ?? new List<Course>())
+                            {
+                                @Html.Raw($"<option value='{course.Id}' {(course.Id == Model?.CourseId ? "selected" : "")}>{course.Title}</option>")
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Description, new
+                        {
+                            Class = "form-control form-control-smy h-100"
+                        })
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Content) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Content, new
+                        {
+                            Class = "form-control form-control-smy h-100",
+                            required =
+                             "required"
+                        })
+                </div>
+            </div>
+            <hr />
+            <div class="mb-2">
+                <button class="btn btn-success" type="button" onclick="$('#editForm').submit()">Lưu</button>
+                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>

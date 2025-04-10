@@ -1,5 +1,5 @@
 ﻿using Demo.Common.Extensions;
-using Demo.Core.ValueObjects;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Models
 {

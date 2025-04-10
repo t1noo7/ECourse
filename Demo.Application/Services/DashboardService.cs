@@ -1,7 +1,6 @@
 ﻿using Demo.Application.Repositories;
 using Demo.Application.Services.IServices;
 using Demo.Core.Enums;
-using Demo.Core.ValueObjects;
 
 namespace Demo.Application.Services
 {
@@ -36,11 +35,11 @@ namespace Demo.Application.Services
             }
 
             var lastPeriodRevenue = _orderRepository
-                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Approved)
                 .Sum(o => (decimal?)o.Price) ?? 0;
 
             var currentPeriodRevenue = _orderRepository
-                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Approved)
                 .Sum(o => (decimal?)o.Price) ?? 0;
 
             return CalculateChangeRate(lastPeriodRevenue, currentPeriodRevenue);
@@ -68,11 +67,11 @@ namespace Demo.Application.Services
             }
 
             var lastPeriodOrders = _orderRepository
-                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Approved)
                 .Count();
 
             var currentPeriodOrders = _orderRepository
-                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Approved)
                 .Count();
 
             return CalculateChangeRate(lastPeriodOrders, currentPeriodOrders);
@@ -100,13 +99,13 @@ namespace Demo.Application.Services
             }
 
             var lastPeriodCustomers = _orderRepository
-                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= previousStartDate && o.Created <= previousEndDate && o.Status == OrderStatus.Approved)
                 .Select(o => o.Username)
                 .Distinct()
                 .Count();
 
             var thisPeriodCustomers = _orderRepository
-                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Paid)
+                .Find(o => o.Created >= startDate && o.Created <= endDate && o.Status == OrderStatus.Approved)
                 .Select(o => o.Username)
                 .Distinct()
                 .Count();

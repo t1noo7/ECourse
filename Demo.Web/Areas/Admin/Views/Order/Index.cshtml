@@ -29,6 +29,9 @@
                     Giá (VNĐ)
                 </th>
                 <th>
+                    Xác thực thanh toán
+                </th>
+                <th>
                     Ngày tạo
                 </th>
                 <th>
@@ -52,11 +55,24 @@
                             @item.CustomerName
                         </td>
                         <td>
-                            @item.GetCourseNames()
+                            @item.Course?.Title
                         </td>
                         <td>
                             @item.Price.ToString("N0")
                         </td>
+                        @if (string.IsNullOrEmpty(item.VerifyImageUrl))
+                        {
+                            <td>
+                                <span class="badge badge-danger">Chưa xác thực</span>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <img src="@item.VerifyImageUrl" class="img64x64" style="cursor: zoom-in;"
+                                    onclick="showImageZoomCinema('@item.VerifyImageUrl')" />
+                            </td>
+                        }
                         <td>
                             @item.Created.ToString("dd/MM/yyyy")
                         </td>
@@ -70,3 +86,41 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function showImageZoomCinema(src) {
+            // Nếu overlay đã tồn tại thì không thêm nữa
+            if (document.getElementById("imageOverlayZoom")) return;
+
+            const overlay = document.createElement("div");
+            overlay.className = "image-overlay-cinema";
+            overlay.id = "imageOverlayZoom";
+
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = "Zoomed Image";
+
+            overlay.appendChild(img);
+
+            overlay.addEventListener("click", () => {
+                overlay.remove();
+                document.documentElement.classList.remove("zoom-lock");
+            });
+
+            // Escape để tắt
+            const escClose = function (e) {
+                if (e.key === "Escape") {
+                    overlay.remove();
+                    document.documentElement.classList.remove("zoom-lock");
+                    document.removeEventListener("keydown", escClose);
+                }
+            };
+            document.addEventListener("keydown", escClose);
+
+            // THAY ĐỔI Ở ĐÂY: thêm vào document.body TRỰC TIẾP
+            document.body.appendChild(overlay);
+            document.documentElement.classList.add("zoom-lock");
+        }
+    </script>
+}

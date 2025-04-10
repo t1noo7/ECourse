@@ -1,0 +1,10 @@
+﻿using Demo.Core.Models;
+using Demo.Core.Repositories;
+
+namespace Demo.Application.Repositories
+{
+    public interface IVoucherRepository : IBaseRepository<Voucher>
+    {
+        Task UpdateQuantity(Guid id, int quantity);
+    }
+}

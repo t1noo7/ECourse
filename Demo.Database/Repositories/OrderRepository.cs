@@ -22,7 +22,7 @@ namespace Demo.Database.Repositories
 
             if (!string.IsNullOrWhiteSpace(filter.courses))
             {
-                filterDefinition &= builder.Regex(m => m.GetCourseNames(), new BsonRegularExpression($"{filter.courses.Trim()}", "i"));
+                filterDefinition &= builder.Regex(m => m.Course.Title, new BsonRegularExpression($"{filter.courses.Trim()}", "i"));
             }
 
             if (filter.OrderStatus.HasValue)
