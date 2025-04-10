@@ -124,8 +124,8 @@
                             </a>
                         </td>
                         <td>
-                            <a href="javascript:void(0)" class="btn btn-secondary m-r-5" onclick="loadDetails('@item.Id')"><i class="far fa-file-alt"></i></a>
-                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-secondary m-r-5 btn-sm" onclick="loadDetails('@item.Id')"><i class="far fa-file-alt"></i></a>
+                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5 btn-sm" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 }
