@@ -67,7 +67,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                     }).ToList();
 
             // Khóa học phổ biến
-            var popularCourses = _orderRepository.Find(o => o.Course != null && o.Created >= startDate && o.Created <= endDate)
+            var popularCourses = _orderRepository.Find(o => o.Course != null && o.Status == OrderStatus.Approved && o.Created >= startDate && o.Created <= endDate)
                     .GroupBy(o => o.Course)
                     .Select(g => new
                     {

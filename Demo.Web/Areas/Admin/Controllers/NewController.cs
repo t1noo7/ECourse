@@ -132,7 +132,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _newRepository.SetAsync(id, nameof(Course.Deleted), true);
+            await _newRepository.SetAsync(id, nameof(New.Deleted), true);
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
             else return Redirect(returnUrl);
         }
