@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Demo.Core.ValueObjects
+namespace Demo.Core.Enums
 {
     public enum ClassState
     {

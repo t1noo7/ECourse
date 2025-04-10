@@ -3,10 +3,10 @@ using Demo.Application.Repositories;
 using Demo.Application.Services;
 using Demo.Core.Models;
 using Demo.Core.Repositories;
-using Demo.Core.ValueObjects;
 using System.Net;
 using System.Net.Mail;
 using Demo.Core.Services;
+using Demo.Core.Enums;
 
 namespace Demo.Infrastructure.Mail
 {

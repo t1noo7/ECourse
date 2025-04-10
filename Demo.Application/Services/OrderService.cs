@@ -1,6 +1,6 @@
 ﻿using Demo.Application.Repositories;
+using Demo.Core.Enums;
 using Demo.Core.Models;
-using Demo.Core.ValueObjects;
 
 namespace Demo.Application.Services
 {
@@ -20,7 +20,7 @@ namespace Demo.Application.Services
 
         List<Order> IOrderService.GetActiveCourse(string username)
         {
-            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Paid || x.Status == OrderStatus.Pending).ToList();
+            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Approved || x.Status == OrderStatus.Pending).ToList();
         }
     }
 }

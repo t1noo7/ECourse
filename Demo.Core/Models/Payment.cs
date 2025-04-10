@@ -1,5 +1,4 @@
-﻿using Demo.Core.Models;
-using Demo.Core.ValueObjects;
+﻿using Demo.Core.Enums;
 
 namespace Demo.Core.Models
 {

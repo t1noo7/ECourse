@@ -12,7 +12,9 @@ namespace Demo.Core.Models
         public string? Description { get; set; }
 
         [Display(Name = "Khóa học")]
-        public Guid CourseId { get; set; }
+        // public Guid CourseId { get; set; }
+
+        public Course Course { get; set; }
 
         [Display(Name = "Video")]
         [Required(ErrorMessage = "Video không được để trống")]
@@ -21,5 +23,10 @@ namespace Demo.Core.Models
         [Display(Name = "Nội dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; }
+
+        // public string GetCourseNames()
+        // {
+        //     return Course != null ? string.Join(", ", Course.Title) : "No courses registered";
+        // }
     }
 }

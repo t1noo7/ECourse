@@ -4,12 +4,10 @@ using Demo.Application.Repositories;
 using Demo.Application.Services;
 using Demo.Core.Models;
 using Demo.Core.Repositories;
-using Demo.Core.ValueObjects;
 using Demo.Web.Models;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
 using Demo.Web.ViewModels;
 
@@ -22,7 +20,8 @@ namespace Demo.Web.Controllers
         private readonly IOrderService _orderService;
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
-        //private readonly IVoucherRepository _voucherRepository;
+        private readonly IVoucherRepository _voucherRepository;
+        private readonly IFileService _fileService;
         private readonly ISystemParameters _systemParameters;
         private readonly IPaymentService _paymentService;
         //private readonly IMailService _mailService;
@@ -36,7 +35,8 @@ namespace Demo.Web.Controllers
             IOrderService orderService,
             IOrderRepository orderRepository,
             IUserRepository userRepository,
-            //IVoucherRepository voucherRepository,
+            IVoucherRepository voucherRepository,
+            IFileService fileService,
             ISystemParameters systemParameters,
             IPaymentService paymentService,
             //IMailService mailService,
@@ -50,9 +50,10 @@ namespace Demo.Web.Controllers
             _orderService = orderService;
             _orderRepository = orderRepository;
             _userRepository = userRepository;
+            _fileService = fileService;
             _systemParameters = systemParameters;
             _paymentService = paymentService;
-            //_voucherRepository = voucherRepository;
+            _voucherRepository = voucherRepository;
             //_mailService = mailService;
             _razorViewEngine = razorViewEngine;
             _serviceProvider = serviceProvider;
@@ -62,7 +63,7 @@ namespace Demo.Web.Controllers
 
         [HttpGet]
         public IActionResult Checkout(Guid courseId)
-        { 
+        {
             if (User?.Identity?.IsAuthenticated != true)
             {
                 return RedirectToAction("Login", "Account", new { returnUrl = $"/Order/Checkout?courseId={courseId}" });
@@ -81,6 +82,12 @@ namespace Demo.Web.Controllers
                 model.CourseId = course.Id;
             }
             ViewBag.Course = course;
+            var bankInfo = _systemParameters.BankInfo;
+            if (!string.IsNullOrEmpty(bankInfo))
+            {
+                bankInfo = bankInfo.Replace("\r\n", "<br/>");
+            }
+            ViewData["BankInfo"] = bankInfo ?? "";
             return View(model);
         }
 
@@ -105,27 +112,72 @@ namespace Demo.Web.Controllers
                 return Json(new JsonReturn(false, "Vui lòng chọn ít nhất một sản phẩm để thanh toán."));
             }
 
+            if (model.PaymentOption != PaymentOption.OneMonth.GetHashCode()
+                && model.PaymentOption != PaymentOption.ThreeMonths.GetHashCode())
+            {
+                return Json(new JsonReturn(false, $"Chưa chọn hình thức thanh toán!"));
+            }
             // Fetch the selected courses from the repository
-            var courses = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
-            if (courses == null)
+            var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
+            long price = 0;
+            if (model.PaymentOption == PaymentOption.OneMonth.GetHashCode())
+            {
+                price = course.Price * (100 - 10) / 100;
+            }
+            else if (model.PaymentOption == PaymentOption.ThreeMonths.GetHashCode())
+            {
+                price = course.Price * (100 - 15) / 100;
+            }
+
+            if (course == null)
             {
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
             }
 
             var order = new Order();
-            // Gán các thuộc tính của Order
+            order.PaymentOption = (PaymentOption)model.PaymentOption;
+            if (!String.IsNullOrEmpty(model.VoucherCode))
+            {
+                var voucher = _voucherRepository.Find(x => x.Code == model.VoucherCode).FirstOrDefault();
+                if (voucher == null || voucher.StartDate.Date > DateTimeExtensions.UTCNowVN.Date)
+                {
+                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} không tồn tại!"));
+                }
+                if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
+                {
+                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} đã hết hạn!"));
+                }
+                if (voucher.Quantity <= 0)
+                {
+                    return Json(new JsonReturn(false, $"Mã giảm giá {model.VoucherCode} đã hết!"));
+                }
+                if (voucher.DiscountRate > 0)
+                {
+                    price = price * (100 - voucher.DiscountRate) / 100;
+                }
+                else if (voucher.DiscountAmount > 0)
+                {
+                    price -= voucher.DiscountAmount;
+                }
+                order.Voucher = voucher;
+                var quantity = voucher.Quantity - 1 > 0 ? voucher.Quantity - 1 : 0;
+                _voucherRepository.UpdateQuantity(voucher.Id, quantity);
+            }
+
             order.Created = DateTimeExtensions.UTCNowVN;
             order.CreatedBy = User?.Identity?.Name;
             order.ModifiedBy = User?.Identity?.Name;
             order.Modified = DateTimeExtensions.UTCNowVN;
-            order.Price = courses.Price;
+            order.Price = course.Price;
             order.Status = OrderStatus.Pending;
             order.Username = User.Identity.Name;
             order.CustomerName = model.CustomerName;
             order.CustomerPhone = model.CustomerPhone;
-            order.Course = courses;
-            //order.CustomerNote = model.CustomerNote;
-            //order.VerifyImageUrl = model.VerifyImageUrl;
+            order.CustomerEmail = model.CustomerEmail;
+            order.Course = course;
+            order.CourseIds = new List<Guid> { courseId };
+            order.CustomerNote = model.CustomerNote;
+            order.VerifyImageUrl = model.VerifyImageUrl;
             order.StatusHistories = new List<OrderStatusDetails>
             {
                 new OrderStatusDetails
@@ -138,7 +190,7 @@ namespace Demo.Web.Controllers
             order.Code = User.Identity.Name.Length > 4
                 ? User.Identity.Name.Substring(0, 4) + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
                 : User.Identity.Name.Length + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss");
-            order.Price = courses.Price;
+            order.Price = course.Price;
 
             // Save the order
             _orderRepository.UpsertAsync(order);
@@ -149,6 +201,43 @@ namespace Demo.Web.Controllers
             // return Json(new JsonReturn(true, "Đặt hàng thành công!"));
             TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
             return RedirectToAction("MyOrders");
+        }
+
+        public IActionResult Voucher(string code)
+        {
+            if (String.IsNullOrEmpty(code))
+            {
+                return Json(new JsonReturn(false, $"Mã giảm giá trống!"));
+            }
+            code = code.Trim();
+            var voucher = _voucherRepository.Find(x => x.Code == code).FirstOrDefault();
+            if (voucher == null
+                || new DateTime(voucher.StartDate.Year, voucher.StartDate.Month, voucher.StartDate.Day) > new DateTime(DateTimeExtensions.UTCNowVN.Year, DateTimeExtensions.UTCNowVN.Month, DateTimeExtensions.UTCNowVN.Day))
+            {
+                return Json(new JsonReturn(false, $"Mã giảm giá {code} không tồn tại!"));
+            }
+            if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
+            {
+                return Json(new JsonReturn(false, $"Mã giảm giá {code} đã hết hạn!"));
+            }
+            if (voucher.Quantity <= 0)
+            {
+                return Json(new JsonReturn(false, $"Mã giảm giá {code} đã hết!"));
+            }
+            return Json(new JsonReturn(true, voucher.DiscountRate > 0 ? $"{voucher.DiscountRate}%" : $"{voucher.DiscountAmount}vnd"));
+        }
+
+        [HttpPost]
+        public IActionResult Upload(IFormFile file)
+        {
+            if (file != null)
+            {
+                var date = DateTimeExtensions.UTCNowVN;
+                string ext = Path.GetExtension(file.FileName);
+                var url = _fileService.UpsertImage("orders", $"{date.Year}/{date.Month}/{Guid.NewGuid()}.{date.ToString("yyyyMMdd")}.{ext ?? "png"}", file.OpenReadStream());
+                return Json(new JsonReturn(true, url));
+            }
+            return Json(new JsonReturn(false));
         }
 
         public IActionResult MyOrders()

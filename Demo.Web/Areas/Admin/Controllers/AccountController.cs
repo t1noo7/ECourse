@@ -99,6 +99,70 @@ namespace Demo.Web.Areas.Admin.Controllers
             ViewBag.SearchModel = model;
 
             var orders = new List<Order>();
+            if (model.CourseName != null)
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true && o.Course.Title == model.CourseName).ToList();
+            }
+            else
+            {
+                orders = _orderRepository.Find(o => o.Deleted != true).ToList();
+            }
+
+            var usersWithOrders = orders.Select(o => o.Username).Distinct().ToHashSet();
+
+            // Lọc danh sách user: chỉ giữ lại những người có đơn hàng
+            var users = (await _userRepository.FindAsync(model))
+                        .Where(u => usersWithOrders.Contains(u.UserName))
+                        .ToList();
+
+            var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
+            var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
+
+        [HttpGet]
+        public async Task<IActionResult> UserDetails(string id)
+        {
+            ViewBag.Error = TempData["Error"];
+            ViewBag.Success = TempData["Success"];
+            var user = await _userRepository.GetByIdAsync(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UserDetails(User model, string returnUrl)
+        {
+            if (model.Email != null)
+                model.Email = model.Email.Trim().ToLower();
+
+            var user = await _userRepository.GetByIdAsync(model.Id.ToString());
+            user.Email = model.Email ?? user.Email;
+            user.FullName = model.FullName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Address = model.Address;
+            user.Updated = DateTimeExtensions.UTCNowVN;
+
+            var emailExisted = _userRepository.Find(m => m.Email != null && m.Email == model.Email && m.Id != model.Id).Any();
+            if (emailExisted)
+            {
+                ViewBag.Error = $"Email {model.Email} đã tồn tại";
+                return View(user);
+            }
+
+            await _userRepository.UpdateAsync(user);
+            return Redirect(returnUrl);
+        }
+        #endregion
+
+        #region Student
+        public async Task<IActionResult> Students(StudentFilter model)
+        {
+            if (model == null) model = new StudentFilter();
+            if (!_userGroupManager.HasPermission(User.Identity.Name, RoleList.Admin))
+                model.custom = "Khách hàng";
+
+            ViewBag.SearchModel = model;
+
+            var orders = new List<Order>();
             if(model.CourseName != null)
             {
                 orders = _orderRepository.Find(o => o.Deleted != true && o.Course.Title == model.CourseName).ToList();

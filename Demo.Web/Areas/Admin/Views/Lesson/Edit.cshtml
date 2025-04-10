@@ -40,7 +40,7 @@
             </div>
             <div class="row mb-lg-2">
                 <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.CourseId)
+                    @Html.LabelFor(m => m.Course.Id)
                     <select class="form-control" id="courseSelection" name="CourseId">
                         @if (courses != null)
                         {
@@ -50,7 +50,7 @@
                             <!-- Display the list of courses, excluding the selected one -->
                             @foreach (var course in courses)
                             {
-                                @if (course.Id != Model.CourseId)
+                                @if (course.Id != Model.Course.Id)
                                 {
                                     <option value="@course.Id">@course.Title</option>
                                 }
@@ -62,7 +62,7 @@
                             <option value="">-- Chọn khóa học --</option>
                             @foreach (var course in courses)
                             {
-                                <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
+                                <option value="@course.Id" selected="@(Model.Course.Id == course.Id ? "selected" : null)">
                                     @course.Title
                                 </option>
                             }
@@ -101,7 +101,7 @@
 
 @section scripts {
     <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
-            referrerpolicy="origin"></script>
+        referrerpolicy="origin"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var youtubeInput = document.getElementById("youtube-url");
@@ -126,10 +126,10 @@
                 }
 
                 previewContainer.innerHTML = `
-                        <iframe width="560" height="315"
-                            src="${embedUrl}"
-                            frameborder="0" allowfullscreen>
-                        </iframe>`;
+                            <iframe width="560" height="315"
+                                src="${embedUrl}"
+                                frameborder="0" allowfullscreen>
+                            </iframe>`;
             }
 
             youtubeInput.addEventListener("input", updatePreview);

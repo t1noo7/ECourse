@@ -1,0 +1,158 @@
+@model Demo.Application.ViewModels.AssignStudentsViewModel
+
+<div class="modal fade assign-students-modal" id="assignStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded border-0 animate__animated animate__fadeInUp">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">👨‍🏫 Gán học viên vào lớp</h5>
+                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm tên/email..." id="searchStudent"
+                        oninput="filterStudents()" />
+                </div>
+
+                <div class="table-responsive" style="max-height: 400px;">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>📚 Khoá học đã đăng ký</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignStudentTable">
+                            @foreach (var s in Model.ApprovedStudents)
+                            {
+                                <tr data-courseid="@s.RegisteredCourseId">
+                                    <td><input type="checkbox" value="@s.Id" data-course="@s.RegisteredCourseId" /></td>
+                                    <td>@s.FullName</td>
+                                    <td>@s.Email</td>
+                                    <td>@s.PhoneNumber</td>
+                                    <td>@s.CourseTitle</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Khoá học đã đăng ký:</label>
+                        <select class="form-select" id="assignedCourseSelect"
+                            onchange="loadClassesForCourse(this.value)">
+                            <option selected disabled>-- Chọn khoá học --</option>
+                            @foreach (var c in Model.AvailableCourses)
+                            {
+                                <option value="@c.Id">@c.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Lớp học:</label>
+                        <select class="form-select" id="assignedClassSelect" disabled>
+                            <option selected disabled>-- Chọn lớp học --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button id="confirmAddBtn" class="btn btn-primary" onclick="submitAssignStudents()" disabled>
+                        Xác nhận thêm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .assign-students-modal .modal-content {
+        animation: fadeInUp 0.6s ease-in-out;
+        border-radius: 1rem;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+
+<script>
+    function filterStudents() {
+        const keyword = $('#searchStudent').val().toLowerCase();
+        $('#assignStudentTable tr').each(function () {
+            const name = $(this).find('td:eq(1)').text().toLowerCase();
+            const email = $(this).find('td:eq(2)').text().toLowerCase();
+            $(this).toggle(name.includes(keyword) || email.includes(keyword));
+        });
+    }
+
+    function loadClassesForCourse(courseId) {
+        $('#assignedClassSelect').prop('disabled', true).html('<option>Đang tải...</option>');
+        $.get('/Admin/Class/GetAvailableClassesByCourse', { courseId: courseId }, function (data) {
+            let options = '<option disabled selected>-- Chọn lớp học --</option>';
+            data.forEach(cls => {
+                options += `<option value="${cls.id}">${cls.className} (${cls.studentCount}/25)</option>`;
+            });
+            $('#assignedClassSelect').html(options).prop('disabled', false);
+        });
+
+        validateAssignState(); // validate lại khi chọn khoá học
+    }
+
+    function validateAssignState() {
+        const hasCourse = $('#assignedCourseSelect').val();
+        const hasChecked = $('#assignStudentTable input:checked').length > 0;
+
+        $('#confirmAddBtn').prop('disabled', !(hasCourse && hasChecked));
+    }
+
+    $('#assignStudentTable input[type="checkbox"]').on('change', validateAssignState);
+    $('#assignedCourseSelect').on('change', validateAssignState);
+
+    function submitAssignStudents() {
+        const selectedStudentIds = $('#assignStudentTable input:checked').map((_, el) => el.value).get();
+        const courseId = $('#assignedCourseSelect').val();
+        const classId = $('#assignedClassSelect').val();
+
+        if (!courseId) {
+            alert("Vui lòng chọn khoá học để tiếp tục.");
+            return;
+        }
+
+        if (selectedStudentIds.length === 0) {
+            alert("Chưa chọn học viên để tiếp tục.");
+            return;
+        }
+
+        if (!classId) {
+            alert("Chưa chọn lớp để tiếp tục.");
+            return;
+        }
+
+        // Submit
+        $.post('/Admin/Class/AssignStudentsToClass', {
+            classId: classId,
+            studentIds: selectedStudentIds
+        }, function () {
+            location.reload(); // hoặc show toast
+        });
+    }
+
+    // Khi modal mở thì reset trạng thái nút
+    $('#assignStudentsModal').on('shown.bs.modal', function () {
+        validateAssignState();
+    });
+</script>
