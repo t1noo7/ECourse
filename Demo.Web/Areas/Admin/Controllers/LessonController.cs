@@ -41,7 +41,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(model.CourseName))
             {
-                var filteredCourseIds = courses.Where(c => c.Title == model.CourseName)
+                var filteredCourseIds = courses.Where(c => c.Title == model.CourseName.Trim())
                                                .Select(c => c.Id)
                                                .ToList();
                 lessons = lessons.Where(l => filteredCourseIds.Contains(l.CourseId)).ToList();
