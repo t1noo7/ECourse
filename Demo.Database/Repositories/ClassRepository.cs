@@ -38,27 +38,18 @@ namespace Demo.Database.Repositories
 
         public async Task<List<ApprovedStudentViewModel>> GetApprovedStudentsWithCourseAsync()
         {
-            // 1. Lấy đơn hàng đã duyệt
             var orders = await _orderRepository.GetAllAsync();
+
+            // 1. Lọc tất cả đơn hàng đã được duyệt
             var approvedOrders = orders
                 .Where(o => o.Status == OrderStatus.Approved &&
                             (!string.IsNullOrWhiteSpace(o.CustomerEmail) ||
                              !string.IsNullOrWhiteSpace(o.CustomerName) ||
                              !string.IsNullOrWhiteSpace(o.CustomerPhone)))
-                .GroupBy(o =>
-                {
-                    if (!string.IsNullOrWhiteSpace(o.CustomerEmail))
-                        return o.CustomerEmail.Trim().ToLower();
-                    if (!string.IsNullOrWhiteSpace(o.CustomerName))
-                        return o.CustomerName.Trim().ToLower();
-                    return o.CustomerPhone.Trim();
-                })
-                .Select(g => g.OrderByDescending(o => o.Created).First())
                 .ToList();
 
             // 2. Lấy danh sách user
             var users = await _userRepository.GetAllAsync();
-
             var userDict = users
                 .Where(u => !string.IsNullOrWhiteSpace(u.Email) ||
                             !string.IsNullOrWhiteSpace(u.UserName) ||
@@ -73,10 +64,10 @@ namespace Demo.Database.Repositories
                 })
                 .ToDictionary(g => g.Key, g => g.First());
 
-            // 3. Lấy danh sách học viên đã được xếp lớp
+            // 3. Lấy tất cả lớp và studentIds đã được xếp
             var allClasses = await GetAllAsync();
-            var assignedStudentIds = allClasses
-                .SelectMany(c => c.StudentIds)
+            var studentCoursePairs = allClasses
+                .SelectMany(c => c.StudentIds.Select(sid => new { sid, courseId = c.CourseId }))
                 .ToHashSet();
 
             var students = new List<ApprovedStudentViewModel>();
@@ -84,7 +75,6 @@ namespace Demo.Database.Repositories
             foreach (var order in approvedOrders)
             {
                 string? key = null;
-
                 if (!string.IsNullOrWhiteSpace(order.CustomerEmail))
                     key = order.CustomerEmail.Trim().ToLower();
                 else if (!string.IsNullOrWhiteSpace(order.CustomerName))
@@ -104,14 +94,18 @@ namespace Demo.Database.Repositories
                     continue;
                 }
 
-                if (assignedStudentIds.Contains(user.Id)) continue;
+                // ❗ Kiểm tra nếu học viên này đã được xếp lớp cho đúng khóa học này chưa
+                if (studentCoursePairs.Contains(new { sid = user.Id, courseId = order.Course.Id }))
+                {
+                    continue;
+                }
 
                 students.Add(new ApprovedStudentViewModel
                 {
                     Id = user.Id,
                     FullName = order.CustomerName,
                     Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
+                    PhoneNumber = order.CustomerPhone,
                     RegisteredCourseId = order.Course.Id,
                     CourseTitle = order.Course.Title
                 });
@@ -125,6 +119,8 @@ namespace Demo.Database.Repositories
             var @class = await GetByIdAsync(classId);
             if (@class == null) return new();
 
+            var courseId = @class.CourseId;
+
             var users = await _userRepository.GetAllAsync();
             var orders = await _orderRepository.GetAllAsync();
 
@@ -132,10 +128,13 @@ namespace Demo.Database.Repositories
                 .Where(u => @class.StudentIds.Contains(u.Id))
                 .Select(u =>
                 {
-                    // Match order theo Email
+                    // Match đơn hàng theo Email và đúng khoá học của lớp
                     var order = orders
-                        .Where(o => o.CustomerEmail?.ToLower() == u.Email?.ToLower())
-                        .OrderByDescending(o => o.Created) // Lấy đơn hàng mới nhất nếu có nhiều
+                        .Where(o =>
+                            o.CustomerEmail?.ToLower() == u.Email?.ToLower() &&
+                            o.Course?.Id == courseId &&
+                            o.Status == OrderStatus.Approved)
+                        .OrderByDescending(o => o.Created)
                         .FirstOrDefault();
 
                     return new StudentInClassViewModel

@@ -39,7 +39,6 @@ namespace Demo.Core.Models
 
         public List<Guid> CourseIds { get; set; } = new List<Guid>();
         public Voucher Voucher { get; set; } = new Voucher();
-        public PaymentOption PaymentOption { get; set; }
 
         public static IEnumerable<(OrderStatus value, string text)> GetPossibleStatuses()
         {

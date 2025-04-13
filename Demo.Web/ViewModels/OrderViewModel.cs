@@ -28,20 +28,5 @@ namespace Demo.Web.ViewModels
         /// Mã voucher
         /// </summary>
         public string? VoucherCode { get; set; }
-
-        /// <summary>
-        /// Hình thức thanh toán
-        /// </summary>
-        [Required(ErrorMessage = "Phải chọn hình thức thanh toán")]
-        [Range(1, 2, ErrorMessage = "Phải chọn hình thức thanh toán")]
-        public int PaymentOption { get; set; }
-
-        public IEnumerable<SelectListItem> PaymentOptions
-        {
-            get
-            {
-                return EnumHelper.EnumToListItems<PaymentOption>();
-            }
-        }
     }
 }

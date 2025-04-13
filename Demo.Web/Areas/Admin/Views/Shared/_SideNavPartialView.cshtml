@@ -22,8 +22,15 @@
             { *@
             <li>
                 <a href="/admin/order/index" data-href="/admin/order/edit//admin/order/details" class="br-menu-link">
-                    <i class="fa fa-edit"></i>
+                    <i class=" fa-solid fa-rectangle-list"></i>
                     <span>Quản lý đơn hàng</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/voucher/index" data-href="/admin/voucher/edit//admin/voucher/details"
+                    class="br-menu-link">
+                    <i class=" fa-solid fa-ticket"></i>
+                    <span>Quản lý Voucher</span>
                 </a>
             </li>
             @* } *@
@@ -39,20 +46,22 @@
                     </span>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="/admin/account/Users" data-href="/admin/account/AssignRoles//admin/account/UserDetails"
-                               class="br-menu-link">
+                            <a href="/admin/account/Users"
+                                data-href="/admin/account/AssignRoles//admin/account/UserDetails" class="br-menu-link">
                                 <i class="fa fa-group"></i>
                                 <span>Tài khoản quản trị</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/admin/account/Students" data-href="/admin/account/StudentDetails" class="br-menu-link">
+                            <a href="/admin/account/Students" data-href="/admin/account/StudentDetails"
+                                class="br-menu-link">
                                 <i class="fa fa-group"></i>
                                 <span>Tài khoản học viên</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/admin/account/Customers" data-href="/admin/account/CustomerDetails" class="br-menu-link">
+                            <a href="/admin/account/Customers" data-href="/admin/account/CustomerDetails"
+                                class="br-menu-link">
                                 <i class="fa fa-group"></i>
                                 <span>Tài khoản khách hàng</span>
                             </a>
@@ -131,7 +140,8 @@
             @* @if (allRoles.Contains(RoleList.Admin))
             { *@
             <li>
-                <a href="/admin/admin/SystemParameters/" data-href="/admin/admin/EditSystemParameter" class="br-menu-link">
+                <a href="/admin/admin/SystemParameters/" data-href="/admin/admin/EditSystemParameter"
+                    class="br-menu-link">
                     <i class="fa fa-android"></i>
                     <span>Danh mục quản trị</span>
                 </a>
