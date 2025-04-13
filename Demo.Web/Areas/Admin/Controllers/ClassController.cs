@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
 using Demo.Application.ViewModels;
+using Demo.Web.Areas.Admin.Models;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -24,18 +25,23 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index(Guid courseId)
+        public IActionResult Index()
         {
-            if (courseId != Guid.Empty)
+            List<ClassViewModel> classViewModel = new List<ClassViewModel>();
+
+            var classes = _classRepository.Find(x => x.Deleted == false).ToList();
+            var courses = _courseRepository.Find(x => x.Deleted == false).ToList();
+
+            classViewModel = classes.Select(classes => new ClassViewModel
             {
-                var classes = _classRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
-                return View(classes);
-            }
-            else
-            {
-                var classes = _classRepository.Find(x => x.Deleted == false).ToList();
-                return View(classes);
-            }
+                Id = classes.Id,
+                ClassName = classes.ClassName,
+                CourseName = courses.FirstOrDefault(c => c.Id == classes.CourseId)?.Title ?? "Không xác định",
+                StudentIds = classes.StudentIds,
+                Created = classes.Created
+            }).ToList();
+
+            return View(classViewModel);
         }
 
         public async Task<IActionResult> Details(Guid id)

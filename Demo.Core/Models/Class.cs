@@ -20,8 +20,5 @@ namespace Demo.Core.Models
 
         [BsonRepresentation(BsonType.ObjectId)]
         public List<ObjectId> StudentIds { get; set; } = new();
-
-        [BsonIgnore]
-        public string StudentIdsDisplay => string.Join(", ", StudentIds.Select(x => x.ToString()));
     }
 }
