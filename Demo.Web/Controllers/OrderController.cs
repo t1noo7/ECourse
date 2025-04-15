@@ -104,24 +104,16 @@ namespace Demo.Web.Controllers
 
             var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
             if (course == null)
-                return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
+                return Json(new JsonReturn(false, "Không tìm thấy khóa học đã chọn, vui lòng thử lại."));
 
-            if (!Enum.IsDefined(typeof(PaymentOption), model.PaymentOption))
-                return Json(new JsonReturn(false, "Chưa chọn hình thức thanh toán!"));
-
-            long basePrice = model.PaymentOption switch
-            {
-                (int)PaymentOption.OneMonth => course.Price * 90 / 100,
-                (int)PaymentOption.ThreeMonths => course.Price * 85 / 100,
-                _ => course.Price
-            };
+            long basePrice = course.Price;
 
             // Áp dụng voucher
             Voucher? appliedVoucher = null;
             long finalPrice = basePrice;
             if (!string.IsNullOrWhiteSpace(model.VoucherCode))
             {
-                var (isValid, message, voucher, newPrice) = ValidateVoucher(model.VoucherCode, basePrice);
+                var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(model.VoucherCode, basePrice);
                 if (!isValid) return Json(new JsonReturn(false, message));
                 appliedVoucher = voucher;
                 finalPrice = newPrice;
@@ -140,7 +132,6 @@ namespace Demo.Web.Controllers
                 CustomerEmail = model.CustomerEmail,
                 CustomerNote = model.CustomerNote,
                 VerifyImageUrl = model.VerifyImageUrl,
-                PaymentOption = (PaymentOption)model.PaymentOption,
                 Course = course,
                 CourseIds = new List<Guid> { courseId },
                 Status = OrderStatus.Pending,
@@ -158,7 +149,7 @@ namespace Demo.Web.Controllers
                 Voucher = appliedVoucher
             };
 
-            var result = _orderRepository.UpsertAsync(order);
+            var result = await _orderRepository.UpsertAsync(order);
             if (result != null)
             {
                 _mailService.OrderStatusChanged(order);
@@ -206,28 +197,23 @@ namespace Demo.Web.Controllers
             return View(model);
         }
 
-        private (bool isValid, string message, Voucher? voucher, long finalPrice) ValidateVoucher(string? code, long originalPrice)
+        [HttpPost]
+        public async Task<IActionResult> ValidateVoucher(string code, long originalPrice)
         {
-            if (string.IsNullOrWhiteSpace(code))
-                return (false, "Mã giảm giá trống!", null, originalPrice);
+            var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(code, originalPrice);
 
-            var voucher = _voucherRepository.Find(x => x.Code == code.Trim()).FirstOrDefault();
-            if (voucher == null || voucher.StartDate.Date > DateTimeExtensions.UTCNowVN.Date)
-                return (false, $"Mã giảm giá {code} không tồn tại!", null, originalPrice);
+            if (!isValid)
+                return Json(new { success = false, message });
 
-            if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
-                return (false, $"Mã giảm giá {code} đã hết hạn!", null, originalPrice);
-
-            if (voucher.Quantity <= 0)
-                return (false, $"Mã giảm giá {code} đã hết!", null, originalPrice);
-
-            var discountedPrice = voucher.DiscountRate > 0
-                ? originalPrice * (100 - voucher.DiscountRate) / 100
-                : originalPrice - voucher.DiscountAmount;
-
-            return (true, "", voucher, Math.Max(discountedPrice, 0));
+            return Json(new
+            {
+                success = true,
+                finalPrice = newPrice,
+                voucherCode = voucher?.Code,
+                discountRate = voucher?.DiscountRate,
+                discountAmount = voucher?.DiscountAmount
+            });
         }
-
 
         private async Task<string> RenderRazorViewToStringAsync(string viewName, object model)
         {

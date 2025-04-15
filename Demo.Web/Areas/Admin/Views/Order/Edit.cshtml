@@ -40,9 +40,6 @@
                             <li class="list-group-item rounded-top-0">
                                 <p class="mg-b-0"><i class="fa fa-check tx-success mg-r-8"></i> <span class="text-muted">Trạng thái đơn: </span> <strong class="tx-inverse tx-medium">@Model.Status.GetEnumDescription()</strong></p>
                             </li>
-                            <li class="list-group-item rounded-top-0">
-                                <p class="mg-b-0"><i class="fa fa-check tx-success mg-r-8"></i> <span class="text-muted">Loại thanh toán: </span> <strong class="tx-inverse tx-medium">@Model.PaymentOption.GetEnumDescription()</strong></p>
-                            </li>
                             @if (Model.Voucher?.Code != null)
                         {
                             <li class="list-group-item rounded-top-0">

@@ -71,20 +71,25 @@
             </div>
 
             <div class="form-group">
-                <label class="fw-bold">Hình thức thanh toán</label>
-                @Html.DropDownListFor(x => x.PaymentOption, Model.PaymentOptions, new
-                    {
-                        @class = "form-control"
-                    })
-                <p>Số tiền được giảm trừ: <span id="paymentOptionDiscountPrice" class="text-success">0</span> VNĐ</p>
-            </div>
-            <div class="form-group">
                 <label class="fw-bold">Mã giảm giá</label>
-                @Html.TextBoxFor(x => x.VoucherCode, new { @class = "form-control" })
-                <span id="spVoucher" class="green"></span><br />
-                <span id="paymentVoucherPrice" class="green" data-price="-1"></span>
-                <button class="form-control" id="btVoucher">Áp dụng</button>
+                <div class="d-flex gap-2" style="max-width: 400px;">
+                    @Html.TextBoxFor(x => x.VoucherCode, new
+                        {
+                            @class = "form-control w-75",
+                            @id = "VoucherCode",
+                            placeholder = "Nhập mã"
+                        })
+                    <button class="btn btn-success w-25 h-100" type="button" id="btVoucher" style="white-space: nowrap;">
+                        Áp dụng
+                    </button>
+                </div>
+
+                <span id="spVoucher" class="text-success mt-1 d-block"></span>
+                <span id="paymentVoucherPrice" class="text-success d-block" data-price="0"></span>
             </div>
+
+
+
             <div class="form-group">
                 <label class="fw-bold">Thông tin thanh toán</label>
                 <p>@Html.Raw(ViewData["BankInfo"])</p>
@@ -115,120 +120,140 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $(document).on("click", "#confirmCheckout", function () {
-                CreateOrder();
+            // Xử lý nút "Xác nhận đặt hàng"
+            $("#confirmCheckout").on("click", function () {
+                createOrder();
             });
 
-            function CreateOrder() {
-                var paymentOption = $("#PaymentOption").val();
-                if (paymentOption != '1' && paymentOption != '2') {
-                    alert("Chưa chọn loại thanh toán!");
-                    return;
-                }
+            // Gửi đơn hàng
+            async function createOrder() {
+                $('#loadingModal').modal('show');
 
-                $('#loadingModal').modal();
-                setTimeout(function () {
-                    var model = $("#frmOrder").serializeObject();
-                    var courses = [];
+                try {
+                    await delay(300); // Đợi 300ms giả lập loading
+
+                    const model = $("#frmOrder").serializeObject();
+                    const courses = [];
+
                     $(".course:checked").each(function () {
                         courses.push({ 'Id': $(this).attr("data-courseid") });
                     });
-                    var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Checkout", { model: model, productIds: courses });
-                    if (result && result.success) {
-                        $('#loadingModal').modal('hide');
+
+                    const result = await $.post("/Order/Checkout", {
+                        model: model,
+                        productIds: courses
+                    });
+
+                    $('#loadingModal').modal('hide');
+
+                    if (result?.success) {
                         alert("Đặt hàng thành công!");
-                        setTimeout(function () {
-                            window.location = "/Order/MyOrder";
+                        setTimeout(() => {
+                            window.location.href = "/Order/MyOrder";
                         }, 1000);
                     } else {
-                        $('#loadingModal').modal('hide');
-                        alert(result.message);
+                        alert(result?.message || "Có lỗi xảy ra khi xử lý đơn hàng.");
                     }
-                }, 300);
-            }
-
-            function voucher(code) {
-                var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Voucher", { code: code });
-                if (result && result.success) {
-                    var price = $("#paymentOptionDiscountPrice").attr("data-price") * 1;
-                    var discount = 0;
-
-                    if (result.message.includes('%')) {
-                        var percent = result.message.replace('%', '') * 1;
-                        discount = price * percent / 100;
-                    } else if (result.message.includes('vnd')) {
-                        discount = result.message.replace('vnd', '') * 1;
-                    }
-
-                    $("#spVoucher").html("Giảm giá: " + result.message);
-                    $("#paymentVoucherPrice").attr("data-price", discount);
-                    $("#paymentVoucherPrice").html("Số tiền sau khi áp dụng voucher: " + discount.toLocaleString() + " vnd");
-                    totalPrice();
-                } else {
-                    toastr.error(result.message);
+                } catch (error) {
+                    $('#loadingModal').modal('hide');
+                    alert("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
+                    console.error("Checkout Error:", error);
                 }
             }
 
-            function totalPrice() {
-                var coursePrice = $("#coursePrice").data("price") * 1 || 0;
-                var discountPrice = $("#coursePrice").data("discount") * 1 || 0;
-                var finalPrice = discountPrice > 0 ? discountPrice : coursePrice;
+            const coursePrice = $("#coursePrice").data("discount") || $("#coursePrice").data("price");
+            updateTotal(coursePrice, 0);
 
-                var paymentDiscount = $("#paymentOptionDiscountPrice").attr("data-price") * 1 || 0;
-                var voucherDiscount = $("#paymentVoucherPrice").attr("data-price") * 1 || 0;
-
-                var total = (finalPrice - paymentDiscount - voucherDiscount);
-                total = total > 0 ? total : 0;
-
-                $("#paymentTotalPrice").text(total.toLocaleString() + " VNĐ");
-            }
-
-            $("#PaymentOptions").change(function () {
-                var discount = $(this).find(":selected").data("discount") * 1 || 0;
-                $("#paymentOptionDiscountPrice").text(discount.toLocaleString());
-                totalPrice();
-            });
-
-            $("#btVoucher").click(function (e) {
+            $("#btVoucher").on("click", async function (e) {
                 e.preventDefault();
-                var code = $("#VoucherCode").val();
+                const code = $("#VoucherCode").val()?.trim();
+
                 if (!code) {
                     alert("Vui lòng nhập mã giảm giá.");
                     return;
                 }
-                $.post("/Order/Voucher", { code: code }, function (result) {
-                    if (result.success) {
-                        var discount = result.discount * 1;
-                        $("#spVoucher").text("Giảm giá: " + discount.toLocaleString() + " VNĐ");
-                        $("#paymentOptionDiscountPrice").text(discount.toLocaleString());
-                        totalPrice();
+
+                const $btn = $(this);
+                $btn.prop("disabled", true).text("Đang kiểm tra...");
+
+                try {
+                    const result = await $.post("/Order/ValidateVoucher", {
+                        code,
+                        originalPrice: coursePrice
+                    });
+
+                    if (result?.success) {
+                        const finalPrice = result.finalPrice || coursePrice;
+                        const discount = coursePrice - finalPrice;
+
+                        $("#VoucherCode").val(code);
+                        $("#spVoucher").text("Giảm giá: " + discount.toLocaleString("vi-VN") + " VNĐ");
+
+                        $("#paymentVoucherPrice")
+                            .data("price", discount)
+                            .html("Số tiền sau khi áp dụng voucher: " + finalPrice.toLocaleString("vi-VN") + " VNĐ")
+                            .addClass("highlight");
+
+                        updateTotal(finalPrice, discount);
+                        highlightTotal();
+                        highlightDiscount();
                     } else {
-                        alert(result.message);
+                        alert(result.message || "Mã giảm giá không hợp lệ.");
+                        resetVoucherInfo();
                     }
-                });
-            });
-
-            totalPrice();
-
-            $('#PaymentOption').on('change', function () {
-                var val = $(this).val();
-                var coursePrice = parseFloat($("#coursePrice").data("price")) || 0;
-                var discount = 0;
-
-                if (val == '1') {
-                    discount = coursePrice * 0.10;
-                } else if (val == '2') {
-                    discount = coursePrice * 0.15;
+                } catch (err) {
+                    alert("Không thể kiểm tra mã giảm giá. Vui lòng thử lại.");
+                    console.error("Voucher Error:", err);
+                    resetVoucherInfo();
+                } finally {
+                    $btn.prop("disabled", false).text("Áp dụng");
                 }
-
-                var discountedPrice = coursePrice - discount;
-
-                $("#paymentOptionPrice").html(discountedPrice.toLocaleString() + " VNĐ");
-                $("#paymentOptionDiscountPrice").attr("data-price", discount);
-                $("#paymentOptionDiscountPrice").html(discount.toLocaleString() + " VNĐ");
-
-                totalPrice();
             });
+
+            function updateTotal(total, discount) {
+                $("#voucherDiscountAmount").text(discount.toLocaleString("vi-VN") + " VNĐ");
+                $("#paymentTotalPrice").text(total.toLocaleString("vi-VN") + " VNĐ");
+            }
+
+            function resetVoucherInfo() {
+                $("#VoucherCode").val("");
+                $("#spVoucher").text("");
+                $("#paymentVoucherPrice").data("price", 0).text("").removeClass("highlight");
+                $("#voucherDiscountAmount").text("0 VNĐ");
+                updateTotal(coursePrice, 0);
+            }
+
+            function highlightTotal() {
+                const $total = $("#paymentTotalPrice");
+                $total.addClass("highlight-blink");
+                setTimeout(() => {
+                    $total.removeClass("highlight-blink");
+                }, 1500);
+            }
+
+            function highlightDiscount() {
+                const $discount = $("#voucherDiscountAmount");
+                $discount.addClass("highlight-blink");
+                setTimeout(() => {
+                    $discount.removeClass("highlight-blink");
+                }, 1500);
+            }
+
+            // Custom style for highlight effect
+            $("<style>")
+                .prop("type", "text/css")
+                .html(`
+                                    .highlight { font-weight: bold; color: green; }
+                                    .highlight-blink {
+                                        animation: blinkEffect 1.5s ease-in-out;
+                                    }
+                    @@keyframes blinkEffect {
+                                        0% { background-color: #d4edda; }
+                                        50% { background-color: #c3e6cb; }
+                                        100% { background-color: transparent; }
+                                    }
+                                `)
+                .appendTo("head");
 
             $('#fileInput').on('change', function () {
                 if (this.files && this.files[0]) {
