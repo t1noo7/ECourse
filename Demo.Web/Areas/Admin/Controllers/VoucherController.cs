@@ -3,6 +3,7 @@ using Demo.Application.Repositories;
 using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Filters;
+using Demo.Common.Extensions;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -20,10 +21,12 @@ namespace Demo.Web.Areas.Admin.Controllers
             _voucherRepository = voucherRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var gardens = _voucherRepository.GetAll().Where(m => !m.Deleted).OrderByDescending(m => m.Created).ToList();
-            return View(gardens);
+            var vouchers = _voucherRepository.GetAll().Where(m => !m.Deleted).OrderByDescending(m => m.Created).ToList();
+
+            var pagedResult = vouchers.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Edit(Guid? id)
