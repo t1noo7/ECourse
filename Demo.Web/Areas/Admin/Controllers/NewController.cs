@@ -24,11 +24,13 @@ namespace Demo.Web.Areas.Admin.Controllers
             _newRepository = newRepository;
             _fileService = fileService;
         }
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
 
             var news = _newRepository.Find(x => x.Deleted == false).ToList();
-            return View(news);
+
+            var pagedResult = news.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Edit(Guid? id)

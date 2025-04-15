@@ -10,6 +10,7 @@ using Demo.Web.Areas.Admin.Models;
 using Demo.Application.Services;
 using Demo.Application.Repositories;
 using Demo.Application.Models;
+using Demo.Database.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -24,6 +25,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         private readonly IUserGroupRepository _groupRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IClassRepository _classRepository;
 
         public AccountController(ILogger<AccountController> logger,
             UserManager<User> userManager,
@@ -31,7 +33,8 @@ namespace Demo.Web.Areas.Admin.Controllers
             IUserGroupManager userGroupManager,
             IUserGroupRepository groupRepository,
             IOrderRepository orderRepository,
-            ICourseRepository courseRepository
+            ICourseRepository courseRepository,
+            IClassRepository classRepository
             )
         {
             _logger = logger;
@@ -41,17 +44,20 @@ namespace Demo.Web.Areas.Admin.Controllers
             _groupRepository = groupRepository;
             _orderRepository = orderRepository;
             _courseRepository = courseRepository;
+            _classRepository = classRepository;
         }
 
         #region User
-        public async Task<IActionResult> Users(FilterModel model)
+        public async Task<IActionResult> Users(FilterModel model, int page = 1)
         {
             if (model == null) model = new FilterModel();
             if (!_userGroupManager.HasPermission(User.Identity.Name, RoleList.Admin))
                 model.custom = "Khách hàng";
             ViewBag.SearchModel = model;
             var users = await _userRepository.FindAsync(model);
-            return View(users);
+
+            var pagedResult = users.GetPaged(page);
+            return View(pagedResult);
         }
 
         [HttpGet]
@@ -90,7 +96,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         #endregion
 
         #region Student
-        public async Task<IActionResult> Students(StudentFilter model)
+        public async Task<IActionResult> Students(StudentFilter model, int page = 1)
         {
             if (model == null) model = new StudentFilter();
             if (!_userGroupManager.HasPermission(User.Identity.Name, RoleList.Admin))
@@ -118,6 +124,9 @@ namespace Demo.Web.Areas.Admin.Controllers
             var courseIds = orders.Select(o => o.Course.Id).Distinct().ToList();
             var courses = _courseRepository.Find(c => courseIds.Contains(c.Id)).ToList();
 
+            var userIds = users.Select(u => u.Id).ToList();
+            var userClasses = _classRepository.Find(c => c.StudentIds.Any(sid => userIds.Contains(sid))).ToList();
+
             List<StudentViewModel> studentViewModels = users.Select(user =>
             {
                 // Lấy danh sách các khóa học mà User đã đặt hàng
@@ -129,17 +138,25 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 var userCourses = courses.Where(c => userCourseIds.Contains(c.Id)).ToList();
 
+                var classes = userClasses
+                    .Where(c => c.StudentIds.Contains(user.Id))
+                    .Distinct()
+                    .ToList();
+
                 return new StudentViewModel
                 {
                     Id = user.Id,
                     UserName = user.UserName,
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
-                    Course = userCourses
+                    Course = userCourses,
+                    Class = classes
                 };
             }).ToList();
 
-            return View(studentViewModels);
+            var pagedResult = studentViewModels.GetPaged(page);
+
+            return View(pagedResult);
         }
 
 
@@ -169,7 +186,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         #endregion
 
         #region Customer
-        public async Task<IActionResult> Customers(FilterModel model)
+        public async Task<IActionResult> Customers(FilterModel model, int page = 1)
         {
             if (model == null) model = new FilterModel();
 
@@ -177,7 +194,9 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             ViewBag.SearchModel = model;
             var users = await _userRepository.FindAsync(model);
-            return View(users);
+
+            var pagedResult = users.GetPaged(page);
+            return View(pagedResult);
         }
 
         public async Task<IActionResult> CustomerDetails(string id)

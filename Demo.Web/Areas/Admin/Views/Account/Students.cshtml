@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Demo.Web.Areas.Admin.Models.StudentViewModel>
+﻿@model Demo.Common.Models.Pagination<Demo.Web.Areas.Admin.Models.StudentViewModel>
 @using Microsoft.AspNetCore.Http.Extensions
 @using Demo.Core.Permission
 @inject Demo.Core.Services.IUserGroupManager _roleManager
@@ -35,18 +35,19 @@
                     Lớp Học
                 </th>
                 <th>Tình trạng</th>
+                <th>Hành động</th>
             </tr>
 
             @{
-                var stt = 1;
-                foreach (var item in Model)
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items)
                 {
                     <tr class="stat even">
                         <td class="ac">
                             @(stt++)
                         </td>
                         <td>
-                            <a href="@Url.Action("StudentDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.UserName @item.FullName</a>
+                            @item.UserName @item.FullName
                         </td>
                         <td>
                             @item.Email
@@ -55,25 +56,29 @@
                             @item.PhoneNumber
                         </td>
                         <td>
-                            @foreach(var course in item.Course)
+                            @foreach (var course in item.Course)
                             {
-                                @course.Title
+                                @course.Title <br />
                             }
                         </td>
                         <td>
-                            
+                            @foreach (var cls in item.Class)
+                            {
+                                @cls.ClassName <br />
+                            }
                         </td>
                         <td>
                             @if (isAdmin)
                             {
                                 <a href="@Url.Action("LockUser", new { id = item.Id, isLocked = !item.IsLocked })" onclick="return confirm('Bạn có chắc chắn muốn @(item.IsLocked ? "mở khóa" : "khóa người dùng")?')" class="text-info">
-                                    @if (item.IsLocked == true)
+                                    @if (item.IsLocked)
                                     {
                                         <div class="d-flex align-items-center">
                                             <div class="badge badge-danger badge-dot m-r-10"></div>
                                             <div>Không Hoạt Động</div>
                                         </div>
-                                    } else
+                                    }
+                                    else
                                     {
                                         <div class="d-flex align-items-center">
                                             <div class="badge badge-success badge-dot m-r-10"></div>
@@ -81,15 +86,17 @@
                                         </div>
                                     }
                                 </a>
-                            } else
+                            }
+                            else
                             {
-                                if (item.IsLocked == true)
+                                if (item.IsLocked)
                                 {
                                     <div class="d-flex align-items-center">
                                         <div class="badge badge-danger badge-dot m-r-10"></div>
                                         <div>Không Hoạt Động</div>
                                     </div>
-                                } else
+                                }
+                                else
                                 {
                                     <div class="d-flex align-items-center">
                                         <div class="badge badge-success badge-dot m-r-10"></div>
@@ -98,9 +105,14 @@
                                 }
                             }
                         </td>
+                        <td>
+                            <a href="@Url.Action("StudentDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-secondary m-r-5 btn-sm"><i class="far fa-file-alt"></i></a>
+                        </td>
                     </tr>
                 }
             }
+
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

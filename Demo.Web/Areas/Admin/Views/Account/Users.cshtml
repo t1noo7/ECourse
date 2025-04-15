@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Demo.Core.Models.User>
+﻿@model Demo.Common.Models.Pagination<Demo.Core.Models.User>
 @using Microsoft.AspNetCore.Http.Extensions
 @using Demo.Core.Permission
 @inject Demo.Core.Services.IUserGroupManager _roleManager
@@ -17,6 +17,7 @@
 <div class="card mt-2 mb-2 shadow-base">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
+            <thead style="background-color: #e3e6f0;">
             <tr>
                 <th>STT</th>
                 <th>
@@ -35,18 +36,19 @@
                     </th>
                 }
                 <th>Tình trạng</th>
+                <th>Hành động</th>
             </tr>
-
+            </thead>
             @{
                 var stt = 1;
-                foreach (var item in Model)
+                foreach (var item in Model.Items)
                 {
                     <tr class="stat even">
                         <td class="ac">
                             @(stt++)
                         </td>
                         <td>
-                            <a href="@Url.Action("UserDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.UserName @item.FullName</a>
+                            @item.UserName @item.FullName
                         </td>
                         <td>
                             @item.Email
@@ -60,7 +62,7 @@
                                 @{
                                     var roles = item.CustomRoles.Any() ? string.Join("<br />", item.CustomRoles) : "Phân quyền";
                                 }
-                                <a href="@Url.Action("AssignRoles", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@Html.Raw(roles)</a>
+                                @Html.Raw(roles)
                             </td>
                         }
                         <td>
@@ -98,9 +100,14 @@
                                 }
                             }
                         </td>
+                        <td>
+                            <a href="@Url.Action("UserDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-secondary m-r-5 btn-sm"><i class="far fa-file-alt"></i></a>
+                            <a href="@Url.Action("AssignRoles", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        </td>
                     </tr>
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

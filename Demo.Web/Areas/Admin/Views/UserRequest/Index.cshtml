@@ -1,5 +1,4 @@
-﻿@using Demo.Core.Models
-@model List<UserRequest>
+﻿@model Demo.Common.Models.Pagination<Demo.Core.Models.UserRequest>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách phản hồi khách hàng";
@@ -96,8 +95,8 @@
             </tr>
 
             @{
-                var stt = 1;
-                foreach (var item in Model.OrderByDescending(x => x.Created))
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items.OrderByDescending(m => m.Created))
                 {
                     <tr class="stat even">
                         <td class="ac">
@@ -131,6 +130,7 @@
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>
 

@@ -9,6 +9,6 @@ namespace Demo.Application.Models
 {
     public class ClassFilter : FilterModel
     {
-        public string Course { get; set; }
+        public string CourseName { get; set; }
     }
 }

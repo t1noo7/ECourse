@@ -36,13 +36,15 @@ namespace Demo.Web.Areas.Admin.Controllers
             _userRepository = userRepository;
         }
 
-        public async Task<IActionResult> Index(OrderFilter filter)
+        public async Task<IActionResult> Index(OrderFilter filter, int page = 1)
         {
             if (filter == null) filter = new OrderFilter { OrderStatus = OrderStatus.Pending };
 
             ViewBag.SearchModel = filter;
             var orders = await _orderRepository.FindAsync(filter);
-            return View(orders);
+
+            var pagedResult = orders.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Edit(Guid id)
