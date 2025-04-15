@@ -28,7 +28,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index(LessonFilter model)
+        public IActionResult Index(LessonFilter model, int page = 1)
         {
             List<LessonViewModel> lessonViewModels = new List<LessonViewModel>();
 
@@ -41,7 +41,7 @@ namespace Demo.Web.Areas.Admin.Controllers
 
             if (!string.IsNullOrEmpty(model.CourseName))
             {
-                var filteredCourseIds = courses.Where(c => c.Title == model.CourseName)
+                var filteredCourseIds = courses.Where(c => c.Title == model.CourseName.Trim())
                                                .Select(c => c.Id)
                                                .ToList();
                 lessons = lessons.Where(l => filteredCourseIds.Contains(l.CourseId)).ToList();
@@ -56,7 +56,8 @@ namespace Demo.Web.Areas.Admin.Controllers
                 Created = lesson.Created
             }).ToList();
 
-            return View(lessonViewModels);
+            var pagedResult = lessonViewModels.GetPaged(page);
+            return View(pagedResult);
         }
 
 

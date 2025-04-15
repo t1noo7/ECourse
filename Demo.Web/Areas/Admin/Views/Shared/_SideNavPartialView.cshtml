@@ -137,6 +137,16 @@
             </li>
             @* } *@
 
+            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            { *@
+            <li>
+                <a href="/admin/userrequest/index" data-href="/admin/userrequest/details" class="br-menu-link">
+                    <i class="fas fa-comment-alt"></i>
+                    <span>Quản lý phản hồi khách hàng</span>
+                </a>
+            </li>
+            @* } *@
+
             @* @if (allRoles.Contains(RoleList.Admin))
             { *@
             <li>

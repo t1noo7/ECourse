@@ -1,10 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
 using Demo.Core.Models;
 using Demo.Web.Helpers;
 using Demo.Application.ViewModels;
+using Demo.Web.Areas.Admin.Models;
+using Demo.Application.Models;
+using DnsClient;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -24,18 +27,34 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index(Guid courseId)
+        public IActionResult Index(ClassFilter model, int page = 1)
         {
-            if (courseId != Guid.Empty)
+            List<ClassViewModel> classViewModel = new List<ClassViewModel>();
+
+            var courses = _courseRepository.Find(x => x.Deleted == false).ToList();
+            var classes = _classRepository.Find(x => !x.Deleted).ToList();
+
+            if (!string.IsNullOrEmpty(model.CourseName))
             {
-                var classes = _classRepository.Find(x => x.Deleted == false && x.CourseId == courseId).ToList();
-                return View(classes);
+                var searchedCourse = courses
+            .Where(c => c.Title.Contains(model.CourseName.Trim(), StringComparison.OrdinalIgnoreCase))
+            .Select(c => c.Id)
+            .ToList();
+
+                classes = classes.Where(x => searchedCourse.Contains(x.CourseId)).ToList();
             }
-            else
+
+            classViewModel = classes.Select(classes => new ClassViewModel
             {
-                var classes = _classRepository.Find(x => x.Deleted == false).ToList();
-                return View(classes);
-            }
+                Id = classes.Id,
+                ClassName = classes.ClassName,
+                CourseName = courses.FirstOrDefault(c => c.Id == classes.CourseId)?.Title ?? "Không xác định",
+                StudentIds = classes.StudentIds,
+                Created = classes.Created
+            }).ToList();
+
+            var pagedResult = classViewModel.GetPaged(page);
+            return View(pagedResult);
         }
 
         public async Task<IActionResult> Details(Guid id)
@@ -99,8 +118,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                             model.FriendlyUrl = url + "-" + new Random().Next(1, 100);
                         }
                         while (_classRepository.Find(x => x.FriendlyUrl == model.FriendlyUrl && x.Deleted != true).FirstOrDefault() != null);
-                    }
-                    else
+                    } else
                     {
                         model.FriendlyUrl = url;
                     }
@@ -109,8 +127,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 await _classRepository.UpsertAsync(model);
                 if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
                 else return Redirect(returnUrl);
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while saving");
                 return View(model);

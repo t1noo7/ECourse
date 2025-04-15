@@ -28,10 +28,12 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
             _fileService = fileService;
         }
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
             var courses = _courseRepository.Find(x => x.Deleted == false).ToList();
-            return View(courses);
+
+            var pagedResult = courses.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Edit(Guid? id)

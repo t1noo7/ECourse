@@ -14,6 +14,9 @@ namespace Demo.Core.Models
         [Display(Name = "Khóa học")]
         public Guid CourseId { get; set; }
 
+        [Display(Name = "Lớp học")]
+        public Guid ClassId { get; set; }
+
         [Display(Name = "Video")]
         [Required(ErrorMessage = "Video không được để trống")]
         public string YouTubeUrl { get; set; }
@@ -21,10 +24,5 @@ namespace Demo.Core.Models
         [Display(Name = "Nội dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
         public string Content { get; set; }
-
-        // public string GetCourseNames()
-        // {
-        //     return Course != null ? string.Join(", ", Course.Title) : "No courses registered";
-        // }
     }
 }

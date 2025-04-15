@@ -1,5 +1,4 @@
-﻿@using Demo.Core.Models
-@model List<Category>
+﻿@model Demo.Common.Models.Pagination<Demo.Core.Models.Category>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách danh mục";
@@ -19,7 +18,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">Danh sách Danh mục</h4>
     <a href="@Url.Action("Edit", new { returnUrl = Context.Request.GetEncodedUrl()})"
-       class="btn btn-primary btn-sm">
+       class="btn btn-primary">
         <i class="anticon anticon-plus-circle m-r-5"></i>Thêm Mới
     </a>
 </div>
@@ -27,26 +26,27 @@
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>
-                    Tên Danh Mục
-                </th>
-                <th>
-                    Ảnh
-                </th>
-                <th>
-                    Ngày Tạo
-                </th>
-                <th>
-                    Trạng Thái
-                </th>
-                <th></th>
-            </tr>
-
+            <thead style="background-color: #e3e6f0;">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        Tên Danh Mục
+                    </th>
+                    <th>
+                        Ảnh
+                    </th>
+                    <th>
+                        Ngày Tạo
+                    </th>
+                    <th>
+                        Trạng Thái
+                    </th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
             @{
-                var stt = 1;
-                foreach (var item in Model.OrderByDescending(x => x.Created))
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items.OrderByDescending(x => x.Created))
                 {
                     <tr class="stat even">
                         <td class="ac">
@@ -78,12 +78,13 @@
                             </a>
                         </td>
                         <td>
-                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="@Url.Action("Delete", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-danger m-r-5 btn-sm" onclick="return confirm('Bạn có chắc muốn xóa?')"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

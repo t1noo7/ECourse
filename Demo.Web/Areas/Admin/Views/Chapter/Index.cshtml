@@ -19,20 +19,21 @@
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>
-                    Tên học phần
-                </th>
-                <th>
-                    Ngày tạo
-                </th>
-                <th>
-                    Trạng thái
-                </th>
-                <th></th>
-            </tr>
-
+            <thead class="thead-gray">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        Tên học phần
+                    </th>
+                    <th>
+                        Ngày tạo
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
             @{
                 var stt = 1;
                 foreach (var item in Model.OrderBy(x => x.Created))
