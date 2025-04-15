@@ -72,12 +72,24 @@
 
             <div class="form-group">
                 <label class="fw-bold">Mã giảm giá</label>
-                @Html.TextBoxFor(x => x.VoucherCode, new { @class = "form-control", @id = "VoucherCode" })
-                <span id="spVoucher" class="green"></span><br />
-                <span id="paymentVoucherPrice" class="green" data-price="0"></span>
-                <button class="form-control mt-2" id="btVoucher">Áp dụng</button>
+                <div class="d-flex gap-2" style="max-width: 400px;">
+                    @Html.TextBoxFor(x => x.VoucherCode, new
+                        {
+                            @class = "form-control w-75",
+                            @id = "VoucherCode",
+                            placeholder = "Nhập mã"
+                        })
+                    <button class="btn btn-success w-25 h-100" type="button" id="btVoucher" style="white-space: nowrap;">
+                        Áp dụng
+                    </button>
+                </div>
 
+                <span id="spVoucher" class="text-success mt-1 d-block"></span>
+                <span id="paymentVoucherPrice" class="text-success d-block" data-price="0"></span>
             </div>
+
+
+
             <div class="form-group">
                 <label class="fw-bold">Thông tin thanh toán</label>
                 <p>@Html.Raw(ViewData["BankInfo"])</p>
