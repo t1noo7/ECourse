@@ -1,0 +1,33 @@
+﻿@model dynamic
+@{
+    var currentUrl = Context.Request.Path;
+    var queryParams = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end mt-3">
+        @if (Model.HasPreviousPage)
+        {
+            queryParams["page"] = (Model.PageIndex - 1).ToString();
+            <li class="page-item">
+                <a class="page-link" href="@($"{currentUrl}?{string.Join("&", queryParams.Select(q => $"{q.Key}={q.Value}"))}")">Trước</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            queryParams["page"] = i.ToString();
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="@($"{currentUrl}?{string.Join("&", queryParams.Select(q => $"{q.Key}={q.Value}"))}")">@i</a>
+            </li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            queryParams["page"] = (Model.PageIndex + 1).ToString();
+            <li class="page-item">
+                <a class="page-link" href="@($"{currentUrl}?{string.Join("&", queryParams.Select(q => $"{q.Key}={q.Value}"))}")">Tiếp</a>
+            </li>
+        }
+    </ul>
+</nav>

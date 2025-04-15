@@ -1,5 +1,4 @@
-@using Demo.Web.Areas.Admin.Models
-@model List<LessonViewModel>
+@model Demo.Common.Models.Pagination<Demo.Web.Areas.Admin.Models.LessonViewModel>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách bài giảng";
@@ -31,23 +30,24 @@
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>
-                    Tên bài giảng
-                </th>
-                <th>
-                    Thuộc khóa học
-                </th>
-                <th>
-                    Ngày tạo
-                </th>
-                <th></th>
-            </tr>
-
+            <thead style="background-color: #e3e6f0;">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        Tên bài giảng
+                    </th>
+                    <th>
+                        Thuộc khóa học
+                    </th>
+                    <th>
+                        Ngày tạo
+                    </th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
             @{
-                var stt = 1;
-                foreach (var item in Model)
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items)
                 {
                     <tr class="stat even">
                         <td class="ac">
@@ -68,6 +68,7 @@
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
         <div class="text-center">
             <nav aria-label="Page navigation">
                 <ul class="pagination">

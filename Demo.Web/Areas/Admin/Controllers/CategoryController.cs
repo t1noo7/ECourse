@@ -29,10 +29,12 @@ namespace Demo.Web.Areas.Admin.Controllers
             _fileService = fileService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
             var categories = _categoryRepository.Find(x => x.Deleted == false).ToList();
-            return View(categories);
+
+            var pagedResult = categories.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Edit(Guid? id)

@@ -5,27 +5,63 @@
     var returnUrl = ViewBag.ReturnUrl ?? "/";
 }
 
-<h3 class="text-center mb-4">Xác minh tài khoản</h3>
+<style>
+    body {
+        background: url('/assets/img/carosel-4.png') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+    }
 
-<form asp-action="RegisterVerify" method="post" class="mx-auto" style="max-width: 400px;">
-    <div class="d-flex justify-content-center gap-2 mb-4" id="code-inputs">
-        @for (int i = 0; i < 6; i++)
-        {
-            <input type="text" maxlength="1" class="form-control text-center code-input" style="width: 50px; height: 50px; font-size: 24px;" />
+    .verify-container {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 40px 30px;
+        max-width: 500px;
+        margin: 100px auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .code-input {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+        .code-input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
         }
-    </div>
+</style>
 
-    <input type="hidden" asp-for="Code" id="HiddenCode" />
-    <input type="hidden" asp-for="Email" />
-    <input type="hidden" name="returnUrl" value="@returnUrl" />
+<div class="verify-container">
+    <h3 class="text-center mb-4">Xác minh tài khoản</h3>
 
-    <button type="submit" class="btn btn-success w-100">Xác minh</button>
-</form>
+    <form asp-action="RegisterVerify" method="post">
+        <div class="d-flex justify-content-center gap-2 mb-4" id="code-inputs">
+            @for (int i = 0; i < 6; i++)
+            {
+                <input type="text" maxlength="1" class="form-control text-center code-input" />
+            }
+        </div>
+
+        <input type="hidden" asp-for="Code" id="HiddenCode" />
+        <input type="hidden" asp-for="Email" />
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+        <button type="submit" class="btn btn-success w-100">Xác minh</button>
+    </form>
+</div>
 
 @section Scripts {
     <script>
         const inputs = document.querySelectorAll(".code-input");
         const hiddenInput = document.getElementById("HiddenCode");
+
+        if (inputs.length > 0) {
+            inputs[0].focus(); // Tự động focus khi vào trang
+        }
 
         inputs.forEach((input, index) => {
             input.addEventListener("input", () => {
@@ -49,7 +85,5 @@
         }
     </script>
 
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

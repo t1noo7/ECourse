@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Demo.Core.Models.User>
+﻿@model Demo.Common.Models.Pagination<Demo.Core.Models.User>
 @using Microsoft.AspNetCore.Http.Extensions
 @using Demo.Core.Permission
 @inject Demo.Core.Services.IUserGroupManager _roleManager
@@ -29,18 +29,19 @@
                     Số Điện Thoại
                 </th>
                 <th>Tình trạng</th>
+                <th>Hành động</th>
             </tr>
 
             @{
                 var stt = 1;
-                foreach (var item in Model)
+                foreach (var item in Model.Items)
                 {
                     <tr class="stat even">
                         <td class="ac">
                             @(stt++)
                         </td>
                         <td>
-                            <a href="@Url.Action("CustomerDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.UserName @item.FullName</a>
+                            @item.UserName @item.FullName
                         </td>
                         <td>
                             @item.Email
@@ -83,9 +84,13 @@
                                 }
                             }
                         </td>
+                        <td>
+                            <a href="@Url.Action("CustomerDetails", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-secondary m-r-5 btn-sm"><i class="far fa-file-alt"></i></a>
+                        </td>
                     </tr>
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

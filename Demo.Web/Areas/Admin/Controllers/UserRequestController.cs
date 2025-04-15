@@ -1,4 +1,5 @@
 ﻿using Demo.Application.Repositories;
+using Demo.Common.Extensions;
 using Demo.Core.Enums;
 using Demo.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,13 @@ namespace Demo.Web.Areas.Admin.Controllers
             _userRequestRepository = userRequestRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
 
             var model = _userRequestRepository.Find(x => x.Deleted == false).OrderByDescending(x => x.Created).ToList();
-            return View(model);
+
+            var pagedResult = model.GetPaged(page);
+            return View(pagedResult);
         }
 
         public IActionResult Details(Guid id)

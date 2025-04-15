@@ -27,7 +27,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             _courseRepository = courseRepository;
         }
 
-        public IActionResult Index(ClassFilter model)
+        public IActionResult Index(ClassFilter model, int page = 1)
         {
             List<ClassViewModel> classViewModel = new List<ClassViewModel>();
 
@@ -53,7 +53,8 @@ namespace Demo.Web.Areas.Admin.Controllers
                 Created = classes.Created
             }).ToList();
 
-            return View(classViewModel);
+            var pagedResult = classViewModel.GetPaged(page);
+            return View(pagedResult);
         }
 
         public async Task<IActionResult> Details(Guid id)

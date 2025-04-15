@@ -1,5 +1,4 @@
-@using Demo.Web.Areas.Admin.Models
-@model List<ClassViewModel>
+@model Demo.Common.Models.Pagination<Demo.Web.Areas.Admin.Models.ClassViewModel>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách lớp";
@@ -45,6 +44,10 @@
         border-radius: 50%;
         padding: 0.3rem;
     }
+
+    .table th {
+        background-color: #e3e6f0;
+    }
 </style>
 
 <div class="page-header">
@@ -84,12 +87,12 @@
                 <th>Tên khóa học</th>
                 <th>Số học viên</th>
                 <th>Ngày tạo</th>
-                <th></th>
+                <th>Hành động</th>
             </tr>
 
             @{
-                var stt = 1;
-                foreach (var item in Model.OrderBy(x => x.Created))
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items.OrderBy(x => x.Created))
                 {
                     <tr class="stat even">
                         <td>@(stt++)</td>
@@ -112,6 +115,7 @@
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>
 

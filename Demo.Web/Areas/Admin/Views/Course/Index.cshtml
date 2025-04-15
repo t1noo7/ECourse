@@ -1,5 +1,4 @@
-@using Demo.Core.Models
-@model List<Course>
+@model Demo.Common.Models.Pagination<Demo.Core.Models.Course>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách khoá học";
@@ -27,29 +26,30 @@
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>
-                    Tiêu Đề Khoá Học
-                </th>
-                <th>
-                    Ảnh
-                </th>
-                <th>
-                    Giá
-                </th>
-                <th>
-                    Ngày tạo
-                </th>
-                <th>
-                    Trạng thái
-                </th>
-                <th></th>
-            </tr>
-
+            <thead style="background-color: #e3e6f0;">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        Tiêu Đề Khoá Học
+                    </th>
+                    <th>
+                        Ảnh
+                    </th>
+                    <th>
+                        Giá
+                    </th>
+                    <th>
+                        Ngày tạo
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
             @{
-                var stt = 1;
-                foreach (var item in Model.OrderBy(x => x.Created))
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items.OrderBy(x => x.Created))
                 {
                     <tr class="stat even">
                         <td class="ac">
@@ -65,7 +65,8 @@
                             @if (item.DiscountPrice > 0 && item.DiscountPrice != null)
                             {
                                 @item.DiscountPrice?.ToString("0,00#")
-                            } else
+                            }
+                            else
                             {
                                 @item.Price.ToString("0,00#")
                             }
@@ -97,5 +98,6 @@
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

@@ -1,5 +1,4 @@
-@using Demo.Core.Models
-@model List<Order>
+@model Demo.Common.Models.Pagination<Demo.Core.Models.Order>
 @using Microsoft.AspNetCore.Http.Extensions
 @using Demo.Common.Extensions
 @{
@@ -14,42 +13,43 @@
 <div class="card mt-2 mb-2 shadow-base pd-b-10">
     <div class="card-body pb-0">
         <table class="table mg-b-0" cellspacing="0">
-            <tr>
-                <th>STT</th>
-                <th>
-                    ID Đơn hàng
-                </th>
-                <th>
-                    Tên khách hàng
-                </th>
-                <th>
-                    Khoá học đăng ký
-                </th>
-                <th>
-                    Giá (VNĐ)
-                </th>
-                <th>
-                    Xác thực thanh toán
-                </th>
-                <th>
-                    Ngày tạo
-                </th>
-                <th>
-                    Trạng thái
-                </th>
-            </tr>
-
+            <thead style="background-color: #e3e6f0;">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        ID Đơn hàng
+                    </th>
+                    <th>
+                        Tên khách hàng
+                    </th>
+                    <th>
+                        Khoá học đăng ký
+                    </th>
+                    <th>
+                        Giá (VNĐ)
+                    </th>
+                    <th>
+                        Xác thực thanh toán
+                    </th>
+                    <th>
+                        Ngày tạo
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
             @{
-                var stt = 1;
-                foreach (var item in Model.OrderByDescending(m => m.Created))
+                var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                foreach (var item in Model.Items.OrderByDescending(m => m.Created))
                 {
                     <tr class="stat even">
                         <td class="ac">
                             @(stt++)
                         </td>
                         <td>
-                            <a
-                                href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.Code</a>
+                            @item.Code
                         </td>
                         <td>
                             @item.CustomerName
@@ -70,7 +70,7 @@
                         {
                             <td>
                                 <img src="@item.VerifyImageUrl" class="img64x64" style="cursor: zoom-in;"
-                                    onclick="showImageZoomCinema('@item.VerifyImageUrl')" />
+                                     onclick="showImageZoomCinema('@item.VerifyImageUrl')" />
                             </td>
                         }
                         <td>
@@ -79,11 +79,14 @@
                         <td>
                             @item.Status.GetEnumDescription()
                         </td>
-
+                        <td>
+                            <a href="@Url.Action("Edit", new { item.Id, returnUrl = Context.Request.GetEncodedUrl()})" class="btn btn-success m-r-5 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        </td>
                     </tr>
                 }
             }
         </table>
+        <partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>
 
