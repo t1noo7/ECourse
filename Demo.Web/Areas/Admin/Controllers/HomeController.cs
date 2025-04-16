@@ -5,10 +5,12 @@ using Demo.Web.Areas.Admin.Models;
 using System.Diagnostics;
 using Demo.Core.Enums;
 using Demo.Application.Services.IServices;
+using Demo.Core.Permission;
+using Demo.Web.Filters;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Admin)]
+    [WebAuthorize(RoleList.Admin, RoleList.Account)]
     [Area("Admin")]
     public class HomeController : Controller
     {

@@ -58,7 +58,7 @@
                             @item.Course?.Title
                         </td>
                         <td>
-                            @item.Price.ToString("N0")
+                            @item.Price.ToString("#,##0")
                         </td>
                         @if (string.IsNullOrEmpty(item.VerifyImageUrl))
                         {

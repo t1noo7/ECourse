@@ -1,4 +1,5 @@
 
+using Demo.Application.Infrastructures;
 using Demo.Application.Repositories;
 using Demo.Application.Services.IServices;
 using Demo.Common.Extensions;
@@ -14,7 +15,7 @@ using MongoDB.Driver;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Admin, RoleList.Product)]
+    [WebAuthorize(RoleList.Admin, RoleList.Product)]
     [Area("Admin")]
     public class CourseController : Controller
     {

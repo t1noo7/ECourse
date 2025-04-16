@@ -2,11 +2,13 @@
 using Demo.Common.Extensions;
 using Demo.Core.Enums;
 using Demo.Core.Models;
+using Demo.Core.Permission;
+using Demo.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Sale, RoleList.Admin)]
+    [WebAuthorize(RoleList.Sale, RoleList.Admin)]
     [Area("Admin")]
     public class UserRequestController : Controller
     {

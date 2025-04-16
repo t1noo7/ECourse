@@ -9,7 +9,7 @@ using Demo.Application.Services.IServices;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    /*[WebAuthorize(RoleList.Admin)]*/
+    [WebAuthorize(RoleList.Admin)]
     [Area("Admin")]
     public class AdminController : Controller
     {

@@ -9,6 +9,7 @@ using Demo.Infrastructure.File;
 using Demo.Infrastructure.Mail;
 using Demo.Web.Helpers;
 using Demo.Application.Services.IServices;
+using Demo.Application.Infrastructures;
 
 namespace Demo.Web.Startup
 {
@@ -33,15 +34,11 @@ namespace Demo.Web.Startup
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IPaymentRepository, PaymentRepository>();
             services.AddTransient<IUserRequestRepository, UserRequestRepository>();
-            //services.AddTransient<IContactRepository, ContactRepository>();
             services.AddTransient<IVoucherRepository, VoucherRepository>();
-            //services.AddTransient<IGeneralItemRepository, GeneralItemRepository>();
             services.AddTransient<ICourseRepository, CourseRepository>();
             services.AddTransient<IChapterRepository, ChapterRepository>();
             services.AddTransient<ILessonRepository, LessonRepository>();
             services.AddTransient<IClassRepository, ClassRepository>();
-            //services.AddTransient<IEventRepository, EventRepository>();
-            //services.AddTransient<IBookRepository, BookRepository>();
             services.AddSingleton<IMongoClient>(s =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");

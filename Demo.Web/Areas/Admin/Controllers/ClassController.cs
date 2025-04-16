@@ -7,11 +7,12 @@ using Demo.Web.Helpers;
 using Demo.Application.ViewModels;
 using Demo.Web.Areas.Admin.Models;
 using Demo.Application.Models;
-using DnsClient;
+using Demo.Core.Permission;
+using Demo.Web.Filters;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
+    [WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
     [Area("Admin")]
     public class ClassController : Controller
     {

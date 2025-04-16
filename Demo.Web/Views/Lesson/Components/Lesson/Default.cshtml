@@ -7,6 +7,18 @@
         justify-content: center;
         width: 100%;
     }
+
+    .video-container {
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto 20px auto;
+    }
+
+        .video-container video,
+        .video-container iframe {
+            width: 100%;
+            height: 400px;
+        }
 </style>
 
 @if (Model != null)
@@ -14,12 +26,19 @@
     <div class="section-wrapper">
         <h2 class="section-title bg-white text-center text-primary px-3">@Model.Title</h2>
     </div>
-    @if (!string.IsNullOrEmpty(Model.YouTubeUrl))
-    {
-        <div class="video-container">
-            <iframe width="100%" height="400" src="@GetEmbeddedUrl(Model.YouTubeUrl)" frameborder="0" allowfullscreen></iframe>
-        </div>
-    }
+
+    <div class="video-container">
+        @if (!string.IsNullOrEmpty(Model.VideoPath))
+        {
+            <video controls>
+                <source src="@Url.Content(Model.VideoPath)" type="video/mp4" />
+                Trình duyệt của bạn không hỗ trợ video.
+            </video>
+        } else if (!string.IsNullOrEmpty(Model.YouTubeUrl))
+        {
+            <iframe src="@GetEmbeddedUrl(Model.YouTubeUrl)" frameborder="0" allowfullscreen></iframe>
+        }
+    </div>
 
     <p>@Html.Raw(Model.Content)</p>
 } else
@@ -30,14 +49,23 @@
 @functions {
     public string GetEmbeddedUrl(string youtubeUrl)
     {
+        if (string.IsNullOrEmpty(youtubeUrl))
+        {
+            return string.Empty;
+        }
+
         if (youtubeUrl.Contains("youtu.be/"))
         {
             var videoId = youtubeUrl.Split('/').Last().Split('?').First();
             return $"https://www.youtube.com/embed/{videoId}";
         } else if (youtubeUrl.Contains("watch?v="))
         {
-            return youtubeUrl.Replace("watch?v=", "embed/");
+            var uri = new Uri(youtubeUrl);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var videoId = query["v"];
+            return $"https://www.youtube.com/embed/{videoId}";
         }
+
         return youtubeUrl;
     }
 }
