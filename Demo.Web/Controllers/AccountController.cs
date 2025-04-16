@@ -156,7 +156,7 @@ namespace Demo.Web.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult UsernameRegister(string returnUrl)
+        public ActionResult UsernameRegister(string? returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
