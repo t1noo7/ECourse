@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Text;
-using Demo.Application.Services.IServices;
+using Demo.Application.Infrastructures;
 
 namespace Demo.Infrastructure.File
 {
@@ -52,6 +51,22 @@ namespace Demo.Infrastructure.File
             blobClient.Upload(imageStream, true);
             return blobClient.Uri.AbsoluteUri;
         }
+
+        public string UpsertVideo(string containerName, string filePath, Stream fileStream)
+        {
+            BlobContainerClient container = new BlobContainerClient(_connectionString.Value, containerName.ToLower());
+
+            if (!container.Exists())
+            {
+                container.Create();
+                container.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+            }
+            var blobClient = container.GetBlobClient(filePath);
+            if (fileStream.Position != 0) fileStream.Position = 0;
+            blobClient.Upload(fileStream, overwrite: true);
+            return blobClient.Uri.AbsoluteUri;
+        }
+
 
         public void Delete(string path)
         {

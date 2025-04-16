@@ -21,6 +21,15 @@
         string UpsertImage(string rootFolder, string filePath, Stream fileStream);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="filePath"></param>
+        /// <param name="fileStream"></param>
+        /// <returns></returns>
+        string UpsertVideo(string containerName, string filePath, Stream fileStream);
+
+        /// <summary>
         /// resize image
         /// </summary>
         /// <param name="stream"></param>

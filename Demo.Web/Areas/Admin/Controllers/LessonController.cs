@@ -9,6 +9,7 @@ using Demo.Web.Helpers;
 using Demo.Database.Repositories;
 using Demo.Web.Areas.Admin.Models;
 using Demo.Application.Models;
+using Demo.Application.Infrastructures;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -19,13 +20,17 @@ namespace Demo.Web.Areas.Admin.Controllers
         private readonly ILogger<LessonController> _logger;
         private readonly ILessonRepository _lessonRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IFileService _fileService;
 
         public LessonController(ILogger<LessonController> logger,
-            ILessonRepository lessonRepository, ICourseRepository courseRepository)
+            ILessonRepository lessonRepository, 
+            ICourseRepository courseRepository,
+            IFileService fileService)
         {
             _logger = logger;
             _lessonRepository = lessonRepository;
             _courseRepository = courseRepository;
+            _fileService = fileService;
         }
 
         public IActionResult Index(LessonFilter model, int page = 1)
@@ -84,11 +89,11 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Lesson model, string returnUrl)
+        public async Task<IActionResult> Edit(Lesson model, IFormFile videoInput, string returnUrl)
         {
             try
             {
-                if (!ModelState.IsValid && (!ModelState.ContainsKey("returnUrl") && !ModelState.ContainsKey("fileInput")))
+                if (!ModelState.IsValid && (!ModelState.ContainsKey("returnUrl") && !ModelState.ContainsKey("videoInput")))
                 {
                     return View(model);
                 }
@@ -108,6 +113,13 @@ namespace Demo.Web.Areas.Admin.Controllers
                     var videoId = ExtractYouTubeVideoId(model.YouTubeUrl);
                     model.Image = $"https://img.youtube.com/vi/{videoId}/hqdefault.jpg";
                 }*/
+
+                if (videoInput != null)
+                {
+                    using var videoStream = videoInput.OpenReadStream();
+                    var videoFileName = $"{model.Id}{Path.GetExtension(videoInput.FileName)}";
+                    model.VideoPath = _fileService.UpsertVideo("lessonVideos", videoFileName, videoStream);
+                }
 
                 if (string.IsNullOrEmpty(model.FriendlyUrl))
                 {

@@ -17,9 +17,13 @@ namespace Demo.Core.Models
         [Display(Name = "Lớp học")]
         public Guid ClassId { get; set; }
 
-        [Display(Name = "Video")]
+        [Display(Name = "VideoYoutube")]
         [Required(ErrorMessage = "Video không được để trống")]
-        public string YouTubeUrl { get; set; }
+        public string? YouTubeUrl { get; set; }
+
+        [Display(Name = "VideoUrl")]
+        [Required(ErrorMessage = "Video không được để trống")]
+        public string? VideoPath { get; set; }
 
         [Display(Name = "Nội dung")]
         [Required(ErrorMessage = "Nội dung không được để trống")]
