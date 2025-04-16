@@ -6,11 +6,12 @@ using Demo.Core.Models;
 using Demo.Application.Services.IServices;
 using Demo.Core.Enums;
 using Demo.Core.Repositories;
+using Demo.Core.Permission;
+using Demo.Web.Filters;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Account, RoleList.Admin, RoleList.OrderManager)]
-
+    [WebAuthorize(RoleList.Account, RoleList.Admin, RoleList.OrderManager)]
     [Area("Admin")]
     public class OrderController : Controller
     {

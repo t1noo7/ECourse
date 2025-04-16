@@ -8,18 +8,18 @@
 <div class="side-nav">
     <div class="side-nav-inner">
         <ul class="side-nav-menu scrollable">
-            @* @if (allRoles.Contains(RoleList.Admin))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin))
+            {
             <li>
                 <a href="/admin" data-href="/admin" class="br-menu-link">
                     <i class="fas fa-chart-line"></i>
                     <span>Thống Kê</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
-            { *@
+            @if (allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
+            {
             <li>
                 <a href="/admin/order/index" data-href="/admin/order/edit//admin/order/details" class="br-menu-link">
                     <i class=" fa-solid fa-rectangle-list"></i>
@@ -33,10 +33,10 @@
                     <span>Quản lý Voucher</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Customer))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Customer))
+            {
             <li class="nav-item dropdown">
                 <a class="dropdown-toggle">
                     <i class="fa fa-group"></i>
@@ -69,30 +69,30 @@
                     </ul>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
             <li>
                 <a href="/admin/banner/index" data-href="/admin/banner/Edit//admin/banner/details" class="br-menu-link">
                     <i class="fa fa-windows"></i>
                     <span>Quản lý Banner</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
             <li>
                 <a href="/admin/category/index" data-href="/admin/category/edit" class="br-menu-link">
                     <i class="fas fa-bars"></i>
                     <span>Quản lý Danh Mục</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Product))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Product))
+            {
             <li class="nav-item dropdown">
                 <a class="dropdown-toggle">
                     <i class="anticon anticon-build"></i>
@@ -125,30 +125,30 @@
                     </ul>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
             <li>
                 <a href="/admin/new/index" data-href="/admin/new/edit" class="br-menu-link">
                     <i class="fa fa-file-text-o"></i>
                     <span>Quản lý bài viết</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Content))
+            {
             <li>
                 <a href="/admin/userrequest/index" data-href="/admin/userrequest/details" class="br-menu-link">
                     <i class="fas fa-comment-alt"></i>
                     <span>Quản lý phản hồi khách hàng</span>
                 </a>
             </li>
-            @* } *@
+            }
 
-            @* @if (allRoles.Contains(RoleList.Admin))
-            { *@
+            @if (allRoles.Contains(RoleList.Admin))
+            {
             <li>
                 <a href="/admin/admin/SystemParameters/" data-href="/admin/admin/EditSystemParameter"
                     class="br-menu-link">
@@ -156,7 +156,7 @@
                     <span>Danh mục quản trị</span>
                 </a>
             </li>
-            @* } *@
+            }
         </ul>
     </div>
 </div>

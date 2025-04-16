@@ -15,6 +15,7 @@
             @Html.HiddenFor(m => m.Created)
             @Html.HiddenFor(m => m.CreatedBy)
             @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.HiddenFor(m => m.CourseId)
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
             <p>Model ID: @Model.Id</p>

@@ -14,7 +14,7 @@ using Demo.Database.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Admin, RoleList.Customer)]
+    [WebAuthorize(RoleList.Admin, RoleList.Customer)]
     [Area("Admin")]
     public class AccountController : Controller
     {

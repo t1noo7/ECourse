@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Content, RoleList.Admin)]
+    [WebAuthorize(RoleList.Content, RoleList.Admin)]
     [Area("Admin")]
     public class NewController : Controller
     {

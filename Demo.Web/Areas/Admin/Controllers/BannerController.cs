@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Content, RoleList.Admin)]
+    [WebAuthorize(RoleList.Content, RoleList.Admin)]
     [Area("Admin")]
     public class BannerController : Controller
     {
