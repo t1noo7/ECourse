@@ -50,8 +50,7 @@
                                 <i class="anticon anticon-bell notification-badge"></i>
                             </a>
                             <div class="dropdown-menu pop-notification">
-                                <div
-                                    class="p-v-15 p-h-25 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="p-v-15 p-h-25 border-bottom d-flex justify-content-between align-items-center">
                                     <p class="text-dark font-weight-semibold m-b-0">
                                         <i class="anticon anticon-bell"></i>
                                         <span class="m-l-10">Notification</span>
@@ -124,11 +123,9 @@
                 </div>
             </div>
             <!-- Header END -->
-
             <!-- Side Nav START -->
             @await Html.PartialAsync("_SideNavPartialView.cshtml")
             <!-- Side Nav END -->
-
             <!-- Page Container START -->
             <div class="page-container">
 
@@ -139,7 +136,6 @@
 
                 </div>
                 <!-- Content Wrapper END -->
-
                 <!-- Footer START -->
                 <footer class="footer">
                     <div class="footer-content">
@@ -169,10 +165,62 @@
     <!-- Core JS -->
     <script src="~/Adminassets/js/app.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    
+
     <script src="~/scripts/AjaxHelper.js"></script>
     <script src="~/scripts/SerializeObject.js"></script>
     <script src="~/scripts/wholeSite.js"></script>
+
+    <!-- Toast -->
+    <!-- Toast HTML -->
+    <div class="toast-container" style="position: fixed; top: 50px; right: 20px; z-index: 1100;">
+        @if (TempData["Success"] != null)
+        {
+            <div id="toastSuccess" class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                    <div class="toast-body">
+                        @TempData["Success"]
+                    </div>
+                    <button type="button" class="close text-white ml-3 mb-1" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div id="toastError" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                    <div class="toast-body">
+                        @TempData["Error"]
+                    </div>
+                    <button type="button" class="close text-white ml-3 mb-1" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Toast Scripts -->
+    <script>
+        $(document).ready(function () {
+            if ($('#toastSuccess').length) {
+                $('#toastSuccess').toast({
+                    delay: 5000,
+                    autohide: true
+                }).toast('show');
+            }
+
+            if ($('#toastError').length) {
+                $('#toastError').toast({
+                    delay: 5000,
+                    autohide: true
+                }).toast('show');
+            }
+        });
+    </script>
+
 </body>
 
 </html>

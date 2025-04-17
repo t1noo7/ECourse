@@ -4,6 +4,7 @@ using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Filters;
 using Demo.Common.Extensions;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -47,42 +48,61 @@ namespace Demo.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Voucher model, string returnUrl)
         {
-            model.ModifiedBy = User?.Identity?.Name;
-            model.Modified = DateTime.UtcNow.AddHours(7);
-            model.Expired = new DateTime(model.Expired.Year, model.Expired.Month, model.Expired.Day).AddHours(7);
-            model.StartDate = new DateTime(model.StartDate.Year, model.StartDate.Month, model.StartDate.Day).AddHours(7);
-            if (model.Id == Guid.Empty)
+            try
             {
-                model.CreatedBy = model.ModifiedBy;
-                model.Created = DateTime.UtcNow.AddHours(7);
-            }
-            if (model.StartDate > model.Expired)
-            {
-                ModelState.AddModelError("StartDate", "Ngày bắt đầu phải nhỏ hơn ngày hết hạn.");
-                return View(model);
-            }
-            if (model.Quantity <= 0)
-            {
-                ModelState.AddModelError("Quantity", "Số lượng ban đầu phải lớn hơn 0.");
-                return View(model);
-            }
-            if (model.DiscountRate > 0 && model.DiscountAmount > 0)
-            {
-                ModelState.AddModelError("DiscountRate", "Chỉ được chọn giảm giá theo % hoặc giảm giá theo tiền.");
-                return View(model);
-            }
+                model.ModifiedBy = User?.Identity?.Name;
+                model.Modified = DateTime.UtcNow.AddHours(7);
+                model.Expired = new DateTime(model.Expired.Year, model.Expired.Month, model.Expired.Day).AddHours(7);
+                model.StartDate = new DateTime(model.StartDate.Year, model.StartDate.Month, model.StartDate.Day).AddHours(7);
+                if (model.Id == Guid.Empty)
+                {
+                    model.CreatedBy = model.ModifiedBy;
+                    model.Created = DateTime.UtcNow.AddHours(7);
+                }
+                if (model.StartDate > model.Expired)
+                {
+                    ModelState.AddModelError("StartDate", "Ngày bắt đầu phải nhỏ hơn ngày hết hạn.");
+                    return View(model);
+                }
+                if (model.Quantity <= 0)
+                {
+                    ModelState.AddModelError("Quantity", "Số lượng ban đầu phải lớn hơn 0.");
+                    return View(model);
+                }
+                if (model.DiscountRate > 0 && model.DiscountAmount > 0)
+                {
+                    ModelState.AddModelError("DiscountRate", "Chỉ được chọn giảm giá theo % hoặc giảm giá theo tiền.");
+                    return View(model);
+                }
 
-            await _voucherRepository.UpsertAsync(model);
-
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+                await _voucherRepository.UpsertAsync(model);
+                TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return View(model);
+            }
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _voucherRepository.SetAsync(id, nameof(Voucher.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Edit));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _voucherRepository.SetAsync(id, nameof(Voucher.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Edit));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

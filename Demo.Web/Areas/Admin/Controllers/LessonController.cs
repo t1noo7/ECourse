@@ -10,6 +10,7 @@ using Demo.Database.Repositories;
 using Demo.Web.Areas.Admin.Models;
 using Demo.Application.Models;
 using Demo.Application.Infrastructures;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -139,21 +140,34 @@ namespace Demo.Web.Areas.Admin.Controllers
                 }
 
                 await _lessonRepository.UpsertAsync(model);
+                TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
                 if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
                 else return Redirect(returnUrl);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return View(model);
             }
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _lessonRepository.SetAsync(id, nameof(Lesson.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _lessonRepository.SetAsync(id, nameof(Lesson.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
+            
         }
 
         private string ExtractYouTubeVideoId(string url)

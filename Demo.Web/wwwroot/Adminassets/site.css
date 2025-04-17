@@ -25,14 +25,14 @@ button[type="button"] {
     background-color: transparent;
 }
 
-.card-header .card-title {
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #343a40;
-    margin-bottom: 0;
-}
+    .card-header .card-title {
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 0;
+    }
 
 .form-control::placeholder,
 .custom-file .custom-file-control {
@@ -55,9 +55,9 @@ button[type="button"] {
     position: relative;
 }
 
-.custom-file-control::before {
-    top: calc(50% - 20px);
-}
+    .custom-file-control::before {
+        top: calc(50% - 20px);
+    }
 
 #file-manager ul {
     border-left: 1px dotted;
@@ -65,19 +65,19 @@ button[type="button"] {
     padding-left: 17px;
 }
 
-#file-manager ul li i {
-    width: 13px;
-}
+    #file-manager ul li i {
+        width: 13px;
+    }
 
-#file-manager ul li i.fa-times {
-    display: none;
-}
+        #file-manager ul li i.fa-times {
+            display: none;
+        }
 
-#file-manager ul li p a {
-    display: inline-block;
-}
+    #file-manager ul li p a {
+        display: inline-block;
+    }
 
-#file-manager li:hover>span>i.fa-times {
+#file-manager li:hover > span > i.fa-times {
     display: inline-block;
 }
 
@@ -85,7 +85,7 @@ button[type="button"] {
     text-decoration: underline;
 }
 
-#file-manager>ul {
+#file-manager > ul {
     border-left: none;
     padding-left: 10px;
 }
@@ -95,7 +95,7 @@ button[type="button"] {
     padding-left: 18px;
 }
 
-#file-manager>p {
+#file-manager > p {
     margin-bottom: 5px;
     padding-left: 10px;
 }
@@ -108,9 +108,9 @@ button[type="button"] {
     display: inline-block;
 }
 
-#file-manager form input {
-    border: none;
-}
+    #file-manager form input {
+        border: none;
+    }
 
 .btgreen {
     background: #62a403;
@@ -221,14 +221,14 @@ input[type=number] {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-.image-overlay-cinema img {
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 12px;
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
-    animation: zoomIn 0.3s ease-in-out;
-    cursor: zoom-out;
-}
+    .image-overlay-cinema img {
+        max-width: 90vw;
+        max-height: 90vh;
+        border-radius: 12px;
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        animation: zoomIn 0.3s ease-in-out;
+        cursor: zoom-out;
+    }
 
 .zoom-lock {
     overflow: hidden !important;

@@ -50,8 +50,6 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public IActionResult Edit(Guid id)
         {
-            ViewBag.Error = TempData["Error"];
-            ViewBag.Success = TempData["Success"];
             var model = _orderRepository.Get(id);
 
             return View(model);
@@ -84,7 +82,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             await _orderRepository.UpsertAsync(order);
             if (status == OrderStatus.Approved)
             {
-                TempData["SuccessMessage"] = "Thay đổi trạng thái đơn hàng thành công. Vui lòng chuyển sang chức năng lớp học để thêm học viên vào lớp.";
+                TempData["Success"] = "Thay đổi trạng thái đơn hàng thành công. Vui lòng chuyển sang chức năng lớp học để thêm học viên vào lớp.";
             }
 
             _logger.LogDebug($"Status updated to {status}, order Id: {order.Id}");
@@ -96,9 +94,20 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _orderRepository.SetAsync(id, nameof(Order.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _orderRepository.SetAsync(id, nameof(Order.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
+            
         }
     }
 }

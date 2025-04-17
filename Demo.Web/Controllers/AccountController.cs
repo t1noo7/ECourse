@@ -12,6 +12,7 @@ using Demo.Application.Services.IServices;
 using Demo.Web.ViewModels;
 using MongoDB.Bson.IO;
 using Demo.Web.Extensions;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Controllers
 {
@@ -90,12 +91,15 @@ namespace Demo.Web.Controllers
                 });
                 if (hasPermission)
                 {
+                    TempData[TempDataKey.Success] = TempDataMessage.LoginSuccess;
                     return RedirectToAction("Login");
                 }
+                TempData[TempDataKey.Success] = TempDataMessage.LoginSuccess;
                 returnUrl = returnUrl ?? "/";
                 return Redirect(returnUrl);
             }
             ModelState.AddModelError("", "Sai mật khẩu hoặc tên đăng nhập.");
+            TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
             return View(model);
         }
 
@@ -179,11 +183,13 @@ namespace Demo.Web.Controllers
                     _mailService.RegisterVerification(model.Email, code);
                     ViewBag.ReturnUrl = returnUrl;
 
+                    TempData[TempDataKey.Success] = TempDataMessage.RegisterSuccess;
                     return RedirectToAction("RegisterVerify", new { returnUrl, model.Email });
                 }
             }
             catch (Exception)
             {
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 ModelState.AddModelError(string.Empty, "Có lỗi xảy ra, liên hệ nhà phát triển phần mềm để được hỗ trợ.");
             }
             return View(model);
@@ -211,7 +217,7 @@ namespace Demo.Web.Controllers
             var expectedCode = HttpContext.Session.GetString("VerificationCode");
             if (model.Code == expectedCode)
             {
-                TempData["Success"] = "Xác minh thành công!";
+                TempData[TempDataKey.Success] = TempDataMessage.VerifySuccess;
 
                 // tạo người dùng
                 var registerData = HttpContext.Session.GetObject<RegisterViewModel>("RegisterData");
@@ -229,11 +235,12 @@ namespace Demo.Web.Controllers
                     return Redirect(returnUrl);
                 }
                 AddErrors(result);
-                TempData["Error"] = "Có lỗi xảy ra, vui lòng thử lại.";
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return View();
             }
             else
             {
+                TempData[TempDataKey.Error] = TempDataMessage.VerifyCodeNotMatched;
                 ModelState.AddModelError("", "Mã xác minh không đúng.");
                 return View(model);
             }
@@ -264,7 +271,6 @@ namespace Demo.Web.Controllers
                 user.PhoneNumber = model.PhoneNumber;
                 user.FullName = model.Name;
                 _userRepository.UpdateAsync(user);
-                TempData["success"] = true;
                 return RedirectToAction("Profile");
             }
             return View(model);
