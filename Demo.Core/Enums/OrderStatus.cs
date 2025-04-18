@@ -14,12 +14,6 @@ namespace Demo.Core.Enums
         Canceled = 20,
 
         [Description("Đã duyệt")]
-        Approved = 30,
-
-        [Description("Kích hoạt")]
-        Active = 40,
-
-        [Description("Đã hết hạn")]
-        Expired = 50
+        Approved = 30
     }
 }
