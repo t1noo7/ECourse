@@ -121,7 +121,13 @@ namespace Demo.Application.Services
         /// <returns></returns>
         private (decimal rate, bool isIncrease) CalculateChangeRate(decimal previousValue, decimal currentValue)
         {
-            if (previousValue == 0) return (0, false); 
+            if (previousValue == 0)
+            {
+                if (currentValue == 0)
+                    return (0, false); // Không thay đổi
+                else
+                    return (100, true); // Trước không có, sau có -> tăng 100%
+            }
 
             decimal changeRate = ((currentValue - previousValue) / previousValue) * 100;
             bool isIncrease = changeRate > 0; // true nếu tăng, false nếu giảm hoặc không thay đổi

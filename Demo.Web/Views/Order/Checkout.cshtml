@@ -177,7 +177,7 @@
                 $btn.prop("disabled", true).text("Đang kiểm tra...");
 
                 try {
-                    const result = await $.post("/Order/ValidateVoucher", {
+                    const result = await $.post("/Order/TryValidateVoucher", {
                         code,
                         originalPrice: coursePrice
                     });
