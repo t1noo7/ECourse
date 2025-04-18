@@ -117,11 +117,11 @@ namespace Demo.Web.Controllers
                 long finalPrice = basePrice;
                 if (!string.IsNullOrWhiteSpace(model.VoucherCode))
                 {
-                    var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(model.VoucherCode, basePrice);
+                    var (isValid, message, voucher, newPrice) = await ValidateVoucher(model.VoucherCode, basePrice);
                     if (!isValid) return Json(new JsonReturn(false, message));
                     appliedVoucher = voucher;
                     finalPrice = newPrice;
-                    _voucherRepository.UpdateQuantity(voucher.Id, Math.Max(0, voucher.Quantity - 1));
+                    await UpdateQuantity(voucher.Id, Math.Max(0, voucher.Quantity - 1));
                 }
 
                 var order = new Order
@@ -208,9 +208,9 @@ namespace Demo.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ValidateVoucher(string code, long originalPrice)
+        public async Task<IActionResult> TryValidateVoucher(string code, long originalPrice)
         {
-            var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(code, originalPrice);
+            var (isValid, message, voucher, newPrice) = await ValidateVoucher(code, originalPrice);
 
             if (!isValid)
                 return Json(new { success = false, message });
@@ -225,33 +225,57 @@ namespace Demo.Web.Controllers
             });
         }
 
-        private async Task<string> RenderRazorViewToStringAsync(string viewName, object model)
+        #region Private
+        private async Task UpdateQuantity(Guid id, int quantity)
         {
-            ViewData.Model = model;
+            var voucher = await _voucherRepository.GetAsync(id);
+            if (voucher == null) return;
 
-            using (var sw = new StringWriter())
-            {
-                var actionContext = new ActionContext(HttpContext, RouteData, ControllerContext.ActionDescriptor, ModelState);
-
-                var viewResult = _razorViewEngine.FindView(actionContext, viewName, false);
-
-                if (viewResult.View == null)
-                {
-                    throw new ArgumentNullException($"View {viewName} was not found.");
-                }
-
-                var viewContext = new ViewContext(
-                    actionContext,
-                    viewResult.View,
-                    ViewData,
-                    TempData,
-                    sw,
-                    new HtmlHelperOptions()
-                );
-
-                await viewResult.View.RenderAsync(viewContext);
-                return sw.ToString();
-            }
+            voucher.Quantity = quantity;
+            await _voucherRepository.UpdateAsync(voucher);
         }
+
+        private async Task<(bool isValid, string message, Voucher? voucher, long finalPrice)> ValidateVoucher(string code, long originalPrice)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return (false, "Mã giảm giá trống!", null, originalPrice);
+
+            var voucher = await _voucherRepository.Find(x => x.Code == code.Trim()).FirstOrDefaultAsync();
+
+            if (voucher == null || voucher.StartDate.Date > DateTimeExtensions.UTCNowVN.Date)
+                return (false, $"Mã giảm giá {code} không tồn tại!", null, originalPrice);
+
+            if (voucher.Expired.Date < DateTimeExtensions.UTCNowVN.Date)
+                return (false, $"Mã giảm giá {code} đã hết hạn!", null, originalPrice);
+
+            if (voucher.Quantity <= 0)
+                return (false, $"Mã giảm giá {code} đã hết lượt sử dụng!", null, originalPrice);
+
+            long discountedPrice = originalPrice;
+
+            if (voucher.DiscountRate > 0)
+                discountedPrice = originalPrice * (100 - voucher.DiscountRate) / 100;
+            else if (voucher.DiscountAmount > 0)
+                discountedPrice = originalPrice - voucher.DiscountAmount;
+
+            discountedPrice = Math.Max(discountedPrice, 0);
+
+            return (true, "", voucher, discountedPrice);
+        }
+
+        private async Task AddUsedOrderId(Guid voucherId, Guid orderId)
+        {
+            var voucher = await _voucherRepository.GetAsync(x => x.Id == voucherId);
+            if (voucher == null) return;
+
+            if (voucher.UsedOrderIds == null)
+                voucher.UsedOrderIds = new List<Guid>();
+
+            if (!voucher.UsedOrderIds.Contains(orderId))
+                voucher.UsedOrderIds.Add(orderId);
+
+            await _voucherRepository.UpdateAsync(voucher);
+        }
+        #endregion
     }
 }
