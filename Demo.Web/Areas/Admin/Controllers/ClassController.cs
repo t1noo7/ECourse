@@ -7,11 +7,14 @@ using Demo.Web.Helpers;
 using Demo.Application.ViewModels;
 using Demo.Web.Areas.Admin.Models;
 using Demo.Application.Models;
-using DnsClient;
+using Demo.Core.Permission;
+using Demo.Web.Filters;
+using Demo.Core.Enums;
+using Demo.Database.Repositories;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
+    [WebAuthorize(RoleList.Content, RoleList.Product, RoleList.Admin)]
     [Area("Admin")]
     public class ClassController : Controller
     {
@@ -125,20 +128,32 @@ namespace Demo.Web.Areas.Admin.Controllers
                 }
 
                 await _classRepository.UpsertAsync(model);
+                TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
                 if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
                 else return Redirect(returnUrl);
             } catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return View(model);
             }
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _classRepository.DeleteAsync(id);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _classRepository.DeleteAsync(id);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xóa lớp học");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet]
@@ -179,8 +194,18 @@ namespace Demo.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignStudentsToClass(Guid classId, List<string> studentIds)
         {
-            await _classRepository.AddStudentsToClassAsync(classId, studentIds);
-            return Ok();
+            try
+            {
+                await _classRepository.AddStudentsToClassAsync(classId, studentIds);
+                TempData[TempDataKey.Success] = TempDataMessage.AddSuccess;
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi thêm học viên vào lớp học");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

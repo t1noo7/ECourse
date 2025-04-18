@@ -1,5 +1,6 @@
 ﻿using Demo.Web.Startup;
 using Demo.Web.Helpers;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +9,16 @@ builder.Services.AddControllersWithViews();
 builder.AddMongoDatabase();
 builder.Services.RegisterServices(builder.Configuration);
 builder.Services.AddMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(15); // Thời gian timeout
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+});
+
+builder.Services.Configure<FormOptions>(options => {
+    options.MultipartBodyLengthLimit = 524288000; // 500MB
 });
 
 var app = builder.Build();

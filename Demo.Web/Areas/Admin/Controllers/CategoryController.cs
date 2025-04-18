@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Demo.Common.Extensions;
 using Demo.Application.Repositories;
@@ -9,10 +9,12 @@ using Demo.Web.Helpers;
 using Microsoft.Extensions.Logging;
 using Demo.Database.Repositories;
 using Demo.Application.Services.IServices;
+using Demo.Application.Infrastructures;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Content, RoleList.Admin)]
+    [WebAuthorize(RoleList.Content, RoleList.Admin)]
     [Area("Admin")]
     public class CategoryController : Controller
     {
@@ -89,10 +91,12 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 var model = await _categoryRepository.GetAsync(id);
                 model.Status = status;
+                TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
                 await _categoryRepository.UpdateAsync(model);
             }
             catch (Exception ex)
             {
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -101,9 +105,19 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _categoryRepository.SetAsync(id, nameof(Category.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _categoryRepository.SetAsync(id, nameof(Category.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xóa danh mục");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

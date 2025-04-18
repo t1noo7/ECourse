@@ -6,28 +6,40 @@ namespace Demo.Web.Helpers
 {
     public static class EnumHelper
     {
-        public static string GetDescriptionEnum<T>(T item) where T : struct, IConvertible
+        /// <summary>
+        /// Lấy mô tả từ [Description] cho một giá trị enum cụ thể
+        /// </summary>
+        public static string GetEnumDescriptionValue<T>(T item) where T : struct, Enum
         {
-            FieldInfo fi = typeof(T).GetField(item.ToString());
-            DescriptionAttribute dna = (DescriptionAttribute)Attribute.GetCustomAttribute(fi, typeof(DescriptionAttribute));
-            return dna != null ? dna.Description : item.ToString();
+            var type = typeof(T);
+            var field = type.GetField(item.ToString());
+
+            if (field == null) return item.ToString();
+
+            var attr = field.GetCustomAttribute<DescriptionAttribute>();
+            return attr?.Description ?? item.ToString();
         }
 
-        public static IEnumerable<SelectListItem> EnumToListItems<T>() where T : struct, IConvertible
+        /// <summary>
+        /// Trả về danh sách (giá trị, mô tả) của toàn bộ enum
+        /// </summary>
+        public static IEnumerable<(T value, string text)> GetEnumDescriptionList<T>() where T : struct, Enum
         {
-            if (!typeof(T).IsEnum)
-            {
-                throw new ArgumentException("T must be an enumerated type");
-            }
-            var ls = Enum.GetValues(typeof(T)).Cast<T>().ToList();
-            List<SelectListItem> lsSelects = new List<SelectListItem>() { };
-            foreach (T item in ls)
-            {
-                string txtSelectListItem = GetDescriptionEnum<T>(item);
-                lsSelects.Add(new SelectListItem() { Text = txtSelectListItem, Value = item.GetHashCode().ToString() });
-            }
-            lsSelects = lsSelects.OrderBy(x => int.Parse(x.Value)).ToList();
-            return lsSelects;
+            return Enum.GetValues(typeof(T)).Cast<T>()
+                .Select(e => (e, GetEnumDescriptionValue(e)));
+        }
+
+        /// <summary>
+        /// Trả về danh sách SelectListItem từ enum (dùng cho dropdown)
+        /// </summary>
+        public static IEnumerable<SelectListItem> EnumToListItems<T>() where T : struct, Enum
+        {
+            return GetEnumDescriptionList<T>()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.value.ToString(),
+                    Text = x.text
+                });
         }
     }
 }

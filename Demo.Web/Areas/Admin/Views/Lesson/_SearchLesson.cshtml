@@ -7,6 +7,11 @@
             <label for="query">Khóa học</label>
             @Html.TextBoxFor(x => x.CourseName, new { Class = "form-control form-control-sm" })
         </div>
+
+        <div class="col-md-3 col-sm-9 col-xs-12 search-item">
+            <label for="query">Lớp học</label>
+            @Html.TextBoxFor(x => x.ClassName, new { Class = "form-control form-control-sm" })
+        </div>
     </div>
     <br>
     <div class="col mb-2 search-item" style="padding-left:0">

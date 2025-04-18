@@ -11,6 +11,8 @@ using MongoDB.Driver;
 using Demo.Web.ViewModels;
 using Demo.Application.Services.IServices;
 using Demo.Core.Enums;
+using Demo.Application.Infrastructures;
+using Microsoft.Extensions.Logging;
 
 namespace Demo.Web.Controllers
 {
@@ -154,10 +156,6 @@ namespace Demo.Web.Controllers
                 var result = await _orderRepository.UpsertAsync(order);
                 if (result != null)
                 {
-                    if (appliedVoucher != null)
-                    {
-                        await _voucherRepository.AddUsedOrderId(appliedVoucher.Id, order.Id);
-                    }
                     _mailService.OrderStatusChanged(order);
                     TempData[TempDataKey.Success] = TempDataMessage.CheckOutSuccess;
                     return RedirectToAction("MyOrders");

@@ -1,5 +1,4 @@
-﻿@using Demo.Core.Models
-@model List<Voucher>
+﻿@model Demo.Common.Models.Pagination<Demo.Core.Models.Voucher>
 @using Microsoft.AspNetCore.Http.Extensions
 @{
     ViewData["Title"] = "Danh sách Voucher";
@@ -41,8 +40,8 @@
             </thead>
             <tbody class="sortable">
                 @{
-                    var stt = 1;
-                    foreach (var item in Model.OrderByDescending(m => m.Created))
+                    var stt = (Model.PageIndex - 1) * Model.PageSize + 1;
+                    foreach (var item in Model.Items.OrderByDescending(m => m.Created))
                     {
                         <tr class="stat even" data-id="@item.Id">
                             <td class="ac">@(stt++)</td>
@@ -50,7 +49,7 @@
                             <td>@item.Quantity</td>
                             <td>@item.UsedOrderIds.Count</td>
                             <td>@item.DiscountRate</td>
-                            <td>@item.DiscountAmount.ToString("N0")</td>
+                            <td>@item.DiscountAmount.ToString("#,##0")</td>
                             <td>@item.Created.ToString("dd/MM/yyyy")</td>
                             <td>@item.Expired.ToString("dd/MM/yyyy")</td>
                             <td>
@@ -64,6 +63,6 @@
                     }
                 }
             </tbody>
-        </table>
+        </table<partial name="_Pagination" model="Model" view-data="ViewData" />
     </div>
 </div>

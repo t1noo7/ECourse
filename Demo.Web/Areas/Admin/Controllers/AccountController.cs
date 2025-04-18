@@ -11,10 +11,11 @@ using Demo.Application.Services;
 using Demo.Application.Repositories;
 using Demo.Application.Models;
 using Demo.Database.Repositories;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    //[WebAuthorize(RoleList.Admin, RoleList.Customer)]
+    [WebAuthorize(RoleList.Admin, RoleList.Customer)]
     [Area("Admin")]
     public class AccountController : Controller
     {
@@ -89,7 +90,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 ViewBag.Error = $"Email {model.Email} đã tồn tại";
                 return View(user);
             }
-
+            TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
             await _userRepository.UpdateAsync(user);
             return Redirect(returnUrl);
         }
@@ -150,7 +151,8 @@ namespace Demo.Web.Areas.Admin.Controllers
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
                     Course = userCourses,
-                    Class = classes
+                    Class = classes,
+                    IsLocked = user.IsLocked
                 };
             }).ToList();
 
@@ -229,6 +231,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {
+                        TempData[TempDataKey.Success] = TempDataMessage.AddSuccess;
                         return RedirectToAction(nameof(Users));
                     }
 
@@ -237,6 +240,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             }
             catch (Exception)
             {
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 ModelState.AddModelError(string.Empty, "Có lỗi xảy ra, liên hệ nhà phát triển phần mềm để được hỗ trợ.");
             }
             return View(model);
@@ -248,16 +252,25 @@ namespace Demo.Web.Areas.Admin.Controllers
             try
             {
                 var user = await _userRepository.GetByIdAsync(id);
+                if (user == null)
+                {
+                    TempData[TempDataKey.Error] = "Không tìm thấy người dùng.";
+                    return Redirect(Request.Headers["Referer"].ToString());
+                }
+
                 user.IsLocked = isLocked;
                 await _userRepository.UpdateAsync(user);
-            }
-            catch (Exception ex)
+
+                TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
+            } catch (Exception ex)
             {
-                return RedirectToAction(nameof(Users));
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                _logger.LogError(ex, "Lỗi không cập nhật được trạng thái tài khoản");
             }
 
-            return RedirectToAction(nameof(Users));
+            return Redirect(Request.Headers["Referer"].ToString());
         }
+
 
         [WebAuthorize(RoleList.Admin)]
         [HttpPost]
@@ -322,17 +335,27 @@ namespace Demo.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AssignRoles(string Item1, List<string> roles, bool? isGroup, string returnUrl)
         {
-            if (isGroup.HasValue)
+            try
             {
-                var groupdId = new Guid(Item1);
-                await _userGroupManager.SetGroupRolesAsync(groupdId, roles);
+                if (isGroup.HasValue)
+                {
+                    var groupdId = new Guid(Item1);
+                    await _userGroupManager.SetGroupRolesAsync(groupdId, roles);
+                }
+                else
+                {
+                    await _userGroupManager.SetUserRolesAsync(Item1, roles);
+                }
+                TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Users));
+                else return Redirect(returnUrl);
             }
-            else
+            catch(Exception ex)
             {
-                await _userGroupManager.SetUserRolesAsync(Item1, roles);
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                _logger.LogError(ex, "Lỗi không cập nhật được quyền");
+                return RedirectToAction(nameof(Users));
             }
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Users));
-            else return Redirect(returnUrl);
         }
 
 

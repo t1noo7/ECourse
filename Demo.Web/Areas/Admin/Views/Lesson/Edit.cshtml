@@ -6,6 +6,7 @@
     ViewData["Title"] = "Thiết lập Bài giảng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
+    var classes = ViewBag.Classes as List<Demo.Core.Models.Class>;
 }
 
 <div class="card mt-2 mb-2 shadow-base">
@@ -15,6 +16,7 @@
             @Html.HiddenFor(m => m.Created)
             @Html.HiddenFor(m => m.CreatedBy)
             @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.HiddenFor(m => m.VideoPath)
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
             <p>Model ID: @Model.Id</p>
@@ -28,48 +30,83 @@
                         })
                 </div>
             </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.VideoPath, new { @class = "form-label fw-bold" })
+
+                <div class="input-group">
+                    <label class="btn btgreen text-white" for="videoInput">Chọn video</label>
+                    <input type="file" id="videoInput" name="videoInput" accept="video/*" style="display:none" />
+                </div>
+
+                <small class="form-text text-muted">Bạn có thể tải lên video hoặc nhập URL YouTube bên dưới.</small>
+            </div>
+
+
             <div class="form-group">
-                @Html.LabelFor(m => m.YouTubeUrl) @Html.RequireLabel()
+                @Html.LabelFor(m => m.YouTubeUrl)
                 <input type="text" class="form-control" asp-for="YouTubeUrl" id="youtube-url">
             </div>
             <div class="form-group">
                 <label class="font-weight-semibold">Preview</label>
                 <div id="youtube-preview">
-                    <!-- Video preview iframe will be inserted here -->
+                    @if (!string.IsNullOrEmpty(Model.VideoPath))
+                    {
+                        <video width="560" height="315" controls>
+                            <source src="@Url.Content(Model.VideoPath)" type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ video.
+                        </video>
+                    } else if (!string.IsNullOrEmpty(Model.YouTubeUrl))
+                    {
+                        var embedUrl = "";
+                        var match = System.Text.RegularExpressions.Regex.Match(Model.YouTubeUrl, @"(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)");
+                        if (match.Success)
+                        {
+                            embedUrl = $"https://www.youtube.com/embed/{match.Groups[1].Value}";
+                        }
+                        if (!string.IsNullOrEmpty(embedUrl))
+                        {
+                            <iframe width="560" height="315"
+                                    src="@embedUrl"
+                                    frameborder="0" allowfullscreen>
+                            </iframe>
+                        } else
+                        {
+                            <span class='text-danger'>URL YouTube không hợp lệ</span>
+                        }
+                    }
                 </div>
             </div>
-            <div class="row mb-lg-2">
-                <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.CourseId)
-                    <select class="form-control" id="courseSelection" name="CourseId">
-                        @if (courses != null)
-                        {
-                            <!-- Display the selected course -->
-                            <option value="courses.Id" selected>courses.Title</option>
 
-                            <!-- Display the list of courses, excluding the selected one -->
-                            @foreach (var course in courses)
-                            {
-                                @if (course.Id != Model.CourseId)
-                                {
-                                    <option value="@course.Id">@course.Title</option>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <!-- Display "Select a Course" if no course is selected -->
-                            <option value="">-- Chọn khóa học --</option>
-                            @foreach (var course in courses)
-                            {
-                                <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
-                                    @course.Title
-                                </option>
-                            }
-                        }
-                    </select>
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.CourseId)
+                <select class="form-control" id="courseSelection" name="CourseId" required>
+                    <option value="">-- Chọn khóa học --</option>
+                    @foreach (var course in courses)
+                    {
+                        <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
+                            @course.Title
+                        </option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.CourseId, "", new { @course = "text-danger" })
             </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ClassId)
+                <select class="form-control" id="classSelection" name="ClassId" required>
+                    <option value="">-- Chọn lớp học --</option>
+                    @foreach (var cls in classes)
+                    {
+                        <option value="@cls.Id" selected="@(Model.ClassId == cls.Id ? "selected" : null)">
+                            @cls.ClassName
+                        </option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.ClassId, "", new { @class = "text-danger" })
+            </div>
+
+
             <div class="row mb-lg-2">
                 <div class="col-md-12 col-sm-12 search-item">
                     @Html.LabelFor(m => m.Description) @Html.RequireLabel()
@@ -126,10 +163,10 @@
                 }
 
                 previewContainer.innerHTML = `
-                                <iframe width="560" height="315"
-                                    src="${embedUrl}"
-                                    frameborder="0" allowfullscreen>
-                                </iframe>`;
+                                        <iframe width="560" height="315"
+                                            src="${embedUrl}"
+                                            frameborder="0" allowfullscreen>
+                                        </iframe>`;
             }
 
             youtubeInput.addEventListener("input", updatePreview);
@@ -141,6 +178,30 @@
         });
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const videoInput = document.getElementById("videoInput");
+            const youtubeInput = document.getElementById("youtube-url");
+            const previewContainer = document.getElementById("youtube-preview");
+
+            videoInput.addEventListener("change", function () {
+                if (videoInput.files && videoInput.files[0]) {
+                    const file = videoInput.files[0];
+                    const fileUrl = URL.createObjectURL(file);
+
+                    previewContainer.innerHTML = `
+                                    <video width="560" height="315" controls>
+                                        <source src="${fileUrl}" type="${file.type}">
+                                        Trình duyệt của bạn không hỗ trợ video.
+                                    </video>
+                                `;
+
+                    // Nếu người dùng chọn video file, thì xóa nội dung ô YouTube để tránh nhầm lẫn
+                    youtubeInput.value = "";
+                }
+            });
+        });
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
