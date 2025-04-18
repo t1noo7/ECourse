@@ -1,3 +1,5 @@
+using Demo.Core.Enums;
+
 namespace Demo.Core.Permission
 {
     public class FilterModel
@@ -7,5 +9,6 @@ namespace Demo.Core.Permission
         public string? status { get; set; }
         public string? orderby { get; set; }
         public bool isAdmin { get; set; }
+        public StatusEnum Status { get; set; }
     }
 }

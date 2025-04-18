@@ -151,7 +151,8 @@ namespace Demo.Web.Areas.Admin.Controllers
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
                     Course = userCourses,
-                    Class = classes
+                    Class = classes,
+                    IsLocked = user.IsLocked
                 };
             }).ToList();
 
@@ -251,19 +252,25 @@ namespace Demo.Web.Areas.Admin.Controllers
             try
             {
                 var user = await _userRepository.GetByIdAsync(id);
+                if (user == null)
+                {
+                    TempData[TempDataKey.Error] = "Không tìm thấy người dùng.";
+                    return Redirect(Request.Headers["Referer"].ToString());
+                }
+
                 user.IsLocked = isLocked;
                 await _userRepository.UpdateAsync(user);
+
                 TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 _logger.LogError(ex, "Lỗi không cập nhật được trạng thái tài khoản");
-                return RedirectToAction(nameof(Users));
             }
 
-            return RedirectToAction(nameof(Users));
+            return Redirect(Request.Headers["Referer"].ToString());
         }
+
 
         [WebAuthorize(RoleList.Admin)]
         [HttpPost]

@@ -1,12 +1,15 @@
 ﻿@using Demo.Application.Models
+@using Demo.Core.Enums
 @using Demo.Core.Models
+@using Demo.Web.Helpers
 @model OrderFilter
 @{
-    var statuses = Order.GetPossibleStatuses().Select(m => new SelectListItem
-            {
-                Value = m.value.ToString(),
-                Text = m.text
-            }).ToList();
+    var statuses = EnumHelper.GetEnumDescriptionList<OrderStatus>()
+        .Select(x => new SelectListItem
+                {
+                    Value = x.value.ToString(),
+                    Text = x.text
+                }).ToList();
 }
 @using (Html.BeginForm(null, null, FormMethod.Get, new { role = "form", id = "frmSearch" }))
 {
