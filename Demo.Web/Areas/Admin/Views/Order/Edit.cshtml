@@ -9,10 +9,6 @@
 }
 @section Button {
     <div class="btn-group" role="group" aria-label="Basic example">
-        @if (Model.Status == OrderStatus.Approved || Model.Status == OrderStatus.Expired)
-        {
-            <a href="@Url.Action("UpdateStatus", new { Model.Id, status = OrderStatus.Active, returnUrl = Context.Request.GetEncodedUrl()})" onclick="return confirm('Bạn có chắc?')" class="btn btn-success pd-x-25">Kích hoạt</a>
-        }
         @if (Model.Status == OrderStatus.Pending && canApprove)
         {
             <a href="@Url.Action("UpdateStatus", new { Model.Id, status = OrderStatus.Approved, returnUrl = Context.Request.GetEncodedUrl()})" onclick="return confirm('Bạn có chắc?')" class="btn btn-success pd-x-25">Duyệt đơn</a>
