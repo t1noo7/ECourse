@@ -96,69 +96,81 @@ namespace Demo.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(OrderViewModel model, Guid courseId)
         {
-            if (!ModelState.IsValid)
-                return Json(new JsonReturn(false, base.GetModalStateErrorMsg()));
-
-            if (!User.Identity?.IsAuthenticated ?? true)
-                return Json(new JsonReturn(false, "Vui lòng đăng nhập để tạo đơn hàng."));
-
-            var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
-            if (course == null)
-                return Json(new JsonReturn(false, "Không tìm thấy khóa học đã chọn, vui lòng thử lại."));
-
-            long basePrice = course.Price;
-
-            // Áp dụng voucher
-            Voucher? appliedVoucher = null;
-            long finalPrice = basePrice;
-            if (!string.IsNullOrWhiteSpace(model.VoucherCode))
+            try
             {
-                var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(model.VoucherCode, basePrice);
-                if (!isValid) return Json(new JsonReturn(false, message));
-                appliedVoucher = voucher;
-                finalPrice = newPrice;
-                _voucherRepository.UpdateQuantity(voucher.Id, Math.Max(0, voucher.Quantity - 1));
+                if (!ModelState.IsValid)
+                    return Json(new JsonReturn(false, base.GetModalStateErrorMsg()));
+
+                if (!User.Identity?.IsAuthenticated ?? true)
+                    return Json(new JsonReturn(false, "Vui lòng đăng nhập để tạo đơn hàng."));
+
+                var course = _courseRepository.Find(x => x.Id == courseId).FirstOrDefault();
+                if (course == null)
+                    return Json(new JsonReturn(false, "Không tìm thấy khóa học đã chọn, vui lòng thử lại."));
+
+                long basePrice = course.Price;
+
+                // Áp dụng voucher
+                Voucher? appliedVoucher = null;
+                long finalPrice = basePrice;
+                if (!string.IsNullOrWhiteSpace(model.VoucherCode))
+                {
+                    var (isValid, message, voucher, newPrice) = await _voucherRepository.ValidateVoucher(model.VoucherCode, basePrice);
+                    if (!isValid) return Json(new JsonReturn(false, message));
+                    appliedVoucher = voucher;
+                    finalPrice = newPrice;
+                    _voucherRepository.UpdateQuantity(voucher.Id, Math.Max(0, voucher.Quantity - 1));
+                }
+
+                var order = new Order
+                {
+                    Created = DateTimeExtensions.UTCNowVN,
+                    Modified = DateTimeExtensions.UTCNowVN,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = User.Identity.Name,
+                    Username = User.Identity.Name,
+                    CustomerName = model.CustomerName,
+                    CustomerPhone = model.CustomerPhone,
+                    CustomerEmail = model.CustomerEmail,
+                    CustomerNote = model.CustomerNote,
+                    VerifyImageUrl = model.VerifyImageUrl,
+                    Course = course,
+                    CourseIds = new List<Guid> { courseId },
+                    Status = OrderStatus.Pending,
+                    StatusHistories = new List<OrderStatusDetails>
+                    {
+                         new OrderStatusDetails
+                         {
+                            ActionTime = DateTimeExtensions.UTCNowVN,
+                            Status = OrderStatus.Pending,
+                            Author = User.Identity.Name
+                         }
+                    },
+                    Code = $"{User.Identity.Name[..Math.Min(4, User.Identity.Name.Length)]}{DateTimeExtensions.UTCNowVN:yyMMddHHmmss}",
+                    Price = finalPrice,
+                    Voucher = appliedVoucher
+                };
+
+                var result = await _orderRepository.UpsertAsync(order);
+                if (result != null)
+                {
+                    if (appliedVoucher != null)
+                    {
+                        await _voucherRepository.AddUsedOrderId(appliedVoucher.Id, order.Id);
+                    }
+                    _mailService.OrderStatusChanged(order);
+                    TempData[TempDataKey.Success] = TempDataMessage.CheckOutSuccess;
+                    return RedirectToAction("MyOrders");
+                }
+
+                TempData[TempDataKey.Error] = TempDataMessage.CheckOutError;
+                return View("CheckOut", model);
             }
-
-            var order = new Order
+            catch (Exception ex)
             {
-                Created = DateTimeExtensions.UTCNowVN,
-                Modified = DateTimeExtensions.UTCNowVN,
-                CreatedBy = User.Identity.Name,
-                ModifiedBy = User.Identity.Name,
-                Username = User.Identity.Name,
-                CustomerName = model.CustomerName,
-                CustomerPhone = model.CustomerPhone,
-                CustomerEmail = model.CustomerEmail,
-                CustomerNote = model.CustomerNote,
-                VerifyImageUrl = model.VerifyImageUrl,
-                Course = course,
-                CourseIds = new List<Guid> { courseId },
-                Status = OrderStatus.Pending,
-                StatusHistories = new List<OrderStatusDetails>
-        {
-            new OrderStatusDetails
-            {
-                ActionTime = DateTimeExtensions.UTCNowVN,
-                Status = OrderStatus.Pending,
-                Author = User.Identity.Name
-            }
-        },
-                Code = $"{User.Identity.Name[..Math.Min(4, User.Identity.Name.Length)]}{DateTimeExtensions.UTCNowVN:yyMMddHHmmss}",
-                Price = finalPrice,
-                Voucher = appliedVoucher
-            };
-
-            var result = await _orderRepository.UpsertAsync(order);
-            if (result != null)
-            {
-                _mailService.OrderStatusChanged(order);
-                TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
-                return RedirectToAction("MyOrders");
-            }
-            else
-            {
-                return Json(new JsonReturn(false, "Có lỗi khi lưu đơn hàng, vui lòng thử lại."));
+                TempData[TempDataKey.Error] = TempDataMessage.CheckOutError;
+                _logger.LogError("Error", ex);
+                return View("CheckOut", model);
             }
         }
 

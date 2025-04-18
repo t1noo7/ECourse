@@ -49,5 +49,10 @@ namespace Demo.Database.Repositories
             return (true, "", voucher, discountedPrice);
         }
 
+        public async Task AddUsedOrderId(Guid voucherId, Guid orderId)
+        {
+            var update = Builders<Voucher>.Update.AddToSet(v => v.UsedOrderIds, orderId);
+            await _collection.UpdateOneAsync(v => v.Id == voucherId, update);
+        }
     }
 }
