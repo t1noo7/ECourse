@@ -95,6 +95,15 @@
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
+
+        <div id="toastWarning" class="toast align-items-center text-dark bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @TempData["Warning"]
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Scripts -->
@@ -102,6 +111,7 @@
         window.onload = function () {
             var successToastEl = document.getElementById('toastSuccess');
             var errorToastEl = document.getElementById('toastError');
+            var warningToastEl = document.getElementById('toastWarning');
 
             if ('@TempData["Success"]' !== '') {
                 var toast = new bootstrap.Toast(successToastEl);
@@ -110,6 +120,11 @@
 
             if ('@TempData["Error"]' !== '') {
                 var toast = new bootstrap.Toast(errorToastEl);
+                toast.show();
+            }
+
+            if ('@TempData["Warning"]' !== '') {
+                var toast = new bootstrap.Toast(warningToastEl);
                 toast.show();
             }
         };

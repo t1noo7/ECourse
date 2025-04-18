@@ -35,6 +35,7 @@ namespace Demo.Core.Enums
 
         #region Warning
         public const string IncompleteForm = "Vui lòng điền đầy đủ thông tin.";
+        public const string DuplicateEmail = "Email này đã tồn tại.";
         #endregion
 
         #region Info
