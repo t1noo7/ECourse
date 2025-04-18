@@ -21,16 +21,19 @@ namespace Demo.Web.Areas.Admin.Controllers
         private readonly ILogger<LessonController> _logger;
         private readonly ILessonRepository _lessonRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IClassRepository _classRepository;
         private readonly IFileService _fileService;
 
         public LessonController(ILogger<LessonController> logger,
             ILessonRepository lessonRepository, 
             ICourseRepository courseRepository,
+            IClassRepository classRepository,
             IFileService fileService)
         {
             _logger = logger;
             _lessonRepository = lessonRepository;
             _courseRepository = courseRepository;
+            _classRepository = classRepository;
             _fileService = fileService;
         }
 
@@ -43,14 +46,26 @@ namespace Demo.Web.Areas.Admin.Controllers
                                            .ToList();
 
             var courseIds = lessons.Select(x => x.CourseId).Distinct().ToList();
+            var classIds = lessons.Select(x => x.ClassId).Distinct().ToList();
+
             var courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
 
+            var classes = _classRepository.Find(x => classIds.Contains(x.Id)).ToList();
+            // lấy thông tin khóa học
             if (!string.IsNullOrEmpty(model.CourseName))
             {
                 var filteredCourseIds = courses.Where(c => c.Title == model.CourseName.Trim())
                                                .Select(c => c.Id)
                                                .ToList();
                 lessons = lessons.Where(l => filteredCourseIds.Contains(l.CourseId)).ToList();
+            }
+            // lấy thông tin lớp học
+            if (!string.IsNullOrEmpty(model.ClassName))
+            {
+                var filteredClassIds = classes.Where(c => c.ClassName == model.ClassName.Trim())
+                                               .Select(c => c.Id)
+                                               .ToList();
+                lessons = lessons.Where(l => filteredClassIds.Contains(l.ClassId)).ToList();
             }
 
             lessonViewModels = lessons.Select(lesson => new LessonViewModel
@@ -59,6 +74,8 @@ namespace Demo.Web.Areas.Admin.Controllers
                 Title = lesson.Title,
                 CourseId = lesson.CourseId,
                 CourseName = courses.FirstOrDefault(c => c.Id == lesson.CourseId)?.Title ?? "Không xác định",
+                ClassId = lesson.ClassId,
+                ClassName = classes.FirstOrDefault(c => c.Id == lesson.ClassId)?.ClassName ?? "Không xác định",
                 Created = lesson.Created
             }).ToList();
 
@@ -71,7 +88,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         {
             Lesson? model = null;
             var lscourse = _courseRepository.Find(x => x.Deleted == false).ToList();
-
+            var lsClass = _classRepository.Find(x => x.Deleted == false).ToList();
             if (id.HasValue)
             {
                 model = _lessonRepository.Get(id.Value);
@@ -85,6 +102,7 @@ namespace Demo.Web.Areas.Admin.Controllers
                 };
             }
             ViewBag.Courses = lscourse;
+            ViewBag.Classes = lsClass;
             return View(model);
         }
 
