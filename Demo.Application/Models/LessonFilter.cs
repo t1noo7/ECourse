@@ -11,5 +11,6 @@ namespace Demo.Application.Models
     {
         public Guid CourseId { get; set; }
         public string CourseName {  get; set; }
+        public string ClassName {  get; set; }
     }
 }

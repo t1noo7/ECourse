@@ -2,6 +2,7 @@
 using Demo.Application.Repositories;
 using Demo.Application.Services.IServices;
 using Demo.Common.Extensions;
+using Demo.Core.Enums;
 using Demo.Core.Models;
 using Demo.Core.Permission;
 using Demo.Core.Repositories;
@@ -111,10 +112,12 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 if (isExist)
                 {
+                    TempData[TempDataKey.Success] = TempDataMessage.AddSuccess;
                     await _bannerRepository.UpdateAsync(model);
                 }
                 else
                 {
+                    TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
                     await _bannerRepository.UpsertAsync(model);
                 }
 
@@ -124,6 +127,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while saving");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return View(model);
             }
         }
@@ -134,10 +138,12 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 var model = await _bannerRepository.GetAsync(id);
                 model.Status = status;
+                TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
                 await _bannerRepository.UpdateAsync(model);
             }
             catch (Exception ex)
             {
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -164,19 +170,31 @@ namespace Demo.Web.Areas.Admin.Controllers
                         await _bannerRepository.UpdateAsync(banner);
                     }
                 }
+                TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
                 return Json(new { success = true });
             } catch (Exception ex)
             {
                 _logger.LogError(ex, "Lỗi khi cập nhật thứ tự banner");
-                return Json(new { success = false, message = ex.Message });
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
             }
         }
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _bannerRepository.SetAsync(id, nameof(Banner.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _bannerRepository.SetAsync(id, nameof(Banner.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xóa banner");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

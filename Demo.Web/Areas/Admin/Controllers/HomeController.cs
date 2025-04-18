@@ -90,15 +90,21 @@ namespace Demo.Web.Areas.Admin.Controllers
             var orders = _orderRepository.Find(o => o.Deleted != true && o.Status == OrderStatus.Approved && o.Created >= startDate && o.Created <= endDate)
                              .ToList(); // Fetch trước, xử lý sau
 
-            var ordersByDay = orders.GroupBy(o => o.Created.Date)
-                                    .Select(g => new OrderByDayViewModel
-                                    {
-                                        OrderDate = g.Key,
-                                        OrderCount = g.Count()
-                                    })
-                                    .OrderBy(g => g.OrderDate)
-                                    .ToList();
+            var orderCountByDate = orders.GroupBy(o => o.Created.Date).ToDictionary(g => g.Key, g => g.Count());
 
+            var ordersByDay = new List<OrderByDayViewModel>();
+            var currentDate = startDate.Date;
+
+            while (currentDate <= endDate.Date)
+            {
+                ordersByDay.Add(new OrderByDayViewModel
+                {
+                    OrderDate = currentDate,
+                    OrderCount = orderCountByDate.ContainsKey(currentDate) ? orderCountByDate[currentDate] : 0
+                });
+
+                currentDate = currentDate.AddDays(1);
+            }
 
             // Gán dữ liệu vào ViewModel
             var dashboardViewModel = new DashboardViewModel

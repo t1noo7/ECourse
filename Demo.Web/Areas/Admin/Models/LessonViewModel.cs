@@ -8,6 +8,8 @@ namespace Demo.Web.Areas.Admin.Models
         public string Title { get; set; }
         public Guid CourseId { get; set; }
         public string CourseName { get; set; }
+        public Guid ClassId { get; set; }
+        public string ClassName { get; set; }
         public DateTime Created { get; set; }
     }
 }

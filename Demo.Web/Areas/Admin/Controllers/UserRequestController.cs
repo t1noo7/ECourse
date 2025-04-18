@@ -52,10 +52,12 @@ namespace Demo.Web.Areas.Admin.Controllers
                 var model = await _userRequestRepository.GetAsync(id);
                 model.Status = status;
                 await _userRequestRepository.UpdateAsync(model);
+                TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -64,9 +66,19 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _userRequestRepository.SetAsync(id, nameof(UserRequest.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _userRequestRepository.SetAsync(id, nameof(UserRequest.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

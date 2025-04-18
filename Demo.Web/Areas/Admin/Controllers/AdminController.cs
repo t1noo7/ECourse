@@ -6,6 +6,7 @@ using Demo.Core.Permission;
 using Demo.Core.Models;
 using Demo.Web.Filters;
 using Demo.Application.Services.IServices;
+using Demo.Core.Enums;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
@@ -46,6 +47,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         public IActionResult EditSystemParameter(SystemParamData model, string dataValue)
         {
             _systemParameters.SetValue(model.DataName, dataValue);
+            TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
             return RedirectToAction(nameof(SystemParameters));
         }
 

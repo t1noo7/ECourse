@@ -4,7 +4,7 @@
 
 @if (Model != null && Model.IsAuthenticated)
 {
-    <div class="user-menu-container">
+    <div class="user-menu-container" style="z-index: 1055; position: relative;">
         <a href="javascript:void(0);" class="nav-link dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown">
             <img src="~/assets/img/testimonial-4.jpg" alt="User" class="rounded-circle img30x30 me-2" style="width: 30px; height: 30px; border-radius: 50%;">
             <span class="d-none d-md-inline">Hello, @User.Identity.Name</span>

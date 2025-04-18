@@ -3,6 +3,7 @@ using Demo.Application.Infrastructures;
 using Demo.Application.Repositories;
 using Demo.Application.Services.IServices;
 using Demo.Common.Extensions;
+using Demo.Core.Enums;
 using Demo.Core.Models;
 using Demo.Core.Permission;
 using Demo.Database.Repositories;
@@ -102,10 +103,12 @@ namespace Demo.Web.Areas.Admin.Controllers
 
                 if (isExist)
                 {
+                    TempData[TempDataKey.Success] = TempDataMessage.UpdateSuccess;
                     await _courseRepository.UpdateAsync(model);
                 }
                 else
                 {
+                    TempData[TempDataKey.Success] = TempDataMessage.AddSuccess;
                     await _courseRepository.UpsertAsync(model);
                 }
 
@@ -115,6 +118,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while saving course");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return View(model);
             }
         }
@@ -126,9 +130,12 @@ namespace Demo.Web.Areas.Admin.Controllers
                 var model = await _courseRepository.GetAsync(id);
                 model.Status = status;
                 await _courseRepository.UpdateAsync(model);
+                TempData[TempDataKey.Success] = TempDataMessage.ChangeStatusSuccess;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while saving course");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
                 return RedirectToAction(nameof(Index));
             }
 
@@ -137,9 +144,20 @@ namespace Demo.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id, string returnUrl)
         {
-            await _courseRepository.SetAsync(id, nameof(Course.Deleted), true);
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
-            else return Redirect(returnUrl);
+            try
+            {
+                await _courseRepository.SetAsync(id, nameof(Course.Deleted), true);
+                TempData[TempDataKey.Success] = TempDataMessage.DeleteSuccess;
+                if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction(nameof(Index));
+                else return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while saving course");
+                TempData[TempDataKey.Error] = TempDataMessage.GeneralError;
+                return RedirectToAction(nameof(Index));
+            }
+            
         }
     }
 }
