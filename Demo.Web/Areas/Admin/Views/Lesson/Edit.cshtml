@@ -17,8 +17,6 @@
             @Html.HiddenFor(m => m.CreatedBy)
             @Html.HiddenFor(m => m.FriendlyUrl)
             @Html.HiddenFor(m => m.VideoPath)
-            @Html.HiddenFor(m => m.CourseId)
-            @Html.HiddenFor(m => m.ClassId)
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
             <p>Model ID: @Model.Id</p>
@@ -79,35 +77,35 @@
                     }
                 </div>
             </div>
-            <div class="row mb-lg-2">
-                <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.CourseId)
-                    <select class="form-control" id="courseSelection" name="CourseId" required>
-                        <option value="">-- Chọn khóa học --</option>
-                        @foreach (var course in courses ?? new List<Course>())
-                        {
-                            <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
-                                @course.Title
-                            </option>
-                        }
-                    </select>
-                </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.CourseId)
+                <select class="form-control" id="courseSelection" name="CourseId" required>
+                    <option value="">-- Chọn khóa học --</option>
+                    @foreach (var course in courses)
+                    {
+                        <option value="@course.Id" selected="@(Model.CourseId == course.Id ? "selected" : null)">
+                            @course.Title
+                        </option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.CourseId, "", new { @course = "text-danger" })
             </div>
 
-            <div class="row mb-lg-2">
-                <div class="col-md-4 col-sm-6 search-item">
-                    @Html.LabelFor(m => m.ClassId)
-                    <select class="form-control" id="classSelection" name="ClassId" required>
-                        <option value="">-- Chọn lớp học --</option>
-                        @foreach (var classItem in classes ?? new List<Class>())
-                        {
-                            <option value="@classItem.Id" selected="@(Model.ClassId == classItem.Id ? "selected" : null)">
-                                @classItem.ClassName
-                            </option>
-                        }
-                    </select>
-                </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.ClassId)
+                <select class="form-control" id="classSelection" name="ClassId" required>
+                    <option value="">-- Chọn lớp học --</option>
+                    @foreach (var cls in classes)
+                    {
+                        <option value="@cls.Id" selected="@(Model.ClassId == cls.Id ? "selected" : null)">
+                            @cls.ClassName
+                        </option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.ClassId, "", new { @class = "text-danger" })
             </div>
+
 
             <div class="row mb-lg-2">
                 <div class="col-md-12 col-sm-12 search-item">
