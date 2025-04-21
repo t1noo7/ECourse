@@ -42,7 +42,8 @@ namespace Demo.Web.Areas.Admin.Controllers
             List<LessonViewModel> lessonViewModels = new List<LessonViewModel>();
 
             var lessons = _lessonRepository.Find(x => !x.Deleted &&
-                                                      (model.CourseId == Guid.Empty || x.CourseId == model.CourseId))
+                                                      (model.CourseId == Guid.Empty || x.CourseId == model.CourseId) &&
+                                                      (model.ClassId == Guid.Empty || x.ClassId == model.ClassId))
                                            .ToList();
 
             var courseIds = lessons.Select(x => x.CourseId).Distinct().ToList();

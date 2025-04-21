@@ -96,7 +96,9 @@
                 {
                     <tr class="stat even">
                         <td>@(stt++)</td>
-                        <td>@item.ClassName</td>
+                        <td>
+                            <a href="@Url.Action("Index", "Lesson", new { ClassId = item.Id, returnUrl = Context.Request.GetEncodedUrl()})">@item.ClassName</a>
+                        </td>
                         <td>@item.CourseName</td>
                         <td>@item.StudentIds.Count học viên</td>
                         <td>@item.Created</td>
