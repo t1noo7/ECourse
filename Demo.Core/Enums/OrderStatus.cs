@@ -14,9 +14,6 @@ namespace Demo.Core.Enums
         Canceled = 20,
 
         [Description("Đã duyệt")]
-        Approved = 30,
-
-        [Description("Đã duyệt")]
-        aa = 40
+        Approved = 30
     }
 }
