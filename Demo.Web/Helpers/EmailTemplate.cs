@@ -13,7 +13,7 @@ namespace Demo.Web.Helpers
 
         public string GetTemplate(string filename)
         {
-            var path = $"{_webHostEnvironment.WebRootPath}\\mail-templates\\{filename}";
+            var path = $"{_webHostEnvironment.WebRootPath}/mail-templates/{filename}";
             return File.ReadAllText(path);
         }
     }
