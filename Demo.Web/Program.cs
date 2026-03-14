@@ -4,6 +4,16 @@ using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
+
+    builder.Configuration.AddEnvironmentVariables();
+}
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.AddMongoDatabase();
@@ -12,12 +22,13 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(15); // Thời gian timeout
+    options.IdleTimeout = TimeSpan.FromMinutes(15);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.Configure<FormOptions>(options => {
+builder.Services.Configure<FormOptions>(options =>
+{
     options.MultipartBodyLengthLimit = 524288000; // 500MB
 });
 
@@ -27,17 +38,25 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+
+    if (!app.Environment.IsProduction())
+    {
+        app.UseHsts();
+    }
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsProduction() || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RAILWAY_STATIC_URL")))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
+// Area routes
 app.MapAreaControllerRoute(
     name: "Admin",
     areaName: "Admin",
@@ -48,10 +67,11 @@ app.MapControllerRoute(
     name: "areaRoute",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+// Friendly URL routes
 app.MapControllerRoute(
-name: "danhsachkhoahoc",
-pattern: FriendlyUrl.CoursesListFrUrl,
-defaults: new { controller = "Course", action = "List" });
+    name: "danhsachkhoahoc",
+    pattern: FriendlyUrl.CoursesListFrUrl,
+    defaults: new { controller = "Course", action = "List" });
 
 app.MapControllerRoute(
     name: "thongtinkhoahoc",
@@ -103,6 +123,7 @@ app.MapControllerRoute(
     pattern: FriendlyUrl.AboutUsFrUrl,
     defaults: new { controller = "Home", action = "AboutUs" });
 
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
