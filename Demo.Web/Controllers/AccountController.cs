@@ -175,12 +175,12 @@ namespace Demo.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var existedUser = _userRepository.Find(x => x.Email == model.Email).ToList();
-                    if(existedUser != null)
+                    if (existedUser.Any())
                     {
                         TempData[TempDataKey.Warning] = TempDataMessage.DuplicateEmail;
                         return View(model);
                     }
-                    
+
                     HttpContext.Session.SetObject("RegisterData", model); // đẩy data vào session và lấy lại khi xác thực mã thành công
 
                     // tạo mã xác thực và gửi đến mail đăng ký
